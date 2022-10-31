@@ -16,7 +16,7 @@ function NavMenu() {
 		return (
 			<ul className="navbar-nav">
 				<li className="nav-item">
-					<Link to="/signin/" className="nav-link">
+					<Link to="/signin/" className={`nav-link ${styles.btn}`}>
 						로그인
 					</Link>
 				</li>
@@ -31,7 +31,7 @@ function NavMenu() {
 				<ul className="navbar-nav">
 					<li className="nav-item dropdown">
 						<a
-							className="nav-link dropdown-toggle"
+							className={`nav-link dropdown-toggle ${styles.btn}`}
 							data-bs-toggle="dropdown"
 							href="#">
 							{nickname}
@@ -110,7 +110,7 @@ export default function Navbar({ items }) {
 									onClick={() => {
 										SetSelectedTab(item.url);
 									}}
-									className={`nav-link ${styles.navlink} `}>
+									className={`nav-link ${styles.navlink} ${styles.btn}`}>
 									{item.name}
 								</Link>
 							</li>
