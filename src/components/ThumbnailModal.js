@@ -5,7 +5,7 @@ export default function ThumbnailModal() {
 			"address",
 			document.getElementById("urlInput").value ?? ""
 		);
-		fetch("http://jiokkae.com/볶음밥/view/youtube_thumbnail.php", {
+		fetch("https://jiokkae.com/볶음밥/view/youtube_thumbnail.php", {
 			method: "post",
 			body: formData,
 		})
