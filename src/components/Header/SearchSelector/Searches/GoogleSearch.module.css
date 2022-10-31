@@ -1,0 +1,26 @@
+.gsfi {
+	font: bold 16px 굴림, dotum, arial, sans-serif;
+	line-height: 34px;
+	width: 100%;
+	height: auto;
+	outline: none;
+	margin: 10px;
+	border: 0;
+	background: url("data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw%3D%3D")
+		transparent;
+}
+.tsf {
+	margin: 20px auto;
+	overflow: visible;
+}
+
+.RNNXgb {
+	background: #fff;
+	display: flex;
+	border-radius: 2px;
+	border: none;
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
+	z-index: 3;
+	height: 44px;
+	width: 100%;
+}

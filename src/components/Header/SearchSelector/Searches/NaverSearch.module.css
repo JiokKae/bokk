@@ -1,0 +1,101 @@
+h1 {
+	margin-top: 0;
+	margin-bottom: 0.5rem;
+}
+
+.special_bg {
+	position: relative;
+	height: 130px;
+	transition: height 0.3s ease;
+	z-index: 300;
+}
+
+.special_bg .area_flex {
+	position: relative;
+	height: 100%;
+}
+
+@media (min-height: 769px) {
+	.special_bg {
+		height: 170px;
+	}
+}
+
+.area_logo {
+	position: relative;
+	margin: 0 auto;
+}
+
+.area_logo h1 {
+	top: 50%;
+	width: 200px;
+}
+
+.area_logo h1 a {
+	display: block;
+}
+
+.area_logo .naver_logo {
+	display: block;
+	overflow: hidden;
+	text-indent: 101%;
+	white-space: nowrap;
+	width: 198px;
+	height: 48px;
+	background-position: -4px -4px;
+}
+
+.area_logo .naver_logo {
+	background-image: url(https://s.pstatic.net/static/www/img/2018/sp_search.png);
+	background-image: linear-gradient(transparent, transparent),
+		url(https://s.pstatic.net/static/www/img/2018/sp_search.svg);
+	background-repeat: no-repeat;
+}
+
+.green_window {
+	display: inline-block;
+	width: 90%;
+	height: 45px;
+	border: 2px solid #03cf5d;
+	background-color: #fff;
+	box-sizing: content-box;
+}
+
+.search {
+	top: 50%;
+	left: 219px;
+}
+
+.search .sch_smit {
+	position: absolute;
+	top: 56;
+	right: 0;
+	overflow: visible;
+	width: 49px;
+	height: 49px;
+	border: 0;
+	background: #03cf5d;
+}
+
+.search .ico_search_submit {
+	position: absolute;
+	top: 14px;
+	left: 14px;
+	width: 21px;
+	height: 21px;
+	background-position: -4px -60px;
+}
+
+.input_text {
+	margin: 11px 0 0 9px;
+	width: 100%;
+	height: 23px;
+	outline: 0;
+	border: 0;
+	background-color: transparent;
+	color: #000;
+	font-weight: 700;
+	font-size: 18px;
+	line-height: 23px;
+	text-align: left;
+}
