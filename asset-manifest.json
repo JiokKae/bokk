@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/bokk/static/css/main.5de6d329.css",
-    "main.js": "/bokk/static/js/main.fad41d82.js",
+    "main.css": "/bokk/static/css/main.b5669921.css",
+    "main.js": "/bokk/static/js/main.fe8ccfbb.js",
     "index.html": "/bokk/index.html",
-    "main.5de6d329.css.map": "/bokk/static/css/main.5de6d329.css.map",
-    "main.fad41d82.js.map": "/bokk/static/js/main.fad41d82.js.map"
+    "main.b5669921.css.map": "/bokk/static/css/main.b5669921.css.map",
+    "main.fe8ccfbb.js.map": "/bokk/static/js/main.fe8ccfbb.js.map"
   },
   "entrypoints": [
-    "static/css/main.5de6d329.css",
-    "static/js/main.fad41d82.js"
+    "static/css/main.b5669921.css",
+    "static/js/main.fe8ccfbb.js"
   ]
 }
