@@ -17,7 +17,6 @@ const GET_BUILTIN_WEBLINK = gql`
 `;
 
 export default function Home() {
-	return <div>웹링크</div>;
 	const { data, loading } = useQuery(GET_BUILTIN_WEBLINK);
 	return (
 		<div id="web_link" className="m-4">
