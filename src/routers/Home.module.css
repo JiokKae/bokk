@@ -1,0 +1,50 @@
+.weblinkRow {
+	display: flex;
+	align-items: center;
+	column-gap: 0.25rem;
+	flex-wrap: wrap;
+	padding: 0.25rem;
+}
+
+.btnDot {
+	border: 2px dotted black;
+	background-color: #fff;
+	color: black;
+	width: 100px;
+	text-align: center;
+	font-weight: bold;
+	padding: 10px;
+	padding-right: 13px;
+	font-size: 13pt !important;
+}
+
+.bgcNaver {
+	background-color: #00c63c !important;
+	color: #fff !important;
+}
+.bgcDaum {
+	background-color: #f05447 !important;
+	color: #fff !important;
+}
+.bgcYoutube {
+	background-color: #ed5565 !important;
+	color: #fff !important;
+}
+
+.logoBtn {
+	display: inline;
+	padding: 0.5rem 0.875rem;
+	font-size: 1rem !important;
+	user-select: none;
+	text-decoration: none;
+}
+
+.btnLg {
+	padding: 15px;
+	padding-right: 18px;
+	font-size: 15pt !important;
+}
+
+img {
+	max-width: 100%;
+}
