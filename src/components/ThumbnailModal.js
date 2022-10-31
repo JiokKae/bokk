@@ -1,64 +1,73 @@
+import { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import InputGroup from "react-bootstrap/InputGroup";
+import Form from "react-bootstrap/Form";
+import styles from "./ThumbnailModal.module.css";
+
+function YoutubeThumbnail({ youtubeId }) {
+	var fullURL = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+	return youtubeId === "" ? (
+		<img src="https://jiokkae.com/볶음밥/img/youtube_share_link.png" />
+	) : (
+		<a href={fullURL} target="_blank">
+			<img src={fullURL} />
+		</a>
+	);
+}
+
 export default function ThumbnailModal() {
+	/**
+	 * @link https://stackoverflow.com/questions/5830387/how-do-i-find-all-youtube-video-ids-in-a-string-using-a-regex/6901180#6901180
+	 * @param {string} text
+	 */
+	function getYouTubeId(text) {
+		if (text === null) return "";
+		var regex =
+			/https?:\/\/(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\S*?[^\w\s-])([\w-]{11})(?=[^\w-]|$)(?![?=&+%\w.-]*(?:['"][^<>]*>|<\/a>))[?=&+%\w.-]*/gi;
+		return text.replace(regex, "$1");
+	}
+	const [thumbnailId, SetThumbnailId] = useState("");
+	const [show, setShow] = useState(false);
+	const handleClose = () => setShow(false);
+	const handleShow = () => setShow(true);
+
 	const onClick = () => {
-		var formData = new FormData();
-		formData.append(
-			"address",
-			document.getElementById("urlInput").value ?? ""
-		);
-		fetch("https://jiokkae.com/볶음밥/view/youtube_thumbnail.php", {
-			method: "post",
-			body: formData,
-		})
-			.then((res) => res.text())
-			.then((txt) => {
-				document.getElementById("thumbnail").innerHTML = txt;
-				document.getElementById("urlInput").value = "";
-			});
+		SetThumbnailId(getYouTubeId(document.getElementById("urlInput").value));
+		document.getElementById("urlInput").value = "";
 	};
 	return (
-		<div
-			className="modal fade"
-			id="thumbnailModal"
-			tabIndex="-1"
-			role="dialog"
-			aria-labelledby="thumbnailModalLabel"
-			aria-hidden="true">
-			<div className="modal-dialog modal-lg" role="document">
-				<div className="modal-content">
-					<div className="modal-header">
-						<h5 className="modal-title" id="thumbnailModalLabel">
-							유튜브 Thumbnail 크게 보기
-						</h5>
-						<button
-							type="button"
-							className="btn-close"
-							data-bs-dismiss="modal"
-							aria-label="Close"></button>
-					</div>
-					<div id="thumbnail" className="modal-body">
-						<img src="https://jiokkae.com/볶음밥/img/youtube_share_link.png" />
-					</div>
-					<div className="modal-footer">
-						<div className="input-group mb-3">
-							<input
-								id="urlInput"
-								type="text"
-								className="form-control"
-								placeholder="https://youtu.be/..."
-								required
-							/>
-							<div className="input-group-append">
-								<input
-									onClick={onClick}
-									type="button"
-									className="btn btn-outline-secondary"
-									value="입력"
-								/>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+		<>
+			<Button
+				className={`${styles.btnLg} ${styles.bgcYoutube} mt-2`}
+				onClick={handleShow}>
+				유튜브 Thumbnail 크게 보기
+			</Button>
+			<Modal show={show} onHide={handleClose}>
+				<Modal.Header closeButton>
+					<Modal.Title>유튜브 Thumbnail 크게 보기</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<YoutubeThumbnail youtubeId={thumbnailId} />
+				</Modal.Body>
+				<Modal.Footer>
+					<InputGroup className="mb-3">
+						<Form.Control
+							id="urlInput"
+							placeholder="https://youtu.be/..."
+							aria-label="input Youtube video link"
+							aria-describedby="basic-addon2"
+							required
+						/>
+						<Button
+							variant="outline-secondary"
+							id="button-addon2"
+							onClick={onClick}>
+							입력
+						</Button>
+					</InputGroup>
+				</Modal.Footer>
+			</Modal>
+		</>
 	);
 }

@@ -70,13 +70,6 @@ export default function Home() {
 				</a>
 			</div>
 			<div>
-				<button
-					type="button"
-					className={`btn ${styles.btnLg} ${styles.bgcYoutube} mt-2`}
-					data-bs-toggle="modal"
-					data-bs-target="#thumbnailModal">
-					유튜브 Thumbnail 크게 보기
-				</button>
 				<ThumbnailModal />
 			</div>
 		</div>
