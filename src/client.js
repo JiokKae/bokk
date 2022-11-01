@@ -1,8 +1,13 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client";
+
+const link = createHttpLink({
+	uri: "https://jiokkae.com/api/",
+	credentials: "include",
+});
 
 const client = new ApolloClient({
-	uri: "https://jiokkae.com/api/",
 	cache: new InMemoryCache(),
+	link,
 });
 
 export default client;
