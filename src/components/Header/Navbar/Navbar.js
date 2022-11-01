@@ -26,7 +26,7 @@ function NavMenu() {
 
 	function UserMenu({ nickname, options }) {
 		return (
-			<div>
+			<>
 				<span className="navbar-text">{nickname}님 환영합니다</span>
 				<ul className="navbar-nav">
 					<li className="nav-item dropdown">
@@ -40,7 +40,7 @@ function NavMenu() {
 						<div
 							className="dropdown-menu dropdown-menu-right"
 							aria-labelledby="navbarDropdown">
-							{options.weblinkManage ? null : (
+							{options?.weblinkManage ? null : (
 								<a
 									class="dropdown-item"
 									href="/볶음밥/weblink_management.php">
@@ -61,7 +61,7 @@ function NavMenu() {
 						</div>
 					</li>
 				</ul>
-			</div>
+			</>
 		);
 	}
 
