@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -43,9 +43,11 @@ export default function ThumbnailModal() {
 				onClick={handleShow}>
 				유튜브 Thumbnail 크게 보기
 			</Button>
-			<Modal show={show} onHide={handleClose}>
+			<Modal size="lg" show={show} onHide={handleClose}>
 				<Modal.Header closeButton>
-					<Modal.Title>유튜브 Thumbnail 크게 보기</Modal.Title>
+					<Modal.Title as="h5">
+						유튜브 Thumbnail 크게 보기
+					</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
 					<YoutubeThumbnail youtubeId={thumbnailId} />
