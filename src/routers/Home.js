@@ -1,20 +1,9 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
 import ThumbnailModal from "../components/ThumbnailModal";
 import Weblink from "../components/Weblink";
+import { GET_BUILTIN_WEBLINK } from "../querys";
 import styles from "./Home.module.css";
-
-const GET_BUILTIN_WEBLINK = gql`
-	query BuiltinWeblinks {
-		builtinWeblinks {
-			name
-			url
-			color
-			backgroundColor
-			id
-		}
-	}
-`;
 
 export default function Home() {
 	const { data, loading } = useQuery(GET_BUILTIN_WEBLINK);
