@@ -75,7 +75,7 @@ function NavMenu() {
 }
 
 export default function Navbar({ items }) {
-	const [selectedTab, SetSelectedTab] = useState("");
+	const [selectedTab, setSelectedTab] = useState("");
 
 	return (
 		<nav className="navbar navbar-expand-md sticky-top navbar-dark">
@@ -108,7 +108,7 @@ export default function Navbar({ items }) {
 								<Link
 									to={item.url}
 									onClick={() => {
-										SetSelectedTab(item.url);
+										setSelectedTab(item.url);
 									}}
 									className={`nav-link ${styles.navlink} ${styles.btn}`}>
 									{item.name}

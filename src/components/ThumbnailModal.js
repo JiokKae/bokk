@@ -27,13 +27,13 @@ export default function ThumbnailModal() {
 			/https?:\/\/(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\S*?[^\w\s-])([\w-]{11})(?=[^\w-]|$)(?![?=&+%\w.-]*(?:['"][^<>]*>|<\/a>))[?=&+%\w.-]*/gi;
 		return text.replace(regex, "$1");
 	}
-	const [thumbnailId, SetThumbnailId] = useState("");
+	const [thumbnailId, setThumbnailId] = useState("");
 	const [show, setShow] = useState(false);
 	const handleClose = () => setShow(false);
 	const handleShow = () => setShow(true);
 
 	const onClick = () => {
-		SetThumbnailId(getYouTubeId(document.getElementById("urlInput").value));
+		setThumbnailId(getYouTubeId(document.getElementById("urlInput").value));
 		document.getElementById("urlInput").value = "";
 	};
 	return (

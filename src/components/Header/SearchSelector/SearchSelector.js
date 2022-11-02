@@ -3,7 +3,7 @@ import GoogleSearch from "./Searches/GoogleSearch";
 import NaverSearch from "./Searches/NaverSearch";
 
 export default function SearchSelector() {
-	const [searchIndex, SetSearchIndex] = useState(0);
+	const [searchIndex, setSearchIndex] = useState(0);
 	const Searches = [<NaverSearch />, <GoogleSearch />];
 	return (
 		<div>
@@ -12,7 +12,7 @@ export default function SearchSelector() {
 					id="tab_naver"
 					className="col-auto pointer"
 					onClick={() => {
-						SetSearchIndex(0);
+						setSearchIndex(0);
 					}}>
 					<img src="https://www.naver.com/favicon.ico" />
 				</div>
@@ -20,7 +20,7 @@ export default function SearchSelector() {
 					id="tab_google"
 					className="col-auto pointer me-auto"
 					onClick={() => {
-						SetSearchIndex(1);
+						setSearchIndex(1);
 					}}>
 					<img src="https://www.google.com/favicon.ico" />
 				</div>
