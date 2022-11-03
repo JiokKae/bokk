@@ -35,6 +35,32 @@ export const GET_BUILTIN_WEBLINK = gql`
 	}
 `;
 
+export const OWN_WEBLINKS = gql`
+	query OwnWeblinks {
+		ownWeblinks {
+			name
+			url
+			color
+			backgroundColor
+			id
+		}
+	}
+`;
+
+export const ADD_WEBLINK = gql`
+	mutation Mutation($input: AddWeblinkInput!) {
+		addWeblink(input: $input) {
+			weblink {
+				name
+				url
+				color
+				backgroundColor
+				id
+			}
+		}
+	}
+`;
+
 export const FILES = gql`
 	query Files {
 		files {

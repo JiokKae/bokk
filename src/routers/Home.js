@@ -1,12 +1,15 @@
 import { useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
-import ThumbnailModal from "../components/ThumbnailModal";
-import Weblink from "../components/Weblink";
-import { GET_BUILTIN_WEBLINK } from "../querys";
+import AddWeblinkModal from "../components/Weblink/AddWeblinkModal";
+import ThumbnailModal from "../components/Weblink/ThumbnailModal";
+import Weblink from "../components/Weblink/Weblink";
+import { GET_BUILTIN_WEBLINK, IS_LOGIN, OWN_WEBLINKS } from "../querys";
 import styles from "./Home.module.css";
 
 export default function Home() {
-	const { data, loading } = useQuery(GET_BUILTIN_WEBLINK);
+	const { data } = useQuery(GET_BUILTIN_WEBLINK);
+	const { data: ownWeblinksData } = useQuery(OWN_WEBLINKS);
+	const { data: isLoginData } = useQuery(IS_LOGIN);
 	return (
 		<>
 			<div className={styles.weblinkRow}>
@@ -23,11 +26,24 @@ export default function Home() {
 				)}
 			</div>
 			<div className={styles.weblinkRow}>
-				<Link to="/signin/">
-					<button className={`btn ${styles.btnDot} btn_dot m-1`}>
-						+
-					</button>
-				</Link>
+				{ownWeblinksData?.ownWeblinks.map(
+					({ id, name, url, color, backgroundColor }) => (
+						<Weblink
+							key={id}
+							name={name}
+							url={url}
+							color={color}
+							backgroundColor={backgroundColor}
+						/>
+					)
+				)}
+				{isLoginData?.me === null ? (
+					<Link to="/signin/">
+						<button className="btn-dot m-1">+</button>
+					</Link>
+				) : (
+					<AddWeblinkModal />
+				)}
 			</div>
 			<div className={styles.weblinkRow}>
 				<a href="https://www.naver.com/" target="_blank">

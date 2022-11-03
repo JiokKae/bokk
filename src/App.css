@@ -10,3 +10,7 @@
 	padding-right: 13px;
 	font-size: 13pt !important;
 }
+.pointer {
+	cursor: pointer;
+}
+
