@@ -47,11 +47,11 @@ function NavMenu() {
 									웹링크 관리
 								</a>
 							)}
-							<a
-								className="dropdown-item"
-								href="/볶음밥/changePassword.php">
+							<Link
+								to="/changePassword/"
+								className="dropdown-item">
 								비밀번호 변경
-							</a>
+							</Link>
 							<div className="dropdown-divider"></div>
 							<a
 								className="dropdown-item"

@@ -5,6 +5,8 @@ import MessageBoard from "./routers/Messageboard";
 import Download from "./routers/Download";
 import Signin from "./routers/Signin";
 import HeaderLayout from "./outlets/HeaderLayout";
+import ChangePassword from "./routers/ChangePassword";
+import SignLayout from "./outlets/SignLayout";
 
 export default function App() {
 	return (
@@ -19,7 +21,13 @@ export default function App() {
 					<Route path="/messageboard/" element={<MessageBoard />} />
 					<Route path="/download/" element={<Download />} />
 				</Route>
-				<Route path="/signin/" element={<Signin />} />
+				<Route element={<SignLayout />}>
+					<Route path="/signin/" element={<Signin />} />
+					<Route
+						path="/changePassword/"
+						element={<ChangePassword />}
+					/>
+				</Route>
 			</Routes>
 		</BrowserRouter>
 	);

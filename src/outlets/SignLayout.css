@@ -1,0 +1,12 @@
+.formSign {
+	width: 100%;
+	max-width: 420px;
+	padding: 15px;
+	margin: auto;
+}
+.signBtn {
+	background-color: #0699f9 !important;
+	color: white !important;
+	width: 100%;
+	padding: 10px 0px;
+}
