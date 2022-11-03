@@ -1,0 +1,12 @@
+.btn-dot {
+	border: 2px dotted black;
+	border-radius: 0.25rem;
+	background-color: #fff;
+	color: black;
+	width: 100px;
+	text-align: center;
+	font-weight: bold;
+	padding: 10px;
+	padding-right: 13px;
+	font-size: 13pt !important;
+}

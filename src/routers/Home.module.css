@@ -6,18 +6,6 @@
 	padding: 0.25rem;
 }
 
-.btnDot {
-	border: 2px dotted black;
-	background-color: #fff;
-	color: black;
-	width: 100px;
-	text-align: center;
-	font-weight: bold;
-	padding: 10px;
-	padding-right: 13px;
-	font-size: 13pt !important;
-}
-
 .bgcNaver {
 	background-color: #00c63c !important;
 	color: #fff !important;

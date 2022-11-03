@@ -5,6 +5,7 @@ import MessageBoard from "./routers/Messageboard";
 import Download from "./routers/Download";
 import Signin from "./routers/Signin";
 import HeaderLayout from "./outlets/HeaderLayout";
+import "./App.css";
 import ChangePassword from "./routers/ChangePassword";
 import SignLayout from "./outlets/SignLayout";
 
