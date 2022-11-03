@@ -8,7 +8,7 @@ import styles from "./Home.module.css";
 export default function Home() {
 	const { data, loading } = useQuery(GET_BUILTIN_WEBLINK);
 	return (
-		<div id="web_link" className="m-4">
+		<>
 			<div className={styles.weblinkRow}>
 				{data?.builtinWeblinks.map(
 					({ id, name, url, color, backgroundColor }) => (
@@ -61,6 +61,6 @@ export default function Home() {
 			<div>
 				<ThumbnailModal />
 			</div>
-		</div>
+		</>
 	);
 }

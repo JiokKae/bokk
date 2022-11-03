@@ -6,7 +6,9 @@ export default function HeaderLayout() {
 		<div>
 			<Header />
 			<div className="container">
-				<Outlet />
+				<div className="m-4">
+					<Outlet />
+				</div>
 			</div>
 		</div>
 	);
