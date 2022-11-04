@@ -6,6 +6,12 @@ export const SIGNIN = gql`
 	}
 `;
 
+export const SIGNOUT = gql`
+	mutation Signout {
+		signout
+	}
+`;
+
 export const CHANGE_PASSWORD = gql`
 	mutation ChangePassword($input: ChangePasswordInput!) {
 		changePassword(input: $input) {

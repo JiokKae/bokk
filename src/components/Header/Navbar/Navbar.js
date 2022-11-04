@@ -1,15 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./Navbar.module.css";
-import { gql, useQuery } from "@apollo/client";
-
-const IS_LOGIN = gql`
-	query Me {
-		me {
-			name
-		}
-	}
-`;
+import { useMutation, useQuery } from "@apollo/client";
+import { IS_LOGIN, QUERIES_AFFECTED_BY_SIGN, SIGNOUT } from "../../../querys";
 
 function NavMenu() {
 	function GuestMenu() {
@@ -24,7 +17,10 @@ function NavMenu() {
 		);
 	}
 
-	function UserMenu({ nickname, options }) {
+	function UserMenu({ nickname, options, refetch }) {
+		const [signout] = useMutation(SIGNOUT, {
+			refetchQueries: QUERIES_AFFECTED_BY_SIGN,
+		});
 		return (
 			<>
 				<span className="navbar-text">{nickname}님 환영합니다</span>
@@ -54,8 +50,10 @@ function NavMenu() {
 							</Link>
 							<div className="dropdown-divider"></div>
 							<a
-								className="dropdown-item"
-								href="/볶음밥/signout.php">
+								className="dropdown-item pointer"
+								onClick={() => {
+									signout();
+								}}>
 								로그아웃
 							</a>
 						</div>
