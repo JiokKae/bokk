@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { CORE_MESSAGE_FIELDS } from "./fragments";
 
 export const SIGNIN = gql`
 	mutation Signin($signinId: String!, $password: String!) {
@@ -63,6 +64,32 @@ export const ADD_WEBLINK = gql`
 				backgroundColor
 				id
 			}
+		}
+	}
+`;
+
+export const MESSAGEBOARD = gql`
+	${CORE_MESSAGE_FIELDS}
+	query Me($page: Int!) {
+		me {
+			id
+		}
+		messageboard(page: $page) {
+			messages {
+				...CoreMessageFields
+				reply {
+					...CoreMessageFields
+				}
+			}
+			totalCount
+		}
+	}
+`;
+
+export const POST_MESSAGE = gql`
+	mutation PostMessage($input: PostMessageInput!) {
+		postMessage(input: $input) {
+			completed
 		}
 	}
 `;

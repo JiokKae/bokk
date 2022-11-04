@@ -6,11 +6,16 @@ const link = createHttpLink({
 });
 
 const client = new ApolloClient({
-	cache: new InMemoryCache(),
 	cache: new InMemoryCache({
 		typePolicies: {
 			Weblink: {
 				keyFields: ["id", "name"],
+			},
+			Message: {
+				keyFields: ["id", "type"],
+			},
+			Writer: {
+				keyFields: ["name", "type"],
 			},
 		},
 	}),

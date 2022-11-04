@@ -1,6 +1,15 @@
+/* backgroundColors */
 .bgc-white {
 	background-color: white !important;
 	color: black !important;
+}
+.bgc-bokk-dark {
+	background-color: #057ecf !important;
+	color: white !important;
+}
+.bgc-bokk {
+	background-color: #0699f9 !important;
+	color: white !important;
 }
 .bgc-opgg {
 	background-color: #5383e8 !important;
@@ -58,4 +67,171 @@
 	font-size: 20px !important;
 }
 
+/* my responsive board (mobile)*/
+.retime {
+	font-size: 12px;
+	color: #aaa;
+	text-align: center;
+}
+@media (max-width: 767px) {
+	div.message-board {
+		padding: 0;
+	}
 
+	div.message-board > .row {
+		border: 1px solid #aaa;
+		border-radius: 0.5rem;
+		text-align: center !important;
+		margin: 0.5rem 0;
+		box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2),
+			0 6px 10px 0 rgba(0, 0, 0, 0.19);
+	}
+	div.message-board .table-header {
+		display: none;
+	}
+	.bd-number {
+		color: #aaa !important;
+		font-weight: normal !important;
+		background-color: #0000 !important;
+		font-size: 0.75rem;
+		width: auto;
+		position: absolute;
+		padding: 0.25rem !important;
+	}
+	.bd-content {
+		padding-top: 1.25rem !important;
+		padding: 0.5rem;
+	}
+	.bd-time {
+		padding: 0.5rem;
+		width: 30% !important;
+		vertical-align: middle;
+	}
+	.bd-writer {
+		padding: 0.5rem;
+		width: 55% !important;
+	}
+	.bd-delete {
+		width: 15% !important;
+	}
+	.bd-reply {
+		margin: 0 !important;
+	}
+	.bd-reply.row {
+		border-radius: 0 !important;
+		box-shadow: none !important;
+	}
+	.bd-reply .bd-content {
+		padding-top: 0.5rem !important;
+	}
+	.m_hide {
+		display: none;
+	}
+}
+
+div.message-board .row {
+	border-bottom: 1px solid #aaa;
+}
+div.message-board .row > div {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+div.message-board .table-header .th {
+	padding-left: 0;
+	padding-right: 0;
+	font-weight: bold;
+	color: #fff;
+	text-align: center;
+	background: #bdbdbd;
+	border-bottom: 3px solid #036;
+}
+div.message-board .table-header div {
+	padding: 0.75rem;
+	font-weight: bold;
+	color: #fff;
+	background: #bdbdbd;
+	border-bottom: 3px solid #036;
+}
+
+.bd-number {
+	text-align: center;
+	padding: 0px;
+	font-weight: bold;
+	background: #f3f6f7;
+}
+.bd-content {
+	padding-left: 0.5rem;
+	word-break: break-all;
+	max-height: 600px;
+	overflow: auto;
+}
+.bd-time {
+	padding-top: 0.75rem !important;
+}
+.bd-writer {
+	display: flex;
+	align-items: flex-start;
+	text-align: left;
+	padding: 0px;
+}
+.bd-delete {
+	padding: 0.5rem;
+	text-align: center;
+}
+.bd-reply {
+	font-size: 15px;
+	padding: 0 0 !important;
+	margin-left: 4rem;
+	margin-right: 1rem;
+	background-color: #f3f6f7 !important;
+	border: 1px solid #aaa;
+}
+.bd-reply.row + .bd-reply.row {
+	border-top: 0;
+}
+.bd-reply:last-child {
+	margin-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) {
+	.col-md-7_5 {
+		-ms-flex: 0 0 62.5%;
+		flex: 0 0 62.5%;
+		max-width: 62.5%;
+	}
+	.col-md-6_5 {
+		-ms-flex: 0 0 54.166666%;
+		flex: 0 0 54.166666%;
+		max-width: 54.166666%;
+	}
+	.col-md-5_5 {
+		-ms-flex: 0 0 45.833333%;
+		flex: 0 0 45.833333%;
+		max-width: 45.833333%;
+	}
+	.col-md-2_5 {
+		-ms-flex: 0 0 20.833333%;
+		flex: 0 0 20.833333%;
+		max-width: 20.833333%;
+	}
+	.col-md-1_5 {
+		-ms-flex: 0 0 12.5%;
+		flex: 0 0 12.5%;
+		max-width: 12.5%;
+	}
+	.col-md-0_5 {
+		-ms-flex: 0 0 4.1666666%;
+		flex: 0 0 4.1666666%;
+		max-width: 4.1666666%;
+	}
+}
+.col-md-7_5,
+.col-md-6_5,
+.col-md-5_5,
+.col-md-2_5,
+.col-md-1_5,
+.col-md-0_5 {
+	position: relative;
+	width: 100%;
+	min-height: 1px;
+}
