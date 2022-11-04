@@ -70,3 +70,10 @@ export const FILES = gql`
 		}
 	}
 `;
+
+export const QUERIES_AFFECTED_BY_SIGN = [
+	{ query: IS_LOGIN },
+	{ query: FILES },
+	{ query: OWN_WEBLINKS },
+	{ query: GET_BUILTIN_WEBLINK },
+];

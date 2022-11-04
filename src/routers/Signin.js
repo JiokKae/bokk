@@ -1,13 +1,13 @@
 import { useMutation } from "@apollo/client";
 import { createRef, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FILES, IS_LOGIN, SIGNIN } from "../querys";
+import { QUERIES_AFFECTED_BY_SIGN, SIGNIN } from "../querys";
 
 export default function Signin() {
 	const [id, setId] = useState("");
 	const [password, setPassword] = useState("");
 	const [signin, { data }] = useMutation(SIGNIN, {
-		refetchQueries: [{ query: IS_LOGIN }, { query: FILES }],
+		refetchQueries: QUERIES_AFFECTED_BY_SIGN,
 	});
 	const navigate = useNavigate();
 	const passwordInput = createRef();
