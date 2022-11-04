@@ -1,3 +1,44 @@
+.bgc-white {
+	background-color: white !important;
+	color: black !important;
+}
+.bgc-opgg {
+	background-color: #5383e8 !important;
+	color: white !important;
+}
+.bgc-fowkr {
+	background-color: #bdbdbd !important;
+	color: black !important;
+}
+.bgc-yourgg {
+	background-color: #2d2b2e !important;
+	color: #fff !important;
+}
+.bgc-dakgg {
+	background-color: #1a2030 !important;
+	color: #ffbb00 !important;
+}
+.bgc-dakgg-orange {
+	background-color: #ffbb00 !important;
+	color: #000000 !important;
+}
+.bgc-llchgg {
+	background-color: #3a3f4c !important;
+	color: #fff !important;
+}
+.bgc-loawa {
+	background-color: #212529 !important;
+	color: white !important;
+}
+.bgc-loawa-gray {
+	background-color: #40444f !important;
+	color: #fff !important;
+}
+
+.brt-2 {
+	border-radius: 0.5rem 0.5rem 0rem 0rem !important;
+}
+
 .btn-dot {
 	border: 2px dotted black;
 	border-radius: 0.25rem;
@@ -13,4 +54,8 @@
 .pointer {
 	cursor: pointer;
 }
+.fs20 {
+	font-size: 20px !important;
+}
+
 
