@@ -37,11 +37,9 @@ function NavMenu() {
 							className="dropdown-menu dropdown-menu-right"
 							aria-labelledby="navbarDropdown">
 							{options?.weblinkManage ? null : (
-								<a
-									class="dropdown-item"
-									href="/볶음밥/weblink_management.php">
-									웹링크 관리
-								</a>
+								<Link to="/manage/" className="dropdown-item">
+									관리
+								</Link>
 							)}
 							<Link
 								to="/changePassword/"
