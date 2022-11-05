@@ -1,12 +1,13 @@
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
-import { MESSAGEBOARD, POST_MESSAGE } from "../../querys";
+import { IS_LOGIN, MESSAGEBOARD, POST_MESSAGE } from "../../querys";
 
-export default function PostReplyForm({ userId, messageId, currentPage }) {
+export default function PostReplyForm({ messageId, currentPage }) {
 	const [writerName, setWriterName] = useState("");
 	const [password, setPassword] = useState("");
 	const [content, setContent] = useState("");
 	const contentInput = useRef();
+	const { data } = useQuery(IS_LOGIN);
 	const [postMessage] = useMutation(POST_MESSAGE, {
 		refetchQueries: [
 			{ query: MESSAGEBOARD, variables: { page: currentPage } },
@@ -31,7 +32,7 @@ export default function PostReplyForm({ userId, messageId, currentPage }) {
 	return (
 		<div className="bd-reply mt-2">
 			<div className="row g-0">
-				{userId === undefined ? (
+				{data?.me ? null : (
 					<>
 						<div className="col-4">
 							<input
@@ -56,7 +57,7 @@ export default function PostReplyForm({ userId, messageId, currentPage }) {
 							/>
 						</div>
 					</>
-				) : null}
+				)}
 				<div className="col-auto">
 					<button
 						type="button"

@@ -15,10 +15,7 @@ export default function MessageBoard() {
 	const [usesTag, setUsesTag] = useState(true);
 	return (
 		<>
-			<PostMessageForm
-				isLogined={data?.me !== null}
-				setCurrentPage={setCurrentPage}
-			/>
+			<PostMessageForm setCurrentPage={setCurrentPage} />
 			<div className="p-2">
 				<button
 					className="btn btn-md bgc-bokk-dark"
@@ -54,7 +51,6 @@ export default function MessageBoard() {
 									time={time}
 									writer={writer}
 									reply={reply}
-									userId={data?.me?.id}
 									currentPage={currentPage}
 									options={{ usesTag }}
 								/>

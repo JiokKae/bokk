@@ -1,4 +1,6 @@
+import { useQuery } from "@apollo/client";
 import { useState } from "react";
+import { IS_LOGIN } from "../../querys";
 import PostReplyForm from "./PostReplyForm";
 
 function isNeedDeleteButton(writerName, writerType, writerId, userId) {
@@ -18,7 +20,8 @@ function Content({ usesTag, content }) {
 	return content;
 }
 
-function Reply({ id, content, time, writer, userId, options }) {
+function Reply({ content, time, writer, options }) {
+	const { data } = useQuery(IS_LOGIN);
 	const onClick = (e) => {
 		//showBoardDelete${writer["type"] === "user" ? "User" : ""}Modal( {id}, 'reply')
 	};
@@ -44,7 +47,7 @@ function Reply({ id, content, time, writer, userId, options }) {
 					writer?.name,
 					writer?.type,
 					writer?.id,
-					userId
+					data?.me?.id
 				) === true ? (
 					<button
 						type="button"
@@ -63,10 +66,10 @@ export default function Message({
 	time,
 	writer,
 	reply,
-	userId,
 	options,
 	currentPage,
 }) {
+	const { data } = useQuery(IS_LOGIN);
 	const [opensForm, setOpensForm] = useState(false);
 	const onClick = () => {
 		//"showBoardDelete${writer["type"] === "user" ? "User" : ""}Modal( ${id}, 'message')"
@@ -95,7 +98,7 @@ export default function Message({
 					writer.name,
 					writer.type,
 					writer.id,
-					userId
+					data?.me?.id
 				) === true ? (
 					<button
 						type="button"
@@ -106,20 +109,14 @@ export default function Message({
 			</div>
 			<div className="message-board p-0 m-0 hide_child">
 				{opensForm ? (
-					<PostReplyForm
-						userId={userId}
-						messageId={id}
-						currentPage={currentPage}
-					/>
+					<PostReplyForm messageId={id} currentPage={currentPage} />
 				) : null}
 				{reply?.map(({ id, content, time, writer }) => (
 					<Reply
 						key={id}
-						id={id}
 						content={content}
 						time={time}
 						writer={writer}
-						userId={userId}
 						options={options}
 					/>
 				))}
