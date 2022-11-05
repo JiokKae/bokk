@@ -64,7 +64,6 @@ function NavMenu() {
 	}
 
 	const { data, loading } = useQuery(IS_LOGIN);
-	console.log(data);
 	return loading ? null : data?.me === null ? (
 		<GuestMenu />
 	) : (
