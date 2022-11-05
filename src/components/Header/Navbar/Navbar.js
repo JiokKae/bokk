@@ -76,7 +76,8 @@ export default function Navbar({ items }) {
 	const [selectedTab, setSelectedTab] = useState("");
 
 	return (
-		<nav className="navbar navbar-expand-md sticky-top navbar-dark">
+		<nav
+			className={`navbar navbar-expand-md sticky-top navbar-dark ${styles.nav}`}>
 			<div className="container">
 				<Link to="/" className="navbar-brand">
 					볶음밥
