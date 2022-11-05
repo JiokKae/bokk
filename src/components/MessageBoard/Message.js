@@ -3,6 +3,21 @@ import { useState } from "react";
 import { IS_LOGIN } from "../../querys";
 import PostReplyForm from "./PostReplyForm";
 
+function Writer({ name, type }) {
+	return (
+		<>
+			{name}
+			{type === "user" ? (
+				<img
+					className="m-1"
+					src="https://jiokkae.com/볶음밥/img/네모볶음밥32x32.png"
+					style={{ width: "16px" }}
+				/>
+			) : null}
+		</>
+	);
+}
+
 function isNeedDeleteButton(writerName, writerType, writerId, userId) {
 	if (writerType === "guest" && writerName !== "----") {
 		return true;
@@ -33,14 +48,7 @@ function Reply({ content, time, writer, options }) {
 			</div>
 			<div className="col-md-2_5 bd-time retime">{time}</div>
 			<div className="col-md-1_5 bd-writer">
-				{writer?.name}
-				{writer?.type === "user" ? (
-					<img
-						className="m-1"
-						src="https://jiokkae.com/볶음밥/img/네모볶음밥32x32.png"
-						style={{ width: "16px" }}
-					/>
-				) : null}
+				<Writer name={writer?.name} type={writer?.type} />
 			</div>
 			<div className="col-md-0_5 bd-delete">
 				{isNeedDeleteButton(
@@ -84,14 +92,7 @@ export default function Message({
 			</div>
 			<div className="col-md-2 bd-time retime">{time}</div>
 			<div className="col-md-2 me-auto bd-writer breakable">
-				{writer.name}
-				{writer.type === "user" ? (
-					<img
-						className="m-1"
-						src="https://jiokkae.com/볶음밥/img/네모볶음밥32x32.png"
-						style={{ width: "16px" }}
-					/>
-				) : null}
+				<Writer name={writer?.name} type={writer?.type} />
 			</div>
 			<div className="col-md-0_5 bd-delete">
 				{isNeedDeleteButton(
