@@ -1,13 +1,13 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
-import { IS_LOGIN, MESSAGEBOARD, POST_MESSAGE } from "../../querys";
+import { ME, MESSAGEBOARD, POST_MESSAGE } from "../../querys";
 
 export default function PostReplyForm({ messageId, currentPage }) {
 	const [writerName, setWriterName] = useState("");
 	const [password, setPassword] = useState("");
 	const [content, setContent] = useState("");
 	const contentInput = useRef();
-	const { data } = useQuery(IS_LOGIN);
+	const { data } = useQuery(ME);
 	const [postMessage] = useMutation(POST_MESSAGE, {
 		refetchQueries: [
 			{ query: MESSAGEBOARD, variables: { page: currentPage } },

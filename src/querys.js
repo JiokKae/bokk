@@ -21,16 +21,19 @@ export const CHANGE_PASSWORD = gql`
 	}
 `;
 
-export const IS_LOGIN = gql`
+export const ME = gql`
 	query Me {
 		me {
 			id
 			name
+			config {
+				videoAutoPlay
+			}
 		}
 	}
 `;
 
-export const GET_BUILTIN_WEBLINK = gql`
+export const BUILTIN_WEBLINKS = gql`
 	query BuiltinWeblinks {
 		builtinWeblinks {
 			name
@@ -110,8 +113,8 @@ export const FILES = gql`
 `;
 
 export const QUERIES_AFFECTED_BY_SIGN = [
-	{ query: IS_LOGIN },
+	{ query: ME },
 	{ query: FILES },
 	{ query: OWN_WEBLINKS },
-	{ query: GET_BUILTIN_WEBLINK },
+	{ query: BUILTIN_WEBLINKS },
 ];

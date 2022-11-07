@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useState } from "react";
-import { IS_LOGIN } from "../../querys";
+import { ME } from "../../querys";
 import DeleteMessageModal from "./DeleteMessageModal";
 import PostReplyForm from "./PostReplyForm";
 
@@ -59,7 +59,7 @@ function Delete({
 }
 
 function Reply({ id, content, time, writer, currentPage, options }) {
-	const { data } = useQuery(IS_LOGIN);
+	const { data } = useQuery(ME);
 	return (
 		<div className="row bd-reply">
 			<div className="col-md-0_5 m_hide">┗</div>
@@ -94,7 +94,7 @@ export default function Message({
 	options,
 	currentPage,
 }) {
-	const { data } = useQuery(IS_LOGIN);
+	const { data } = useQuery(ME);
 	const [opensForm, setOpensForm] = useState(false);
 	return (
 		<div className="row g-0">

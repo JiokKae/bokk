@@ -3,13 +3,13 @@ import { Link } from "react-router-dom";
 import AddWeblinkModal from "../components/Weblink/AddWeblinkModal";
 import ThumbnailModal from "../components/Weblink/ThumbnailModal";
 import Weblink from "../components/Weblink/Weblink";
-import { GET_BUILTIN_WEBLINK, IS_LOGIN, OWN_WEBLINKS } from "../querys";
+import { BUILTIN_WEBLINKS, ME, OWN_WEBLINKS } from "../querys";
 import styles from "./Home.module.css";
 
 export default function Home() {
-	const { data } = useQuery(GET_BUILTIN_WEBLINK);
+	const { data } = useQuery(BUILTIN_WEBLINKS);
 	const { data: ownWeblinksData } = useQuery(OWN_WEBLINKS);
-	const { data: isLoginData } = useQuery(IS_LOGIN);
+	const { data: isLoginData } = useQuery(ME);
 	return (
 		<>
 			<div className={styles.weblinkRow}>

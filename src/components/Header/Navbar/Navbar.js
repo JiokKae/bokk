@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { useMutation, useQuery } from "@apollo/client";
-import { IS_LOGIN, QUERIES_AFFECTED_BY_SIGN, SIGNOUT } from "../../../querys";
+import { ME, QUERIES_AFFECTED_BY_SIGN, SIGNOUT } from "../../../querys";
 
 function NavMenu() {
 	function GuestMenu() {
@@ -61,7 +61,7 @@ function NavMenu() {
 		);
 	}
 
-	const { data, loading } = useQuery(IS_LOGIN);
+	const { data, loading } = useQuery(ME);
 	return loading ? null : data?.me === null ? (
 		<GuestMenu />
 	) : (
