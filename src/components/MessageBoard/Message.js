@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useState } from "react";
 import { IS_LOGIN } from "../../querys";
+import DeleteMessageModal from "./DeleteMessageModal";
 import PostReplyForm from "./PostReplyForm";
 
 function Writer({ name, type }) {
@@ -18,16 +19,6 @@ function Writer({ name, type }) {
 	);
 }
 
-function isNeedDeleteButton(writerName, writerType, writerId, userId) {
-	if (writerType === "guest" && writerName !== "----") {
-		return true;
-	}
-	if (writerType === "user" && writerId === userId) {
-		return true;
-	}
-	return false;
-}
-
 function Content({ usesTag, content }) {
 	if (usesTag === true) {
 		return <div dangerouslySetInnerHTML={{ __html: content }}></div>;
@@ -35,11 +26,40 @@ function Content({ usesTag, content }) {
 	return content;
 }
 
-function Reply({ content, time, writer, options }) {
-	const { data } = useQuery(IS_LOGIN);
-	const onClick = (e) => {
-		//showBoardDelete${writer["type"] === "user" ? "User" : ""}Modal( {id}, 'reply')
+function Delete({
+	writerName,
+	writerType,
+	writerId,
+	userId,
+	messageId,
+	messageType,
+	currentPage,
+}) {
+	const NeedsDeleteButton = (writerName, writerType, writerId, userId) => {
+		if (writerType === "guest" && writerName !== "----") {
+			return true;
+		}
+		if (writerType === "user" && writerId === userId) {
+			return true;
+		}
+		return false;
 	};
+	return (
+		<>
+			{NeedsDeleteButton(writerName, writerType, writerId, userId) ? (
+				<DeleteMessageModal
+					messageId={messageId}
+					messageType={messageType}
+					writerType={writerType}
+					currentPage={currentPage}
+				/>
+			) : null}
+		</>
+	);
+}
+
+function Reply({ id, content, time, writer, currentPage, options }) {
+	const { data } = useQuery(IS_LOGIN);
 	return (
 		<div className="row bd-reply">
 			<div className="col-md-0_5 m_hide">┗</div>
@@ -51,18 +71,15 @@ function Reply({ content, time, writer, options }) {
 				<Writer name={writer?.name} type={writer?.type} />
 			</div>
 			<div className="col-md-0_5 bd-delete">
-				{isNeedDeleteButton(
-					writer?.name,
-					writer?.type,
-					writer?.id,
-					data?.me?.id
-				) === true ? (
-					<button
-						type="button"
-						className="btn-close"
-						aria-label="Close"
-						onClick={onclick}></button>
-				) : null}
+				<Delete
+					messageId={id}
+					messageType="message"
+					userId={data?.me?.id}
+					writerId={writer?.id}
+					writerName={writer?.name}
+					writerType={writer?.type}
+					currentPage={currentPage}
+				/>
 			</div>
 		</div>
 	);
@@ -79,9 +96,6 @@ export default function Message({
 }) {
 	const { data } = useQuery(IS_LOGIN);
 	const [opensForm, setOpensForm] = useState(false);
-	const onClick = () => {
-		//"showBoardDelete${writer["type"] === "user" ? "User" : ""}Modal( ${id}, 'message')"
-	};
 	return (
 		<div className="row g-0">
 			<div className="col-md-1 bd-number">{id}</div>
@@ -95,29 +109,28 @@ export default function Message({
 				<Writer name={writer?.name} type={writer?.type} />
 			</div>
 			<div className="col-md-0_5 bd-delete">
-				{isNeedDeleteButton(
-					writer.name,
-					writer.type,
-					writer.id,
-					data?.me?.id
-				) === true ? (
-					<button
-						type="button"
-						className="btn-close"
-						aria-label="Close"
-						onClick={onClick}></button>
-				) : null}
+				<Delete
+					messageId={id}
+					messageType="message"
+					userId={data?.me?.id}
+					writerId={writer?.id}
+					writerName={writer?.name}
+					writerType={writer?.type}
+					currentPage={currentPage}
+				/>
 			</div>
-			<div className="message-board p-0 m-0 hide_child">
+			<div className="message-board p-0 m-0">
 				{opensForm ? (
 					<PostReplyForm messageId={id} currentPage={currentPage} />
 				) : null}
 				{reply?.map(({ id, content, time, writer }) => (
 					<Reply
 						key={id}
+						id={id}
 						content={content}
 						time={time}
 						writer={writer}
+						currentPage={currentPage}
 						options={options}
 					/>
 				))}

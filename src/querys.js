@@ -91,6 +91,14 @@ export const POST_MESSAGE = gql`
 	}
 `;
 
+export const DELETE_MESSAGE = gql`
+	mutation DeleteMessage($input: DeleteMessageInput!) {
+		deleteMessage(input: $input) {
+			success
+		}
+	}
+`;
+
 export const FILES = gql`
 	query Files {
 		files {
