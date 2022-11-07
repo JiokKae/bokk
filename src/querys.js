@@ -112,9 +112,20 @@ export const FILES = gql`
 	}
 `;
 
+export const OWN_YOUTUBE_VIDEOS = gql`
+	query OwnYoutubeVideos {
+		ownYoutubeVideos {
+			id
+			title
+			length
+		}
+	}
+`;
+
 export const QUERIES_AFFECTED_BY_SIGN = [
 	{ query: ME },
 	{ query: FILES },
 	{ query: OWN_WEBLINKS },
 	{ query: BUILTIN_WEBLINKS },
+	{ query: OWN_YOUTUBE_VIDEOS },
 ];

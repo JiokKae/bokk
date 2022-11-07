@@ -1,10 +1,14 @@
+import { useQuery } from "@apollo/client";
 import { useState } from "react";
+import { ME } from "../../../querys";
 import GoogleSearch from "./Searches/GoogleSearch";
 import NaverSearch from "./Searches/NaverSearch";
+import YoutubeOffcanvas from "./YoutubeOffcanvas/YoutubeOffcanvas";
 
 export default function SearchSelector() {
 	const [searchIndex, setSearchIndex] = useState(0);
 	const Searches = [<NaverSearch />, <GoogleSearch />];
+	const { data } = useQuery(ME);
 	return (
 		<div>
 			<div className="row m-2 gx-2">
@@ -31,18 +35,11 @@ export default function SearchSelector() {
 					/>
 					<div id="status_minecraft"></div>
 				</div>
-				<div className="col-auto">
-					<a
-						data-bs-toggle="offcanvas"
-						href="#offcanvasYoutubeQueue"
-						role="button"
-						aria-controls="offcanvasYoutubeQueue">
-						<img
-							src="https://jiokkae.com/볶음밥/img/YouTube-icon.png"
-							alt="유튜브 재생 목록"
-						/>
-					</a>
-				</div>
+				{data?.me ? (
+					<div className="col-auto">
+						<YoutubeOffcanvas />
+					</div>
+				) : null}
 			</div>
 			{Searches[searchIndex]}
 		</div>
