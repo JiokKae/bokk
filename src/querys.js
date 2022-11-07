@@ -70,10 +70,7 @@ export const ADD_WEBLINK = gql`
 
 export const MESSAGEBOARD = gql`
 	${CORE_MESSAGE_FIELDS}
-	query Me($page: Int!) {
-		me {
-			id
-		}
+	query Messageboard($page: Int!) {
 		messageboard(page: $page) {
 			messages {
 				...CoreMessageFields
