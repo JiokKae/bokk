@@ -8,6 +8,7 @@ import HeaderLayout from "./outlets/HeaderLayout";
 import "./App.css";
 import ChangePassword from "./routers/ChangePassword";
 import SignLayout from "./outlets/SignLayout";
+import Signup from "./routers/Signup";
 
 export default function App() {
 	return (
@@ -24,6 +25,7 @@ export default function App() {
 				</Route>
 				<Route element={<SignLayout />}>
 					<Route path="/signin/" element={<Signin />} />
+					<Route path="/signup/" element={<Signup />} />
 					<Route
 						path="/changePassword/"
 						element={<ChangePassword />}

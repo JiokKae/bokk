@@ -1,6 +1,16 @@
 import { gql } from "@apollo/client";
 import { CORE_MESSAGE_FIELDS } from "./fragments";
 
+export const SIGNUP = gql`
+	mutation Signup($input: SignupInput!) {
+		signup(input: $input) {
+			completed
+			key
+			message
+		}
+	}
+`;
+
 export const SIGNIN = gql`
 	mutation Signin($signinId: String!, $password: String!) {
 		signin(id: $signinId, password: $password)
