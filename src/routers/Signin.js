@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { createRef, useEffect, useState } from "react";
+import { createRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ME, QUERIES_AFFECTED_BY_SIGN, SIGNIN } from "../querys";
 
@@ -7,27 +7,23 @@ export default function Signin() {
 	const [id, setId] = useState("");
 	const [password, setPassword] = useState("");
 	const navigate = useNavigate();
+	const passwordInput = createRef();
+
 	useQuery(ME, {
 		onCompleted: (data) => {
 			if (data?.me) navigate("/");
 		},
 	});
 	const [signin, { data }] = useMutation(SIGNIN, {
+		onCompleted: (data) => {
+			if (data?.signin) {
+				navigate(-1);
+				return;
+			}
+			passwordInput.current.focus();
+		},
 		refetchQueries: QUERIES_AFFECTED_BY_SIGN,
 	});
-
-	const passwordInput = createRef();
-
-	useEffect(() => {
-		if (data?.signin === undefined) {
-			return;
-		}
-		if (data.signin === true) {
-			navigate(-1);
-			return;
-		}
-		passwordInput.current.focus();
-	}, [data]);
 
 	const onSubmit = (e) => {
 		e.preventDefault();
