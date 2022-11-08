@@ -23,7 +23,7 @@ function shuffle(array) {
 }
 
 export default function YoutubeOffcanvas() {
-	useQuery(ME, {
+	const { data: meData, loading } = useQuery(ME, {
 		onCompleted: (data) => {
 			if (data?.me?.config.videoAutoPlay) {
 				setAutoPlay(true);
@@ -125,11 +125,12 @@ export default function YoutubeOffcanvas() {
 				</div>
 				<div className="offcanvas-body">
 					<div id="youtube_video_queue">
-						{videos.length > 0 ? (
+						{loading === false && videos.length > 0 ? (
 							<>
 								<YoutubePlayer
 									className="ratio ratio-16x9 mb-2"
 									firstVideoId={videos[0].id}
+									autoPlay={meData.me.config.videoAutoPlay}
 									onReady={onReady}
 									onStateChange={onStateChange}
 								/>
