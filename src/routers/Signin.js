@@ -50,6 +50,8 @@ export default function Signin() {
 						className="form-control"
 						placeholder="Username"
 						required
+						maxLength="20"
+						pattern="[A-Za-z0-9]{4,20}"
 						autoFocus
 						onChange={(e) => {
 							setId(e.target.value);
@@ -62,6 +64,8 @@ export default function Signin() {
 						type="password"
 						className="form-control"
 						placeholder="비밀번호"
+						maxLength="20"
+						pattern=".{8,20}"
 						required
 						ref={passwordInput}
 						onChange={(e) => {
