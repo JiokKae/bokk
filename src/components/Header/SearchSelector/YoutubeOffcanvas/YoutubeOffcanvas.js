@@ -5,6 +5,7 @@ import YouTube from "react-youtube";
 import { ME, OWN_YOUTUBE_VIDEOS } from "../../../../querys";
 import Controller from "./Controller";
 import YoutubePlayer from "./YoutubePlayer";
+import YoutubeVideoAdder from "./YoutubeVideoAdder";
 import YoutubeVideoItem from "./YoutubeVideoItem";
 
 function shuffle(array) {
@@ -157,25 +158,7 @@ export default function YoutubeOffcanvas() {
 							</>
 						) : null}
 
-						{/*TODO: API 추가 */}
-						<form
-							method="post"
-							action="/볶음밥/youtube_process.php">
-							<div className="input-group mb-2">
-								<input
-									type="url"
-									className="form-control"
-									name="add_address"
-									placeholder="https://youtu.be/example"
-									required
-								/>
-								<input
-									type="submit"
-									className="btn btn-outline-secondary"
-									value="추가"
-								/>
-							</div>
-						</form>
+						<YoutubeVideoAdder />
 						<div
 							id="scroll_queue"
 							className="overflow-auto"

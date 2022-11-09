@@ -132,6 +132,18 @@ export const OWN_YOUTUBE_VIDEOS = gql`
 	}
 `;
 
+export const ADD_VIDEO_ITEM = gql`
+	mutation AddVideoItem($input: AddVideoItemInput!) {
+		addVideoItem(input: $input) {
+			video {
+				id
+				length
+				title
+			}
+		}
+	}
+`;
+
 export const QUERIES_AFFECTED_BY_SIGN = [
 	{ query: ME },
 	{ query: FILES },
