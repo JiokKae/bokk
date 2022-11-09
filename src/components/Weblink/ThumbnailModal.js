@@ -49,14 +49,10 @@ export default function ThumbnailModal() {
 						<Form.Control
 							ref={urlInput}
 							placeholder="https://youtu.be/..."
-							aria-label="input Youtube video link"
-							aria-describedby="basic-addon2"
+							aria-label="input Youtube video url"
 							required
 						/>
-						<Button
-							variant="outline-secondary"
-							id="button-addon2"
-							onClick={onClick}>
+						<Button variant="outline-secondary" onClick={onClick}>
 							입력
 						</Button>
 					</InputGroup>
