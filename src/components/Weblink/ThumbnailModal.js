@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -22,10 +22,11 @@ export default function ThumbnailModal() {
 	const [show, setShow] = useState(false);
 	const handleClose = () => setShow(false);
 	const handleShow = () => setShow(true);
+	const urlInput = useRef();
 
 	const onClick = () => {
-		document.getElementById("urlInput").value = "";
-		setThumbnailId(videoId(document.getElementById("urlInput").value));
+		setThumbnailId(videoId(urlInput.current.value));
+		urlInput.current.value = "";
 	};
 	return (
 		<>
@@ -46,7 +47,7 @@ export default function ThumbnailModal() {
 				<Modal.Footer>
 					<InputGroup className="mb-3">
 						<Form.Control
-							id="urlInput"
+							ref={urlInput}
 							placeholder="https://youtu.be/..."
 							aria-label="input Youtube video link"
 							aria-describedby="basic-addon2"
