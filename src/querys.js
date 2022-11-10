@@ -157,6 +157,12 @@ export const ADD_VIDEO_ITEM = gql`
 	}
 `;
 
+export const DELETE_VIDEO_ITEM = gql`
+	mutation DeleteVideoItem($itemId: Int!) {
+		deleteVideoItem(itemId: $itemId)
+	}
+`;
+
 export const QUERIES_AFFECTED_BY_SIGN = [
 	{ query: ME },
 	{ query: FILES },
