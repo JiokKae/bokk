@@ -4,15 +4,14 @@ import Modal from "react-bootstrap/Modal";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import styles from "./ThumbnailModal.module.css";
-import { videoId } from "../../utils/youtubeUtil";
+import { RESOLUTION, thumbnailUrl, videoId } from "../../utils/youtubeUtil";
 
 function YoutubeThumbnail({ youtubeId }) {
-	var fullURL = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
 	return youtubeId === "" ? (
 		<img src="https://jiokkae.com/볶음밥/img/youtube_share_link.png" />
 	) : (
-		<a href={fullURL} target="_blank">
-			<img src={fullURL} />
+		<a href={thumbnailUrl(youtubeId, RESOLUTION.MAX)} target="_blank">
+			<img src={thumbnailUrl(youtubeId, RESOLUTION.MAX)} />
 		</a>
 	);
 }

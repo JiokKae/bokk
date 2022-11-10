@@ -9,3 +9,8 @@ export function videoId(youtubeUrl) {
 		/https?:\/\/(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\S*?[^\w\s-])([\w-]{11})(?=[^\w-]|$)(?![?=&+%\w.-]*(?:['"][^<>]*>|<\/a>))[?=&+%\w.-]*/gi;
 	return youtubeUrl.replace(regex, "$1");
 }
+
+export const RESOLUTION = { MQ: "mq", MAX: "maxres" };
+export function thumbnailUrl(videoId, resolution = "") {
+	return `https://img.youtube.com/vi/${videoId}/${resolution}default.jpg`;
+}

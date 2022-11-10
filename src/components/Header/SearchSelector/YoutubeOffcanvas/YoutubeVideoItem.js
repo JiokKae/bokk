@@ -1,3 +1,5 @@
+import { thumbnailUrl } from "../../../../utils/youtubeUtil";
+
 export default function YoutubeVideoItem({
 	index,
 	currentVideoIndex,
@@ -25,10 +27,7 @@ export default function YoutubeVideoItem({
 			onClick={onClick}>
 			<div className="row gx-3">
 				<div className="col-3">
-					<img
-						className="rounded img-fluid"
-						src={`https://i.ytimg.com/vi/${id}/default.jpg`}
-					/>
+					<img className="rounded img-fluid" src={thumbnailUrl(id)} />
 				</div>
 				<div className="col">
 					<p className="mb-1">{title}</p>
