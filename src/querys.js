@@ -68,6 +68,12 @@ export const BUILTIN_WEBLINKS = gql`
 	}
 `;
 
+export const TOGGLE_BUILTIN_WEBLINK = gql`
+	mutation ToggleBuiltinWeblink($weblinkId: Int!) {
+		toggleBuiltinWeblink(weblinkId: $weblinkId)
+	}
+`;
+
 export const OWN_WEBLINKS = gql`
 	query OwnWeblinks {
 		ownWeblinks {
