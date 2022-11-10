@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
-import { ADD_VIDEO_ITEM, OWN_YOUTUBE_VIDEOS } from "../../../../querys";
+import { ADD_VIDEO_ITEM, MY_VIDEO_ITEMS } from "../../../../querys";
 import { videoId } from "../../../../utils/youtubeUtil";
 
 export default function YoutubeVideoAdder() {
@@ -19,7 +19,7 @@ export default function YoutubeVideoAdder() {
 			}
 			alert("영상을 추가하지 못했습니다.\nURL을 확인해주세요.");
 		},
-		refetchQueries: [{ query: OWN_YOUTUBE_VIDEOS }],
+		refetchQueries: [{ query: MY_VIDEO_ITEMS }],
 	});
 	return (
 		<form onSubmit={onSubmit}>
