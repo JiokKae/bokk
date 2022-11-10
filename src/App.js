@@ -11,10 +11,22 @@ import SignLayout from "./outlets/SignLayout";
 import Signup from "./routers/Signup";
 
 export default function App() {
+	const ITEMS = {
+		nav: [
+			{ name: "웹 링크", url: "/" },
+			{ name: "전적 검색", url: "/gameRecordSearch/" },
+			{ name: "게시판", url: "/messageboard/" },
+			{ name: "다운로드", url: "/download/" },
+		],
+		menu: [
+			{ name: "관리", url: "/manage/" },
+			{ name: "비밀번호 변경", url: "/changePassword/" },
+		],
+	};
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route element={<HeaderLayout />}>
+				<Route element={<HeaderLayout items={ITEMS} searchSelector />}>
 					<Route path="/" element={<Home />} />
 					<Route
 						path="/gameRecordSearch/"
