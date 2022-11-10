@@ -23,6 +23,16 @@ export const SIGNOUT = gql`
 	}
 `;
 
+export const SET_USER_CONFIG = gql`
+	mutation SetUserConfig($input: SetUserConfigInput!) {
+		setUserConfig(input: $input) {
+			config {
+				videoAutoPlay
+			}
+		}
+	}
+`;
+
 export const CHANGE_PASSWORD = gql`
 	mutation ChangePassword($input: ChangePasswordInput!) {
 		changePassword(input: $input) {
