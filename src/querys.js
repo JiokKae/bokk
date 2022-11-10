@@ -54,13 +54,16 @@ export const ME = gql`
 `;
 
 export const BUILTIN_WEBLINKS = gql`
-	query BuiltinWeblinks {
-		builtinWeblinks {
-			name
-			url
-			color
-			backgroundColor
-			id
+	query BuiltinWeblinks($input: BuiltinWeblinksInput) {
+		builtinWeblinks(input: $input) {
+			hidedIds
+			weblinks {
+				name
+				url
+				color
+				backgroundColor
+				id
+			}
 		}
 	}
 `;
