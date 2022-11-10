@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import { useState } from "react";
 import { CloseButton } from "react-bootstrap";
 import YouTube from "react-youtube";
-import { ME, OWN_YOUTUBE_VIDEOS } from "../../../../querys";
+import { ME, MY_VIDEO_ITEMS } from "../../../../querys";
 import Controller from "./Controller";
 import YoutubePlayer from "./YoutubePlayer";
 import YoutubeVideoAdder from "./YoutubeVideoAdder";
@@ -26,22 +26,20 @@ function shuffle(array) {
 export default function YoutubeOffcanvas() {
 	const { data: meData, loading } = useQuery(ME, {
 		onCompleted: (data) => {
-			if (data?.me?.config.videoAutoPlay) {
-				setAutoPlay(true);
-			}
+			setAutoPlay(data.me.config.videoAutoPlay);
 		},
 	});
-	const { data } = useQuery(OWN_YOUTUBE_VIDEOS, {
+	useQuery(MY_VIDEO_ITEMS, {
 		onCompleted: (data) => {
-			setVideos(data?.ownYoutubeVideos);
+			setVideoItems(data.myVideoItems);
 			setRandomIndexes(
-				shuffle(data?.ownYoutubeVideos.map((_, index) => index))
+				shuffle(data.myVideoItems.map((_, index) => index))
 			);
 		},
 	});
 
 	const [autoPlay, setAutoPlay] = useState(false);
-	const [videos, setVideos] = useState([]);
+	const [videoItems, setVideoItems] = useState([]);
 	const [randomIndexes, setRandomIndexes] = useState([]);
 	const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
@@ -54,7 +52,7 @@ export default function YoutubeOffcanvas() {
 
 	function playVideo(index) {
 		setCurrentVideoIndex(index);
-		player.loadVideoById({ videoId: videos[index].id });
+		player.loadVideoById({ videoId: videoItems[index].video.id });
 		player.playVideo();
 		document.getElementById("scroll_queue").scrollTop =
 			getVideoItem(index).offsetTop -
@@ -126,11 +124,11 @@ export default function YoutubeOffcanvas() {
 				</div>
 				<div className="offcanvas-body">
 					<div id="youtube_video_queue">
-						{loading === false && videos.length > 0 ? (
+						{loading === false && videoItems.length > 0 ? (
 							<>
 								<YoutubePlayer
 									className="ratio ratio-16x9 mb-2"
-									firstVideoId={videos[0].id}
+									firstVideoId={videoItems[0].video.id}
 									autoPlay={meData.me.config.videoAutoPlay}
 									onReady={onReady}
 									onStateChange={onStateChange}
@@ -164,8 +162,11 @@ export default function YoutubeOffcanvas() {
 							className="overflow-auto"
 							style={{ height: "400px" }}>
 							<div className="list-group">
-								{data?.ownYoutubeVideos?.map(
-									({ id, title, length }, index) => (
+								{videoItems.map(
+									(
+										{ video: { id, title, length } },
+										index
+									) => (
 										<YoutubeVideoItem
 											key={index}
 											index={index}
