@@ -9,6 +9,9 @@ import "./App.css";
 import ChangePassword from "./routers/ChangePassword";
 import SignLayout from "./outlets/SignLayout";
 import Signup from "./routers/Signup";
+import Playlist from "./routers/manage/Playlist";
+import MyWeblink from "./routers/manage/MyWeblink";
+import BuiltinWeblink from "./routers/manage/BuiltinWeblink";
 
 export default function App() {
 	const ITEMS = {
@@ -23,6 +26,14 @@ export default function App() {
 			{ name: "비밀번호 변경", url: "/changePassword/" },
 		],
 	};
+	const MANAGE_ITEMS = {
+		nav: [
+			{ name: "재생 목록", url: "/manage/" },
+			{ name: "내 웹링크", url: "/manage/myWeblink/" },
+			{ name: "볶음밥 웹링크", url: "/manage/builtinWeblink/" },
+		],
+		menu: [{ name: "비밀번호 변경", url: "/changePassword/" }],
+	};
 	return (
 		<BrowserRouter>
 			<Routes>
@@ -34,6 +45,14 @@ export default function App() {
 					/>
 					<Route path="/messageboard/" element={<MessageBoard />} />
 					<Route path="/download/" element={<Download />} />
+				</Route>
+				<Route element={<HeaderLayout items={MANAGE_ITEMS} />}>
+					<Route path="/manage/" element={<Playlist />} />
+					<Route path="/manage/myWeblink/" element={<MyWeblink />} />
+					<Route
+						path="/manage/builtinWeblink/"
+						element={<BuiltinWeblink />}
+					/>
 				</Route>
 				<Route element={<SignLayout />}>
 					<Route path="/signin/" element={<Signin />} />
