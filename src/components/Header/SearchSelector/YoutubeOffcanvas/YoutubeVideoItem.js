@@ -1,4 +1,4 @@
-import { thumbnailUrl } from "../../../../utils/youtubeUtil";
+import { secondToDate, thumbnailUrl } from "../../../../utils/youtubeUtil";
 
 export default function YoutubeVideoItem({
 	index,
@@ -8,16 +8,6 @@ export default function YoutubeVideoItem({
 	title,
 	length,
 }) {
-	const secondToDate = (second) => {
-		var date = new Date(0);
-		date.setSeconds(second);
-		if (second >= 3600) {
-			return date.toISOString().substring(11, 19);
-		} else {
-			return date.toISOString().substring(14, 19);
-		}
-	};
-
 	return (
 		<a
 			id={`videoItem${index}`}
