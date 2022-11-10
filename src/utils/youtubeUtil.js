@@ -14,3 +14,13 @@ export const RESOLUTION = { MQ: "mq", MAX: "maxres" };
 export function thumbnailUrl(videoId, resolution = "") {
 	return `https://img.youtube.com/vi/${videoId}/${resolution}default.jpg`;
 }
+
+export const secondToDate = (second) => {
+	var date = new Date(0);
+	date.setSeconds(second);
+	if (second >= 3600) {
+		return date.toISOString().substring(11, 19);
+	} else {
+		return date.toISOString().substring(14, 19);
+	}
+};
