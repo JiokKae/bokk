@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import AddWeblinkModal from "../components/Weblink/AddWeblinkModal";
 import ThumbnailModal from "../components/Weblink/ThumbnailModal";
@@ -7,13 +8,18 @@ import { BUILTIN_WEBLINKS, ME, OWN_WEBLINKS } from "../querys";
 import styles from "./Home.module.css";
 
 export default function Home() {
-	const { data } = useQuery(BUILTIN_WEBLINKS);
+	const [builtinWeblinks, setBuiltinWeblinks] = useState([]);
+	useQuery(BUILTIN_WEBLINKS, {
+		onCompleted: (data) => {
+			setBuiltinWeblinks(data.builtinWeblinks.weblinks);
+		},
+	});
 	const { data: ownWeblinksData } = useQuery(OWN_WEBLINKS);
 	const { data: isLoginData } = useQuery(ME);
 	return (
 		<>
 			<div className={styles.weblinkRow}>
-				{data?.builtinWeblinks.map(
+				{builtinWeblinks.map(
 					({ id, name, url, color, backgroundColor }) => (
 						<Weblink
 							key={id}
