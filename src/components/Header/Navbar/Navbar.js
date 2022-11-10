@@ -1,76 +1,64 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { useMutation, useQuery } from "@apollo/client";
 import { ME, QUERIES_AFFECTED_BY_SIGN, SIGNOUT } from "../../../querys";
 
-function NavMenu() {
-	function GuestMenu() {
-		return (
+function GuestMenu() {
+	return (
+		<ul className="navbar-nav">
+			<li className="nav-item">
+				<Link to="/signin/" className={`nav-link ${styles.btn}`}>
+					로그인
+				</Link>
+			</li>
+		</ul>
+	);
+}
+
+function UserMenu({ menuItems }) {
+	const { data } = useQuery(ME);
+	const [signout] = useMutation(SIGNOUT, {
+		refetchQueries: QUERIES_AFFECTED_BY_SIGN,
+	});
+
+	return (
+		<>
+			<span className="navbar-text">{data?.me?.name}님 환영합니다</span>
 			<ul className="navbar-nav">
-				<li className="nav-item">
-					<Link to="/signin/" className={`nav-link ${styles.btn}`}>
-						로그인
-					</Link>
+				<li className="nav-item dropdown">
+					<a
+						className={`nav-link dropdown-toggle ${styles.btn}`}
+						data-bs-toggle="dropdown"
+						href="#">
+						{data?.me?.name}
+						<b className="caret"></b>
+					</a>
+					<div
+						className="dropdown-menu dropdown-menu-right"
+						aria-labelledby="navbarDropdown">
+						{menuItems?.map(({ url, name }) => (
+							<Link key={url} to={url} className="dropdown-item">
+								{name}
+							</Link>
+						))}
+						<div className="dropdown-divider"></div>
+						<a
+							className="dropdown-item pointer"
+							onClick={() => {
+								signout();
+							}}>
+							로그아웃
+						</a>
+					</div>
 				</li>
 			</ul>
-		);
-	}
-
-	function UserMenu({ nickname, options, refetch }) {
-		const [signout] = useMutation(SIGNOUT, {
-			refetchQueries: QUERIES_AFFECTED_BY_SIGN,
-		});
-		return (
-			<>
-				<span className="navbar-text">{nickname}님 환영합니다</span>
-				<ul className="navbar-nav">
-					<li className="nav-item dropdown">
-						<a
-							className={`nav-link dropdown-toggle ${styles.btn}`}
-							data-bs-toggle="dropdown"
-							href="#">
-							{nickname}
-							<b className="caret"></b>
-						</a>
-						<div
-							className="dropdown-menu dropdown-menu-right"
-							aria-labelledby="navbarDropdown">
-							{options?.weblinkManage ? null : (
-								<Link to="/manage/" className="dropdown-item">
-									관리
-								</Link>
-							)}
-							<Link
-								to="/changePassword/"
-								className="dropdown-item">
-								비밀번호 변경
-							</Link>
-							<div className="dropdown-divider"></div>
-							<a
-								className="dropdown-item pointer"
-								onClick={() => {
-									signout();
-								}}>
-								로그아웃
-							</a>
-						</div>
-					</li>
-				</ul>
-			</>
-		);
-	}
-
-	const { data, loading } = useQuery(ME);
-	return loading ? null : data?.me === null ? (
-		<GuestMenu />
-	) : (
-		<UserMenu nickname={data?.me?.name} />
+		</>
 	);
 }
 
 export default function Navbar({ items }) {
-	const [selectedTab, setSelectedTab] = useState("");
+	const { data, loading } = useQuery(ME);
+	const location = useLocation();
 
 	return (
 		<nav
@@ -93,26 +81,27 @@ export default function Navbar({ items }) {
 					className="collapse navbar-collapse"
 					id="navbarSupportedContent">
 					<ul className="navbar-nav me-auto">
-						{items?.map((item) => (
+						{items?.nav?.map(({ url, name }) => (
 							<li
 								className={`nav-item pointer ${
-									selectedTab === item.url
+									location.pathname === url
 										? styles.active
 										: ""
 								}`}
-								key={item.url}>
+								key={url}>
 								<Link
-									to={item.url}
-									onClick={() => {
-										setSelectedTab(item.url);
-									}}
+									to={url}
 									className={`nav-link ${styles.navlink} ${styles.btn}`}>
-									{item.name}
+									{name}
 								</Link>
 							</li>
 						))}
 					</ul>
-					<NavMenu />
+					{loading ? null : data?.me ? (
+						<UserMenu menuItems={items?.menu} />
+					) : (
+						<GuestMenu />
+					)}
 				</div>
 			</div>
 		</nav>
