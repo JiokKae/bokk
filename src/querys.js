@@ -91,6 +91,12 @@ export const ADD_WEBLINK = gql`
 	}
 `;
 
+export const DELETE_WEBLINK = gql`
+	mutation DeleteWeblink($weblinkId: Int!) {
+		deleteWeblink(weblinkId: $weblinkId)
+	}
+`;
+
 export const MESSAGEBOARD = gql`
 	${CORE_MESSAGE_FIELDS}
 	query Messageboard($page: Int!) {
