@@ -15,7 +15,7 @@ export default function Weblink({
 			className={`btn ${styles.btnMd} m-1`}
 			style={{ color, backgroundColor, ...style }}
 			onClick={onClick}>
-			{name}
+			{name === "" ? "웹 링크" : name}
 		</a>
 	);
 }

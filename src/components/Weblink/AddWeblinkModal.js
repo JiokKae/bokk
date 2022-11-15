@@ -1,24 +1,19 @@
 import { useMutation } from "@apollo/client";
-import { useRef, useState } from "react";
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Modal } from "react-bootstrap";
 import { ADD_WEBLINK, OWN_WEBLINKS } from "../../querys";
-import Weblink from "./Weblink";
+import WeblinkForm from "./WeblinkForm";
 
 export default function AddWeblinkModal() {
 	const [show, setShow] = useState(false);
-	const [name, setName] = useState("웹 링크");
+	const [name, setName] = useState("");
 	const [url, setUrl] = useState("");
 	const [color, setColor] = useState("#FFFFFF");
 	const [backgroundColor, setBackgroundColor] = useState("#1EA1F7");
 	const [addWeblink] = useMutation(ADD_WEBLINK, {
 		refetchQueries: [{ query: OWN_WEBLINKS }],
 	});
-	const form = useRef();
 	const onSubmit = () => {
-		if (form.current.checkValidity() === false) {
-			form.current.requestSubmit();
-			return;
-		}
 		addWeblink({
 			variables: {
 				input: {
@@ -30,7 +25,6 @@ export default function AddWeblinkModal() {
 			},
 		});
 		setShow(false);
-		form.current.reset();
 	};
 	return (
 		<>
@@ -42,69 +36,24 @@ export default function AddWeblinkModal() {
 					<Modal.Title as="h5">웹 링크 추가</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					<Form className="row g-3" ref={form}>
-						<Form.Group className="col-auto">
-							<Form.Label htmlFor="name">이름</Form.Label>
-							<Form.Control
-								type="text"
-								id="name"
-								maxLength={10}
-								pattern="[A-Za-z0-9ㄱ-힣 ]{1,10}"
-								onInput={(e) => setName(e.target.value)}
-								required
-							/>
-						</Form.Group>
-						<Form.Group className="col-12">
-							<Form.Label htmlFor="url">URL</Form.Label>
-							<Form.Control
-								type="url"
-								id="url"
-								placeholder="https://example.com"
-								pattern="(http|https):\/\/[^'\s()]+"
-								required
-								onChange={(e) => setUrl(e.target.value)}
-							/>
-						</Form.Group>
-						<Col>
-							<Row>
-								<Form.Group className="col-auto">
-									<Form.Label htmlFor="color">
-										글자 색상
-									</Form.Label>
-									<Form.Control
-										type="color"
-										id="color"
-										onInput={(e) =>
-											setColor(e.target.value)
-										}
-										defaultValue="#FFFFFF"></Form.Control>
-								</Form.Group>
-								<Form.Group className="col-auto">
-									<Form.Label htmlFor="backgroundColor">
-										배경 색상
-									</Form.Label>
-									<Form.Control
-										type="color"
-										id="backgroundColor"
-										onInput={(e) =>
-											setBackgroundColor(e.target.value)
-										}
-										defaultValue="#1EA1F7"></Form.Control>
-								</Form.Group>
-								<Col>
-									<Form.Label>미리보기</Form.Label>
-									<Weblink
-										name={name}
-										color={color}
-										backgroundColor={backgroundColor}
-									/>
-								</Col>
-							</Row>
-						</Col>
-					</Form>
+					<WeblinkForm
+						id="addWeblinkForm"
+						onSubmit={onSubmit}
+						name={name}
+						setName={setName}
+						url={url}
+						setUrl={setUrl}
+						color={color}
+						setColor={setColor}
+						backgroundColor={backgroundColor}
+						setBackgroundColor={setBackgroundColor}
+					/>
 				</Modal.Body>
 				<Modal.Footer>
-					<Button variant="primary" onClick={onSubmit}>
+					<Button
+						form="addWeblinkForm"
+						type="submit"
+						variant="primary">
 						추가
 					</Button>
 				</Modal.Footer>
