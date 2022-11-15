@@ -1,7 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import Weblink from "../../components/Weblink/Weblink";
-import { BUILTIN_WEBLINKS, TOGGLE_BUILTIN_WEBLINK } from "../../querys";
+import {
+	BUILTIN_WEBLINKS,
+	TOGGLE_BUILTIN_WEBLINK,
+} from "../../constants/querys";
 
 export default function BuiltinWeblink() {
 	const [builtinWeblinks, setBuiltinWeblinks] = useState([]);

@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
 import { Button, CloseButton, Form, InputGroup, Modal } from "react-bootstrap";
-import { DELETE_MESSAGE, MESSAGEBOARD } from "../../querys";
+import { DELETE_MESSAGE, MESSAGEBOARD } from "../../constants/querys";
 
 export default function DeleteMessageModal({
 	messageId,

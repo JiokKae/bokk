@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
-import { ME, MESSAGEBOARD, POST_MESSAGE } from "../../querys";
+import { ME, MESSAGEBOARD, POST_MESSAGE } from "../../constants/querys";
 
 function GuestInput({ setWriterName, setPassword }) {
 	return (

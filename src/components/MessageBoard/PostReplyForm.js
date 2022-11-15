@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
-import { ME, MESSAGEBOARD, POST_MESSAGE } from "../../querys";
+import { ME, MESSAGEBOARD, POST_MESSAGE } from "../../constants/querys";
 
 export default function PostReplyForm({ messageId, currentPage }) {
 	const [writerName, setWriterName] = useState("");

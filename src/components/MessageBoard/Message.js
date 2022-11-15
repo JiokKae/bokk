@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useState } from "react";
-import { ME } from "../../querys";
+import { ME } from "../../constants/querys";
 import DeleteMessageModal from "./DeleteMessageModal";
 import PostReplyForm from "./PostReplyForm";
 

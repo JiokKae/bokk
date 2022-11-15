@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
-import { ADD_VIDEO_ITEM, MY_VIDEO_ITEMS } from "../../../../querys";
+import { ADD_VIDEO_ITEM, MY_VIDEO_ITEMS } from "../../../../constants/querys";
 import { videoId } from "../../../../utils/youtubeUtil";
 
 export default function YoutubeVideoAdder() {

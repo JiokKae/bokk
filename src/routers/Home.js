@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import AddWeblinkModal from "../components/Weblink/AddWeblinkModal";
 import ThumbnailModal from "../components/Weblink/ThumbnailModal";
 import Weblink from "../components/Weblink/Weblink";
-import { BUILTIN_WEBLINKS, ME, OWN_WEBLINKS } from "../querys";
+import { BUILTIN_WEBLINKS, ME, OWN_WEBLINKS } from "../constants/querys";
 import styles from "./Home.module.css";
 
 export default function Home() {
