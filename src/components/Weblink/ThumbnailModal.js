@@ -5,10 +5,11 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import styles from "./ThumbnailModal.module.css";
 import { RESOLUTION, thumbnailUrl, videoId } from "../../utils/youtubeUtil";
+import { BOKK_IMG } from "../../constants/urls";
 
 function YoutubeThumbnail({ youtubeId }) {
 	return youtubeId === "" ? (
-		<img src="https://jiokkae.com/볶음밥/img/youtube_share_link.png" />
+		<img src={`${BOKK_IMG}/youtube_share_link.png`} />
 	) : (
 		<a href={thumbnailUrl(youtubeId, RESOLUTION.MAX)} target="_blank">
 			<img src={thumbnailUrl(youtubeId, RESOLUTION.MAX)} />

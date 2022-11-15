@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { createRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ME, QUERIES_AFFECTED_BY_SIGN, SIGNIN } from "../constants/querys";
+import { BOKK_IMG } from "../constants/urls";
 
 export default function Signin() {
 	const [id, setId] = useState("");
@@ -37,7 +38,7 @@ export default function Signin() {
 	return (
 		<>
 			<Link to="/">
-				<img src="https://jiokkae.com/볶음밥/img/볶음밥_logo.png" />
+				<img src={`${BOKK_IMG}/볶음밥_logo.png`} />
 			</Link>
 			<form className="formSign" onSubmit={onSubmit}>
 				<div className="form-floating mb-3">
