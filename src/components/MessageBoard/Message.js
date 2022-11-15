@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useState } from "react";
 import { ME } from "../../constants/querys";
+import { BOKK_IMG } from "../../constants/urls";
 import DeleteMessageModal from "./DeleteMessageModal";
 import PostReplyForm from "./PostReplyForm";
 
@@ -11,7 +12,7 @@ function Writer({ name, type }) {
 			{type === "user" ? (
 				<img
 					className="m-1"
-					src="https://jiokkae.com/볶음밥/img/네모볶음밥32x32.png"
+					src={`${BOKK_IMG}/네모볶음밥32x32.png`}
 					style={{ width: "16px" }}
 				/>
 			) : null}

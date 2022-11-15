@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useState } from "react";
 import { ME } from "../../../constants/querys";
+import { BOKK_IMG } from "../../../constants/urls";
 import GoogleSearch from "./Searches/GoogleSearch";
 import NaverSearch from "./Searches/NaverSearch";
 import YoutubeOffcanvas from "./YoutubeOffcanvas/YoutubeOffcanvas";
@@ -30,7 +31,7 @@ export default function SearchSelector() {
 				</div>
 				<div className="col-auto">
 					<img
-						src="https://jiokkae.com/볶음밥/img/Chrisbanks2-Cold-Fusion-Hd-Minecraft.ico"
+						src={`${BOKK_IMG}/Chrisbanks2-Cold-Fusion-Hd-Minecraft.ico`}
 						style={{ width: "32px" }}
 					/>
 					<div id="status_minecraft"></div>

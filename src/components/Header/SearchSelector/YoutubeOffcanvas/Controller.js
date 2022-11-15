@@ -2,6 +2,7 @@ import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { Form } from "react-bootstrap";
 import { ME, SET_USER_CONFIG } from "../../../../constants/querys";
+import { BOKK_IMG } from "../../../../constants/urls";
 import styles from "./Controller.module.css";
 
 export default function Controller({
@@ -51,7 +52,7 @@ export default function Controller({
 							: button?.onClick
 					}>
 					<img
-						src={`https://jiokkae.com/볶음밥/img/${
+						src={`${BOKK_IMG}/${
 							button?.condition ? button.swap.id : button.id
 						}.png`}
 						style={{ width: "24px" }}
