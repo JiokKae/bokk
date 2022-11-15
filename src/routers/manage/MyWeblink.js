@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
+import UpdateWeblinkModal from "../../components/Weblink/UpdateWeblinkModal";
 import Weblink from "../../components/Weblink/Weblink";
 import { DELETE_WEBLINK, OWN_WEBLINKS } from "../../querys";
 
@@ -34,9 +35,9 @@ function WeblinkManageItem({
 					/>
 				</div>
 				<div className="col-auto">
-					<button className="btn btn-secondary" disabled>
-						변경
-					</button>
+					<UpdateWeblinkModal
+						weblink={{ id, name, url, color, backgroundColor }}
+					/>
 				</div>
 				<div className="col-auto">
 					<button className="btn btn-danger" onClick={onRemove}>
