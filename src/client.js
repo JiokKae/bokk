@@ -1,7 +1,8 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client";
+import { API } from "./constants/urls";
 
 const link = createHttpLink({
-	uri: "https://jiokkae.com/api/",
+	uri: `${API}/`,
 	credentials: "include",
 });
 
