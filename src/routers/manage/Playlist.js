@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { CloseButton } from "react-bootstrap";
 import YoutubeVideoAdder from "../../components/Header/SearchSelector/YoutubeOffcanvas/YoutubeVideoAdder";
-import { DELETE_VIDEO_ITEM, MY_VIDEO_ITEMS } from "../../querys";
+import { DELETE_VIDEO_ITEM, MY_VIDEO_ITEMS } from "../../constants/querys";
 import { secondToDate, thumbnailUrl } from "../../utils/youtubeUtil";
 
 function VideoItem({ itemId, youtubeId, title, length }) {

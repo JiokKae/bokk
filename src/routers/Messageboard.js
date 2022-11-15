@@ -3,7 +3,7 @@ import { useState } from "react";
 import Message from "../components/MessageBoard/Message";
 import Pagination from "../components/MessageBoard/Pagination";
 import PostMessageForm from "../components/MessageBoard/PostMessageForm";
-import { MESSAGEBOARD } from "../querys";
+import { MESSAGEBOARD } from "../constants/querys";
 
 export default function MessageBoard() {
 	const [currentPage, setCurrentPage] = useState(1);

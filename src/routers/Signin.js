@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { createRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ME, QUERIES_AFFECTED_BY_SIGN, SIGNIN } from "../querys";
+import { ME, QUERIES_AFFECTED_BY_SIGN, SIGNIN } from "../constants/querys";
 
 export default function Signin() {
 	const [id, setId] = useState("");

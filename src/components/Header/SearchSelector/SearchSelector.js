@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useState } from "react";
-import { ME } from "../../../querys";
+import { ME } from "../../../constants/querys";
 import GoogleSearch from "./Searches/GoogleSearch";
 import NaverSearch from "./Searches/NaverSearch";
 import YoutubeOffcanvas from "./YoutubeOffcanvas/YoutubeOffcanvas";

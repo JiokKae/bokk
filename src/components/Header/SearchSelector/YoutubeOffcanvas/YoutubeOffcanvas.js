@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import { useState } from "react";
 import { CloseButton } from "react-bootstrap";
 import YouTube from "react-youtube";
-import { ME, MY_VIDEO_ITEMS } from "../../../../querys";
+import { ME, MY_VIDEO_ITEMS } from "../../../../constants/querys";
 import Controller from "./Controller";
 import YoutubePlayer from "./YoutubePlayer";
 import YoutubeVideoAdder from "./YoutubeVideoAdder";

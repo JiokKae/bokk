@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CHANGE_PASSWORD, ME } from "../querys";
+import { CHANGE_PASSWORD, ME } from "../constants/querys";
 
 export default function ChangePassword() {
 	const [currentPassword, setCurrentPassword] = useState("");

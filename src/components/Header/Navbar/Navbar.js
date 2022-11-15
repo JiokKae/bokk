@@ -1,7 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { useMutation, useQuery } from "@apollo/client";
-import { ME, QUERIES_AFFECTED_BY_SIGN, SIGNOUT } from "../../../querys";
+import {
+	ME,
+	QUERIES_AFFECTED_BY_SIGN,
+	SIGNOUT,
+} from "../../../constants/querys";
 
 function GuestMenu() {
 	return (

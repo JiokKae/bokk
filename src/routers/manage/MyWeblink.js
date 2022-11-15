@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import UpdateWeblinkModal from "../../components/Weblink/UpdateWeblinkModal";
 import Weblink from "../../components/Weblink/Weblink";
-import { DELETE_WEBLINK, OWN_WEBLINKS } from "../../querys";
+import { DELETE_WEBLINK, OWN_WEBLINKS } from "../../constants/querys";
 
 function WeblinkManageItem({
 	className,

@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import DownloadCard from "../components/DownloadCard";
-import { FILES } from "../querys";
+import { FILES } from "../constants/querys";
 
 export default function Download() {
 	const { data } = useQuery(FILES);

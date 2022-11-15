@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { OWN_WEBLINKS, UPDATE_WEBLINK } from "../../querys";
+import { OWN_WEBLINKS, UPDATE_WEBLINK } from "../../constants/querys";
 import WeblinkForm from "./WeblinkForm";
 
 export default function UpdateWeblinkModal({ weblink }) {

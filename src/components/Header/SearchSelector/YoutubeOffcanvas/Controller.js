@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { Form } from "react-bootstrap";
-import { ME, SET_USER_CONFIG } from "../../../../querys";
+import { ME, SET_USER_CONFIG } from "../../../../constants/querys";
 import styles from "./Controller.module.css";
 
 export default function Controller({
