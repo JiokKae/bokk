@@ -100,6 +100,20 @@ export const ADD_WEBLINK = gql`
 	}
 `;
 
+export const UPDATE_WEBLINK = gql`
+	mutation UpdateWeblink($input: UpdateWeblinkInput!) {
+		updateWeblink(input: $input) {
+			weblink {
+				name
+				url
+				color
+				backgroundColor
+				id
+			}
+		}
+	}
+`;
+
 export const DELETE_WEBLINK = gql`
 	mutation DeleteWeblink($weblinkId: Int!) {
 		deleteWeblink(weblinkId: $weblinkId)
