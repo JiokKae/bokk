@@ -1,4 +1,4 @@
 # 볶음밥
-로스트아크 플레이를 보조하는 웹 사이트\
+자주 사용하는 기능을 모아둔 웹 사이트\
 \
-Link: https://mkk.jiokkae.com/
+Link: https://bokk.jiokkae.com/
