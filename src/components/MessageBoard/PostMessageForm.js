@@ -59,7 +59,11 @@ class MyUploadAdapter {
 
 	_initRequest() {
 		const xhr = (this.xhr = new XMLHttpRequest());
-		xhr.open("POST", "http://localhost/api/upload.php", true);
+		xhr.open(
+			"POST",
+			`${process.env.REACT_APP_GRAPHQL_SERVER_URL}upload.php`,
+			true
+		);
 		xhr.withCredentials = true;
 		xhr.responseType = "json";
 	}
