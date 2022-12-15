@@ -1,6 +1,9 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ME, MESSAGEBOARD, POST_MESSAGE } from "../../constants/querys";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import InlineEditor from "@ckeditor/ckeditor5-build-inline";
+import styled from "styled-components";
 
 function GuestInput({ setWriterName, setPassword }) {
 	return (
@@ -32,18 +35,96 @@ function GuestInput({ setWriterName, setPassword }) {
 		</>
 	);
 }
+class MyUploadAdapter {
+	constructor(loader) {
+		this.loader = loader;
+	}
+
+	upload() {
+		return this.loader.file.then(
+			(file) =>
+				new Promise((resolve, reject) => {
+					this._initRequest();
+					this._initListeners(resolve, reject, file);
+					this._sendRequest(file);
+				})
+		);
+	}
+
+	abort() {
+		if (this.xhr) {
+			this.xhr.abort();
+		}
+	}
+
+	_initRequest() {
+		const xhr = (this.xhr = new XMLHttpRequest());
+		xhr.open("POST", "http://localhost/api/upload.php", true);
+		xhr.withCredentials = true;
+		xhr.responseType = "json";
+	}
+
+	_initListeners(resolve, reject, file) {
+		const xhr = this.xhr;
+		const loader = this.loader;
+		const genericErrorText = `Couldn't upload file: ${file.name}.`;
+
+		xhr.addEventListener("error", () => reject(genericErrorText));
+		xhr.addEventListener("abort", () => reject());
+		xhr.addEventListener("load", () => {
+			const response = xhr.response;
+
+			if (!response || response.error) {
+				return reject(
+					response && response.error
+						? response.error.message
+						: genericErrorText
+				);
+			}
+
+			resolve({
+				default: response.url,
+			});
+		});
+
+		if (xhr.upload) {
+			xhr.upload.addEventListener("progress", (evt) => {
+				if (evt.lengthComputable) {
+					loader.uploadTotal = evt.total;
+					loader.uploaded = evt.loaded;
+				}
+			});
+		}
+	}
+
+	_sendRequest(file) {
+		const data = new FormData();
+		data.append("upload", file);
+		this.xhr.send(data);
+	}
+}
+
+function MyCustomUploadAdapterPlugin(editor) {
+	editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
+		return new MyUploadAdapter(loader);
+	};
+}
 
 export default function PostMessageForm({ setCurrentPage }) {
 	const [content, setContent] = useState("");
 	const [writerName, setWriterName] = useState("");
 	const [password, setPassword] = useState("");
-	const contentInput = useRef();
+	const [editor, setEditor] = useState(null);
 	const { data } = useQuery(ME);
 	const [postMessage] = useMutation(POST_MESSAGE, {
 		refetchQueries: [{ query: MESSAGEBOARD, variables: { page: 1 } }],
 	});
 	const onSubmit = (e) => {
 		e.preventDefault();
+		if (content === "") {
+			editor.focus();
+			return;
+		}
 		postMessage({
 			variables: {
 				input: {
@@ -54,8 +135,8 @@ export default function PostMessageForm({ setCurrentPage }) {
 			},
 		});
 		setCurrentPage(1);
-		contentInput.current.value = "";
-		contentInput.current.focus();
+		editor.setData("");
+		editor.focus();
 	};
 	return (
 		<div className="bgc-bokk p-2" style={{ borderRadius: "5px" }}>
@@ -73,15 +154,54 @@ export default function PostMessageForm({ setCurrentPage }) {
 						</button>
 					</div>
 				</div>
-				<textarea
-					ref={contentInput}
-					className="form-control"
-					placeholder="내용"
-					onChange={(e) => {
-						setContent(e.target.value.trim());
-					}}
-					required></textarea>
+				<CKEditorLayout>
+					<CKEditor
+						editor={InlineEditor}
+						config={{
+							language: "ko",
+							toolbar: [
+								"bold",
+								"|",
+								"link",
+								"imageUpload",
+								"mediaEmbed",
+								"|",
+								"undo",
+								"redo",
+							],
+							placeholder: "내용",
+							extraPlugins: [MyCustomUploadAdapterPlugin],
+						}}
+						onReady={(editor) => {
+							setEditor(editor);
+						}}
+						onChange={(event, editor) => {
+							const regex = /<p>([^/<>]*)<\/p>/g;
+							setContent(
+								editor
+									.getData()
+									.replaceAll("&nbsp;", "")
+									.replaceAll(regex, "$1 ")
+							);
+						}}
+					/>
+				</CKEditorLayout>
 			</form>
 		</div>
 	);
 }
+
+const CKEditorLayout = styled.div`
+	width: 100%;
+	font-size: 1rem;
+	font-weight: 400;
+	color: #212529;
+	background-color: #fff;
+	background-clip: padding-box;
+	border: 1px solid #ced4da;
+	border-radius: 0.375rem;
+	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+	p {
+		margin: 0;
+	}
+`;
