@@ -74,7 +74,7 @@ function Reply({ id, content, time, writer, currentPage, options }) {
 			<div className="col-md-0_5 bd-delete">
 				<Delete
 					messageId={id}
-					messageType="message"
+					messageType="reply"
 					userId={data?.me?.id}
 					writerId={writer?.id}
 					writerName={writer?.name}
