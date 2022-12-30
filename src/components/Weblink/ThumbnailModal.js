@@ -11,7 +11,10 @@ function YoutubeThumbnail({ youtubeId }) {
 	return youtubeId === "" ? (
 		<img src={`${BOKK_IMG}/youtube_share_link.png`} />
 	) : (
-		<a href={thumbnailUrl(youtubeId, RESOLUTION.MAX)} target="_blank">
+		<a
+			href={thumbnailUrl(youtubeId, RESOLUTION.MAX)}
+			target="_blank"
+			rel="noopener noreferrer">
 			<img src={thumbnailUrl(youtubeId, RESOLUTION.MAX)} />
 		</a>
 	);

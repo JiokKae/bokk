@@ -11,7 +11,8 @@ export default function NaverSearch() {
 								<a
 									data-clk="top.logo"
 									href="https://www.naver.com/"
-									target="_blank">
+									target="_blank"
+									rel="noopener noreferrer">
 									<span className={styles.naver_logo}>
 										네이버
 									</span>
