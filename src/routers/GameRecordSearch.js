@@ -28,6 +28,7 @@ function OpggSearch({ playerNames }) {
 					key={index}
 					href={`https://www.op.gg/summoner/userName=${name}`}
 					target="_blank"
+					rel="noopener noreferrer"
 					className="btn btn-md bgc-white ms-2 mb-2">
 					{name}
 				</a>
@@ -68,6 +69,7 @@ function FowkrSearch({ playerNames }) {
 					key={index}
 					href={`http://fow.kr/find/${name}`}
 					target="_blank"
+					rel="noopener noreferrer"
 					className="btn bgc-white ms-2 mb-2">
 					{name}
 				</a>
@@ -112,6 +114,7 @@ function YourggSearch({ playerNames }) {
 					key={index}
 					href={`https://your.gg/kr/profile/${name}`}
 					target="_blank"
+					rel="noopener noreferrer"
 					className="btn btn_md bgc-white ms-2 mb-2">
 					{name}
 				</a>
@@ -150,6 +153,7 @@ function DakggSearch({ playerNames }) {
 					key={index}
 					href={`https://dak.gg/profile/${name}`}
 					target="_blank"
+					rel="noopener noreferrer"
 					className="btn bgc-dakgg-orange ms-2 mb-2">
 					{name}
 				</a>
@@ -189,6 +193,7 @@ function LlchggSearch({ playerNames }) {
 					key={index}
 					href={`https://lolchess.gg/profile/kr/${name}`}
 					target="_blank"
+					rel="noopener noreferrer"
 					className="btn btn_md bgc-white ms-2 mb-2">
 					{name}
 				</a>
@@ -231,6 +236,7 @@ function LoawaSearch({ playerNames }) {
 					key={index}
 					href={`https://loawa.com/char/${name}`}
 					target="_blank"
+					rel="noopener noreferrer"
 					className="btn bgc-loawa-gray ms-2 mb-2">
 					{name}
 				</a>

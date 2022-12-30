@@ -4,7 +4,10 @@ export default function GoogleSearch() {
 	return (
 		<div id="google" style={{ marginTop: "20px" }}>
 			<center>
-				<a href="https://www.google.com/" target="_blank">
+				<a
+					href="https://www.google.com/"
+					target="_blank"
+					rel="noopener noreferrer">
 					<img
 						alt="Google"
 						height="92"

@@ -12,6 +12,7 @@ export default function Weblink({
 		<a
 			href={onClick ? undefined : url}
 			target="_blank"
+			rel="noopener noreferrer"
 			className={`btn ${styles.btnMd} m-1`}
 			style={{ color, backgroundColor, ...style }}
 			onClick={onClick}>
