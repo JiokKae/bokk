@@ -192,6 +192,15 @@ export const DELETE_VIDEO_ITEM = gql`
 	}
 `;
 
+export const TEXT_TO_IMAGE = gql`
+	mutation TextToImage($input: TextToImageInput!) {
+		textToImage(input: $input) {
+			image
+			nsfw
+		}
+	}
+`;
+
 export const QUERIES_AFFECTED_BY_SIGN = [
 	{ query: ME },
 	{ query: FILES },
