@@ -60,9 +60,29 @@ function UserMenu({ menuItems }) {
 	);
 }
 
+function NavItem({ name, url, options }) {
+	const location = useLocation();
+
+	return (
+		<li
+			className={`nav-item pointer ${
+				location.pathname === url ? styles.active : ""
+			}`}>
+			<Link
+				to={url}
+				className={`nav-link ${styles.navlink} ${styles.btn}`}>
+				{name}
+			</Link>
+		</li>
+	);
+}
+
 export default function Navbar({ items }) {
 	const { data, loading } = useQuery(ME);
-	const location = useLocation();
+
+	const isUser = () => {
+		return !loading && data?.me;
+	};
 
 	return (
 		<nav
@@ -85,21 +105,11 @@ export default function Navbar({ items }) {
 					className="collapse navbar-collapse"
 					id="navbarSupportedContent">
 					<ul className="navbar-nav me-auto">
-						{items?.nav?.map(({ url, name }) => (
-							<li
-								className={`nav-item pointer ${
-									location.pathname === url
-										? styles.active
-										: ""
-								}`}
-								key={url}>
-								<Link
-									to={url}
-									className={`nav-link ${styles.navlink} ${styles.btn}`}>
-									{name}
-								</Link>
-							</li>
-						))}
+						{items?.nav?.map(({ url, name, options }) =>
+							options?.userOnly && !isUser() ? null : (
+								<NavItem key={url} name={name} url={url} />
+							)
+						)}
 					</ul>
 					{loading ? null : data?.me ? (
 						<UserMenu menuItems={items?.menu} />

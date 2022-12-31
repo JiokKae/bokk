@@ -19,7 +19,11 @@ export default function App() {
 			{ name: "웹 링크", url: "/" },
 			{ name: "전적 검색", url: "/gameRecordSearch/" },
 			{ name: "게시판", url: "/messageboard/" },
-			{ name: "다운로드", url: "/download/" },
+			{
+				name: "다운로드",
+				url: "/download/",
+				options: { userOnly: true },
+			},
 		],
 		menu: [
 			{ name: "관리", url: "/manage/" },
