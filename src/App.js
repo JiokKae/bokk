@@ -12,6 +12,7 @@ import Signup from "./routers/Signup";
 import Playlist from "./routers/manage/Playlist";
 import MyWeblink from "./routers/manage/MyWeblink";
 import BuiltinWeblink from "./routers/manage/BuiltinWeblink";
+import Image from "./routers/Image";
 
 export default function App() {
 	const ITEMS = {
@@ -22,6 +23,11 @@ export default function App() {
 			{
 				name: "다운로드",
 				url: "/download/",
+				options: { userOnly: true },
+			},
+			{
+				name: "이미지",
+				url: "/image/",
 				options: { userOnly: true },
 			},
 		],
@@ -49,6 +55,7 @@ export default function App() {
 					/>
 					<Route path="/messageboard/" element={<MessageBoard />} />
 					<Route path="/download/" element={<Download />} />
+					<Route path="/image/" element={<Image />} />
 				</Route>
 				<Route element={<HeaderLayout items={MANAGE_ITEMS} />}>
 					<Route path="/manage/" element={<Playlist />} />
