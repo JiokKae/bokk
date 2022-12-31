@@ -1,7 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { TEXT_TO_IMAGE } from "../constants/querys";
 import Spinner from "./Spinner";
@@ -64,9 +63,11 @@ function KakaoImageAPI() {
 					제출
 				</SubmitButton>
 			</Form>
-			<HowToUseLink to="https://developers.kakao.com/docs/latest/ko/karlo/how-to-use">
-				활용 가이드
-			</HowToUseLink>
+			<div>
+				<a href="https://developers.kakao.com/docs/latest/ko/karlo/how-to-use">
+					활용 가이드
+				</a>
+			</div>
 			<FeatureDiv>
 				<SaveButton disabled={data === undefined} onClick={onSaveClick}>
 					이미지 저장
@@ -126,10 +127,6 @@ const SubmitButton = styled.button`
 	border-radius: 0 0.25rem 0.25rem 0;
 	padding: 0 0.75rem;
 	word-break: keep-all;
-`;
-
-const HowToUseLink = styled(Link)`
-	//text-decoration: none;
 `;
 
 const FeatureDiv = styled.div`
