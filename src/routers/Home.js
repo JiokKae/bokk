@@ -5,7 +5,6 @@ import AddWeblinkModal from "../components/Weblink/AddWeblinkModal";
 import ThumbnailModal from "../components/Weblink/ThumbnailModal";
 import Weblink from "../components/Weblink/Weblink";
 import { BUILTIN_WEBLINKS, ME, OWN_WEBLINKS } from "../constants/querys";
-import { BOKK_IMG } from "../constants/urls";
 import styles from "./Home.module.css";
 
 export default function Home() {
@@ -57,7 +56,7 @@ export default function Home() {
 					href="https://www.naver.com/"
 					target="_blank"
 					rel="noopener noreferrer">
-					<img src={`${BOKK_IMG}/NAVER.png`} />
+					<img src={`${process.env.REACT_APP_BOKK_IMG}/NAVER.png`} />
 				</a>
 				<a
 					className={`${styles.bgcNaver} ${styles.logoBtn}`}
@@ -80,7 +79,7 @@ export default function Home() {
 					href="https://www.daum.net"
 					target="_blank"
 					rel="noopener noreferrer">
-					<img src={`${BOKK_IMG}/DAUM.png`} />
+					<img src={`${process.env.REACT_APP_BOKK_IMG}/DAUM.png`} />
 				</a>
 				<a
 					className={`${styles.bgcDaum} ${styles.logoBtn}`}

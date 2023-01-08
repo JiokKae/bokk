@@ -1,30 +1,17 @@
 import { useQuery } from "@apollo/client";
 import { useState } from "react";
+import styled from "styled-components";
 import { ME } from "../../constants/querys";
-import { BOKK_IMG } from "../../constants/urls";
 import DeleteMessageModal from "./DeleteMessageModal";
+import Likes from "./Message/Likes";
+import Writer from "./Message/Writer";
 import PostReplyForm from "./PostReplyForm";
-
-function Writer({ name, type }) {
-	return (
-		<>
-			{name}
-			{type === "user" ? (
-				<img
-					className="m-1"
-					src={`${BOKK_IMG}/네모볶음밥32x32.png`}
-					style={{ width: "16px" }}
-				/>
-			) : null}
-		</>
-	);
-}
 
 function Content({ usesTag, content }) {
 	if (usesTag === true) {
 		return <div dangerouslySetInnerHTML={{ __html: content }}></div>;
 	}
-	return content;
+	return <div>{content}</div>;
 }
 
 function Delete({
@@ -92,6 +79,7 @@ export default function Message({
 	time,
 	writer,
 	reply,
+	likes,
 	options,
 	currentPage,
 }) {
@@ -99,11 +87,14 @@ export default function Message({
 	const [opensForm, setOpensForm] = useState(false);
 	return (
 		<div className="row g-0">
-			<div className="col-md-1 bd-number">{id}</div>
-			<div
-				className="col-md-6_5 bd-content breakable"
-				onClick={() => setOpensForm(!opensForm)}>
-				<Content usesTag={options?.usesTag} content={content} />
+			<NumberLayout>{id}</NumberLayout>
+			<div className="col-md-6_5 bd-content breakable">
+				<div onClick={() => setOpensForm(!opensForm)}>
+					<Content usesTag={options?.usesTag} content={content} />
+				</div>
+				<div>
+					<Likes messageId={id} likes={likes} />
+				</div>
 			</div>
 			<div className="col-md-2 bd-time retime">{time}</div>
 			<div className="col-md-2 me-auto bd-writer breakable">
@@ -139,3 +130,21 @@ export default function Message({
 		</div>
 	);
 }
+
+const NumberLayout = styled.div`
+	flex: 0 0 auto;
+	width: 8.33333333%;
+	text-align: center;
+	padding: 0;
+	font-weight: bold;
+	background-color: #f3f6f7;
+	@media (max-width: 767px) {
+		color: #aaa !important;
+		padding: 0.25rem !important;
+		font-weight: normal !important;
+		background-color: #0000 !important;
+		font-size: 0.75rem;
+		width: auto;
+		position: absolute;
+	}
+`;
