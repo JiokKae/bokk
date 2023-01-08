@@ -3,7 +3,6 @@ import { useState } from "react";
 import { CloseButton } from "react-bootstrap";
 import YouTube from "react-youtube";
 import { ME, MY_VIDEO_ITEMS } from "../../../../constants/querys";
-import { BOKK_IMG } from "../../../../constants/urls";
 import Controller from "./Controller";
 import YoutubePlayer from "./YoutubePlayer";
 import YoutubeVideoAdder from "./YoutubeVideoAdder";
@@ -107,7 +106,7 @@ export default function YoutubeOffcanvas() {
 				role="button"
 				aria-controls="offcanvasYoutubeQueue">
 				<img
-					src={`${BOKK_IMG}/YouTube-icon.png`}
+					src={`${process.env.REACT_APP_BOKK_IMG}/YouTube-icon.png`}
 					alt="유튜브 재생 목록"
 				/>
 			</a>

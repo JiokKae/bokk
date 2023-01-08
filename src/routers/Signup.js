@@ -2,7 +2,6 @@ import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { QUERIES_AFFECTED_BY_SIGN, SIGNUP } from "../constants/querys";
-import { BOKK_IMG } from "../constants/urls";
 
 export default function Signup() {
 	const [id, setId] = useState("");
@@ -43,7 +42,9 @@ export default function Signup() {
 	return (
 		<>
 			<Link to="/">
-				<img src={`${BOKK_IMG}/볶음밥_logo.png`} />
+				<img
+					src={`${process.env.REACT_APP_BOKK_IMG}/볶음밥_logo.png`}
+				/>
 			</Link>
 			<form className="formSign" onSubmit={onSubmit}>
 				<div className="form-floating mb-3">

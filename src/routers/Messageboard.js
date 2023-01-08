@@ -43,7 +43,7 @@ export default function MessageBoard() {
 							<div className="col-md-0_5 th"></div>
 						</div>
 						{data?.messageboard?.messages?.map(
-							({ id, content, time, writer, reply }) => (
+							({ id, content, time, writer, reply, likes }) => (
 								<Message
 									key={id}
 									id={id}
@@ -51,6 +51,7 @@ export default function MessageBoard() {
 									time={time}
 									writer={writer}
 									reply={reply}
+									likes={likes}
 									currentPage={currentPage}
 									options={{ usesTag }}
 								/>

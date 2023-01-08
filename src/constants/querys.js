@@ -129,8 +129,39 @@ export const MESSAGEBOARD = gql`
 				reply {
 					...CoreMessageFields
 				}
+				likes {
+					userId
+				}
 			}
 			totalCount
+		}
+	}
+`;
+
+export const LIKE_MESSAGE = gql`
+	mutation LikeMessage($input: LikeMessageInput!) {
+		likeMessage(input: $input) {
+			message {
+				id
+				type
+				likes {
+					userId
+				}
+			}
+		}
+	}
+`;
+
+export const UNLIKE_MESSAGE = gql`
+	mutation UnlikeMessage($input: UnlikeMessageInput!) {
+		unlikeMessage(input: $input) {
+			message {
+				id
+				type
+				likes {
+					userId
+				}
+			}
 		}
 	}
 `;
