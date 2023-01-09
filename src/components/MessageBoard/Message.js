@@ -51,7 +51,7 @@ function Reply({ id, content, time, writer, currentPage, options }) {
 	return (
 		<div className="row bd-reply">
 			<div className="col-md-0_5 m_hide">┗</div>
-			<div className="col-md-7 bd-content breakable">
+			<div className="col-md-7 bd-content">
 				<Content usesTag={options?.usesTag} content={content} />
 			</div>
 			<div className="col-md-2_5 bd-time retime">{time}</div>
