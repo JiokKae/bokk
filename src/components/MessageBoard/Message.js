@@ -3,16 +3,10 @@ import { useState } from "react";
 import styled from "styled-components";
 import { ME } from "../../constants/querys";
 import DeleteMessageModal from "./DeleteMessageModal";
+import Content from "./Message/Content";
 import Likes from "./Message/Likes";
 import Writer from "./Message/Writer";
 import PostReplyForm from "./PostReplyForm";
-
-function Content({ usesTag, content }) {
-	if (usesTag === true) {
-		return <div dangerouslySetInnerHTML={{ __html: content }}></div>;
-	}
-	return <div>{content}</div>;
-}
 
 function Delete({
 	writerName,
@@ -88,16 +82,18 @@ export default function Message({
 	return (
 		<div className="row g-0">
 			<NumberLayout>{id}</NumberLayout>
-			<div className="col-md-6_5 bd-content breakable">
-				<div onClick={() => setOpensForm(!opensForm)}>
-					<Content usesTag={options?.usesTag} content={content} />
-				</div>
+			<div className="col-md-6_5 bd-content">
+				<Content
+					usesTag={options?.usesTag}
+					content={content}
+					onClick={() => setOpensForm(!opensForm)}
+				/>
 				<div>
 					<Likes messageId={id} likes={likes} />
 				</div>
 			</div>
 			<div className="col-md-2 bd-time retime">{time}</div>
-			<div className="col-md-2 me-auto bd-writer breakable">
+			<div className="col-md-2 me-auto bd-writer">
 				<Writer name={writer?.name} type={writer?.type} />
 			</div>
 			<div className="col-md-0_5 bd-delete">
