@@ -150,9 +150,11 @@ div.message-board .table-header div {
 
 .bd-content {
 	padding-left: 0.5rem;
-	max-height: 600px;
 	overflow: auto;
 	overflow-wrap: break-word;
+	gap: 0.5rem;
+	display: flex;
+	flex-direction: column;
 }
 .bd-time {
 	padding-top: 0.75rem !important;
