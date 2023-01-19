@@ -1,3 +1,5 @@
+import styled from "styled-components";
+
 function Numbers({ boardPage, totalPage, setCurrentPage }) {
 	return Array.from({ length: 7 }, (_, i) => boardPage - 3 + i).map(
 		(index) => {
@@ -29,44 +31,50 @@ export default function Pagination({ boardPage, totalCount, setCurrentPage }) {
 	return (
 		<nav className="p-4" aria-label="Page navigation">
 			<ul className="pagination justify-content-center">
-				<li className={`page-item${boardPage > 1 ? "" : " disabled"}`}>
+				<PreviousButtonLI
+					className={`page-item${boardPage > 1 ? "" : " disabled"}`}>
 					{boardPage > 1 ? (
 						<a
-							className="page-link word_keep pointer"
+							className="page-link pointer"
 							onClick={() => setCurrentPage(boardPage - 1)}>
 							이전
 						</a>
 					) : (
-						<a className="page-link word_keep" tabIndex="-1">
+						<a className="page-link" tabIndex="-1">
 							이전
 						</a>
 					)}
-				</li>
+				</PreviousButtonLI>
 				<Numbers
 					boardPage={boardPage}
 					totalPage={totalPage}
 					setCurrentPage={setCurrentPage}
 				/>
-				<li
+				<NextButtonLI
 					className={`page-item ${
 						boardPage < totalPage - 1 ? "" : "disabled"
 					}`}>
 					{boardPage < totalPage - 1 ? (
 						<a
-							className="page-link word_keep pointer"
+							className="page-link pointer"
 							onClick={() => setCurrentPage(boardPage + 1)}>
 							다음
 						</a>
 					) : (
-						<a
-							className="page-link word_keep"
-							href="#"
-							tabIndex="-1">
+						<a className="page-link" href="#" tabIndex="-1">
 							다음
 						</a>
 					)}
-				</li>
+				</NextButtonLI>
 			</ul>
 		</nav>
 	);
 }
+
+const PreviousButtonLI = styled.li`
+	word-break: keep-all;
+`;
+
+const NextButtonLI = styled.li`
+	word-break: keep-all;
+`;
