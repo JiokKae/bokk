@@ -22,22 +22,11 @@ export default function MessageBoard() {
 					onClick={() => refetch()}>
 					새로고침
 				</button>
-				<button
-					className="btn btn-md bgc-bokk-dark ms-1"
-					onClick={() => setUsesTag(!usesTag)}>
-					{usesTag ? "태그 숨기기" : "태그 보기"}
-				</button>
 				<div id="board_table">
 					<div className="message-board">
 						<div className="row g-0 table-header">
 							<div className="col-md-1 th">글번호</div>
-							{usesTag === true ? (
-								<div className="col-md-6_5 th">글내용</div>
-							) : (
-								<div className="col-md-6_5 th">
-									글내용 <small>tag off</small>
-								</div>
-							)}
+							<div className="col-md-6_5 th">글내용</div>
 							<div className="col-md-2 th"></div>
 							<div className="col-md-2 th">글쓴이</div>
 							<div className="col-md-0_5 th"></div>
