@@ -40,13 +40,13 @@ function Delete({
 	);
 }
 
-function Reply({ id, content, time, writer, currentPage, options }) {
+function Reply({ id, content, time, writer, currentPage }) {
 	const { data } = useQuery(ME);
 	return (
 		<div className="row bd-reply">
 			<div className="col-md-0_5 m_hide">┗</div>
 			<div className="col-md-7 bd-content">
-				<Content usesTag={options?.usesTag} content={content} />
+				<Content content={content} />
 			</div>
 			<div className="col-md-2_5 bd-time retime">{time}</div>
 			<div className="col-md-1_5 bd-writer">
@@ -74,7 +74,6 @@ export default function Message({
 	writer,
 	reply,
 	likes,
-	options,
 	currentPage,
 }) {
 	const { data } = useQuery(ME);
@@ -84,7 +83,6 @@ export default function Message({
 			<NumberLayout>{id}</NumberLayout>
 			<div className="col-md-6_5 bd-content">
 				<Content
-					usesTag={options?.usesTag}
 					content={content}
 					onClick={() => setOpensForm(!opensForm)}
 				/>
@@ -119,7 +117,6 @@ export default function Message({
 						time={time}
 						writer={writer}
 						currentPage={currentPage}
-						options={options}
 					/>
 				))}
 			</div>

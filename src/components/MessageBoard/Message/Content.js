@@ -1,14 +1,11 @@
 import styled from "styled-components";
 
-function Content({ usesTag, content, onClick }) {
-	if (usesTag === true) {
-		return (
-			<ContentLayout
-				dangerouslySetInnerHTML={{ __html: content }}
-				onClick={onClick}></ContentLayout>
-		);
-	}
-	return <ContentLayout onClick={onClick}>{content}</ContentLayout>;
+function Content({ content, onClick }) {
+	return (
+		<ContentLayout
+			dangerouslySetInnerHTML={{ __html: content }}
+			onClick={onClick}></ContentLayout>
+	);
 }
 
 export default Content;
