@@ -232,6 +232,17 @@ export const TEXT_TO_IMAGE = gql`
 	}
 `;
 
+export const KAKAO_API_QUOTAS = gql`
+	query KakaoAPIQuotas {
+		kakaoAPIQuotas {
+			karlo {
+				current
+				limit
+			}
+		}
+	}
+`;
+
 export const QUERIES_AFFECTED_BY_SIGN = [
 	{ query: ME },
 	{ query: FILES },

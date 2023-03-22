@@ -1,8 +1,8 @@
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { TEXT_TO_IMAGE } from "../constants/querys";
+import { KAKAO_API_QUOTAS, TEXT_TO_IMAGE } from "../constants/querys";
 import Spinner from "./Spinner";
 
 function KakaoImageAPI() {
@@ -23,6 +23,17 @@ function KakaoImageAPI() {
 			};
 		},
 	});
+
+	const { data: quotasData, loading: quotasLoading } =
+		useQuery(KAKAO_API_QUOTAS);
+
+	const isAPILimited = () => {
+		return (
+			quotasLoading ||
+			quotasData?.kakaoAPIQuotas.karlo.current >=
+				quotasData?.kakaoAPIQuotas.karlo.limit
+		);
+	};
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -59,15 +70,21 @@ function KakaoImageAPI() {
 					value={text}
 					onChange={(e) => setText(e.target.value)}
 				/>
-				<SubmitButton onClick={onSubmit} disabled={loading}>
+				<SubmitButton
+					onClick={onSubmit}
+					disabled={loading || isAPILimited()}>
 					제출
 				</SubmitButton>
 			</Form>
-			<div>
+			<ItemDiv>
 				<a href="https://developers.kakao.com/docs/latest/ko/karlo/how-to-use">
 					활용 가이드
 				</a>
-			</div>
+				<span>
+					{quotasLoading ||
+						`이번 달 API 사용량: ${quotasData?.kakaoAPIQuotas.karlo.current} / ${quotasData?.kakaoAPIQuotas.karlo.limit}`}
+				</span>
+			</ItemDiv>
 			<FeatureDiv>
 				<SaveButton disabled={data === undefined} onClick={onSaveClick}>
 					이미지 저장
@@ -127,6 +144,11 @@ const SubmitButton = styled.button`
 	border-radius: 0 0.25rem 0.25rem 0;
 	padding: 0 0.75rem;
 	word-break: keep-all;
+`;
+
+const ItemDiv = styled.div`
+	display: flex;
+	justify-content: space-between;
 `;
 
 const FeatureDiv = styled.div`
