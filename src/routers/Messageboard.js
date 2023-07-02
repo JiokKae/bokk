@@ -12,7 +12,6 @@ export default function MessageBoard() {
 			page: currentPage,
 		},
 	});
-	const [usesTag, setUsesTag] = useState(true);
 	return (
 		<>
 			<PostMessageForm setCurrentPage={setCurrentPage} />
@@ -42,7 +41,6 @@ export default function MessageBoard() {
 									reply={reply}
 									likes={likes}
 									currentPage={currentPage}
-									options={{ usesTag }}
 								/>
 							)
 						)}
