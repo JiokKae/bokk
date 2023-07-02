@@ -4,17 +4,30 @@ import Message from "../components/MessageBoard/Message";
 import Pagination from "../components/MessageBoard/Pagination";
 import PostMessageForm from "../components/MessageBoard/PostMessageForm";
 import { MESSAGEBOARD } from "../constants/querys";
+import { scroller } from "react-scroll";
 
 export default function MessageBoard() {
 	const [currentPage, setCurrentPage] = useState(1);
+	const onSetCurrentPage = (page) => {
+		setCurrentPage(page);
+		scrollToComponent();
+	};
 	const { data, refetch } = useQuery(MESSAGEBOARD, {
 		variables: {
 			page: currentPage,
 		},
 	});
+	const scrollToComponent = () => {
+		scroller.scrollTo("top", {
+			duration: 100,
+			smooth: true,
+			offset: -75,
+		});
+	};
 	return (
 		<>
-			<PostMessageForm setCurrentPage={setCurrentPage} />
+			<div name="top"></div>
+			<PostMessageForm setCurrentPage={onSetCurrentPage} />
 			<div className="p-2">
 				<button
 					className="btn btn-md bgc-bokk-dark"
@@ -46,7 +59,7 @@ export default function MessageBoard() {
 						)}
 						<Pagination
 							boardPage={currentPage}
-							setCurrentPage={setCurrentPage}
+							setCurrentPage={onSetCurrentPage}
 							totalCount={data?.messageboard?.totalCount}
 						/>
 					</div>
