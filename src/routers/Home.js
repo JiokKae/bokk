@@ -83,7 +83,7 @@ export default function Home() {
 				</a>
 				<a
 					className={`${styles.bgcDaum} ${styles.logoBtn}`}
-					href="http://webtoon.daum.net/"
+					href="https://webtoon.kakao.com/"
 					target="_blank"
 					rel="noopener noreferrer">
 					웹툰
