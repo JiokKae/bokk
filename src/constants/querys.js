@@ -249,4 +249,5 @@ export const QUERIES_AFFECTED_BY_SIGN = [
 	{ query: OWN_WEBLINKS },
 	{ query: BUILTIN_WEBLINKS },
 	{ query: MY_VIDEO_ITEMS },
+	{ query: KAKAO_API_QUOTAS },
 ];

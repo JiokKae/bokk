@@ -27,11 +27,14 @@ function KakaoImageAPI() {
 	const { data: quotasData, loading: quotasLoading } =
 		useQuery(KAKAO_API_QUOTAS);
 
-	const isAPILimited = () => {
+	const isKarloLimited = () => {
+		if (quotasLoading === true) return true;
+		if (quotasData.kakaoAPIQuotas === null) return true;
+		if (quotasData.kakaoAPIQuotas.hasOwnProperty("karlo") === false)
+			return true;
 		return (
-			quotasLoading ||
-			quotasData?.kakaoAPIQuotas.karlo.current >=
-				quotasData?.kakaoAPIQuotas.karlo.limit
+			quotasData.kakaoAPIQuotas.karlo.current >=
+			quotasData.kakaoAPIQuotas.karlo.limit
 		);
 	};
 
@@ -72,7 +75,7 @@ function KakaoImageAPI() {
 				/>
 				<SubmitButton
 					onClick={onSubmit}
-					disabled={loading || isAPILimited()}>
+					disabled={loading || isKarloLimited()}>
 					제출
 				</SubmitButton>
 			</Form>
@@ -82,7 +85,9 @@ function KakaoImageAPI() {
 				</a>
 				<span>
 					{quotasLoading ||
-						`이번 달 API 사용량: ${quotasData?.kakaoAPIQuotas.karlo.current} / ${quotasData?.kakaoAPIQuotas.karlo.limit}`}
+						`이번 달 API 사용량: ${
+							quotasData?.kakaoAPIQuotas?.karlo.current ?? 0
+						} / ${quotasData?.kakaoAPIQuotas?.karlo.limit ?? 0}`}
 				</span>
 			</ItemDiv>
 			<FeatureDiv>
