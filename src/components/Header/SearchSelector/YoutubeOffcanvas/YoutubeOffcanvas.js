@@ -60,13 +60,13 @@ export default function YoutubeOffcanvas() {
 	}
 
 	function onStateChange(event) {
-		if (event.data == YouTube.PlayerState.ENDED) {
+		if (event.data === YouTube.PlayerState.ENDED) {
 			setIsPlaying(!isPlaying);
 			playVideo(getNextVideoIndex(currentVideoIndex));
 		}
 		if (
-			event.data == YouTube.PlayerState.PLAYING ||
-			event.data == YouTube.PlayerState.PAUSED
+			event.data === YouTube.PlayerState.PLAYING ||
+			event.data === YouTube.PlayerState.PAUSED
 		) {
 			setIsPlaying(!isPlaying);
 		}
@@ -75,10 +75,10 @@ export default function YoutubeOffcanvas() {
 		function mod(n, m) {
 			return ((n % m) + m) % m;
 		}
-		if (isRandom == true) {
+		if (isRandom === true) {
 			return randomIndexes[
 				mod(
-					randomIndexes.findIndex((item) => item == currentIndex) +
+					randomIndexes.findIndex((item) => item === currentIndex) +
 						changeValue,
 					randomIndexes.length
 				)

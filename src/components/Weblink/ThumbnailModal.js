@@ -8,13 +8,16 @@ import { RESOLUTION, thumbnailUrl, videoId } from "../../utils/youtubeUtil";
 
 function YoutubeThumbnail({ youtubeId }) {
 	return youtubeId === "" ? (
-		<img src={`${process.env.REACT_APP_BOKK_IMG}/youtube_share_link.png`} />
+		<img
+			src={`${process.env.REACT_APP_BOKK_IMG}/youtube_share_link.png`}
+			alt="유튜브 공유 설명"
+		/>
 	) : (
 		<a
 			href={thumbnailUrl(youtubeId, RESOLUTION.MAX)}
 			target="_blank"
 			rel="noopener noreferrer">
-			<img src={thumbnailUrl(youtubeId, RESOLUTION.MAX)} />
+			<img src={thumbnailUrl(youtubeId, RESOLUTION.MAX)} alt="섬네일" />
 		</a>
 	);
 }

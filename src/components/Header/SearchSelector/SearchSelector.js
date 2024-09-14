@@ -18,7 +18,10 @@ export default function SearchSelector() {
 					onClick={() => {
 						setSearchIndex(0);
 					}}>
-					<img src="https://www.naver.com/favicon.ico" />
+					<img
+						src="https://www.naver.com/favicon.ico"
+						alt="네이버 검색 선택"
+					/>
 				</div>
 				<div
 					id="tab_google"
@@ -26,12 +29,16 @@ export default function SearchSelector() {
 					onClick={() => {
 						setSearchIndex(1);
 					}}>
-					<img src="https://www.google.com/favicon.ico" />
+					<img
+						src="https://www.google.com/favicon.ico"
+						alt="구글 검색 선택"
+					/>
 				</div>
 				<div className="col-auto">
 					<img
 						src={`${process.env.REACT_APP_BOKK_IMG}/Chrisbanks2-Cold-Fusion-Hd-Minecraft.ico`}
 						style={{ width: "32px" }}
+						alt=""
 					/>
 					<div id="status_minecraft"></div>
 				</div>
