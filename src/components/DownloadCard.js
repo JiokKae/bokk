@@ -16,8 +16,8 @@ export default function DownloadCard({ href, date, size }) {
 					<a href={href} download>
 						<h5
 							className={`card-title ${styles.singleLine}`}
-							title={href.match(/[^\/]*$/)}>
-							{href.match(/[^\/]*$/)}
+							title={href.match(/[^/]*$/)}>
+							{href.match(/[^/]*$/)}
 						</h5>
 					</a>
 					<div className={styles.details}>
