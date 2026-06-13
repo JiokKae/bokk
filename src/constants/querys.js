@@ -223,31 +223,10 @@ export const DELETE_VIDEO_ITEM = gql`
 	}
 `;
 
-export const TEXT_TO_IMAGE = gql`
-	mutation TextToImage($input: TextToImageInput!) {
-		textToImage(input: $input) {
-			image
-			nsfw
-		}
-	}
-`;
-
-export const KAKAO_API_QUOTAS = gql`
-	query KakaoAPIQuotas {
-		kakaoAPIQuotas {
-			karlo {
-				current
-				limit
-			}
-		}
-	}
-`;
-
 export const QUERIES_AFFECTED_BY_SIGN = [
 	{ query: ME },
 	{ query: FILES },
 	{ query: OWN_WEBLINKS },
 	{ query: BUILTIN_WEBLINKS },
 	{ query: MY_VIDEO_ITEMS },
-	{ query: KAKAO_API_QUOTAS },
 ];
