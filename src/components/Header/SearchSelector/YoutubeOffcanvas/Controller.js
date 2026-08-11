@@ -22,9 +22,9 @@ export default function Controller({
 		{ id: "previous_play", onClick: onPreviousPlay },
 		{
 			id: "play",
-			onClick: () => player.playVideo(),
+			onClick: () => player?.playVideo(),
 			condition: isPlaying,
-			swap: { id: "pause", onClick: () => player.pauseVideo() },
+			swap: { id: "pause", onClick: () => player?.pauseVideo() },
 		},
 		{ id: "next_play", onClick: onNextPlay },
 		{

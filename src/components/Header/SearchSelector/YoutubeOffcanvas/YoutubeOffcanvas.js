@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CloseButton } from "react-bootstrap";
 import YouTube from "react-youtube";
 import { ME, MY_VIDEO_ITEMS } from "../../../../constants/querys";
@@ -26,25 +26,27 @@ function shuffle(array) {
 export default function YoutubeOffcanvas() {
 	const { data: meData, loading } = useQuery(ME, {
 		onCompleted: (data) => {
-			setAutoPlay(data.me.config.videoAutoPlay);
+			if (data?.me?.config) {
+				setAutoPlay(data.me.config.videoAutoPlay);
+			}
 		},
 	});
-	useQuery(MY_VIDEO_ITEMS, {
-		onCompleted: (data) => {
-			setVideoItems(data.myVideoItems);
-			setRandomIndexes(
-				shuffle(data.myVideoItems.map((_, index) => index))
-			);
-		},
-	});
+	const { data: myVideoData } = useQuery(MY_VIDEO_ITEMS);
+	const videoItems = useMemo(
+		() => myVideoData?.myVideoItems || [],
+		[myVideoData]
+	);
 
 	const [autoPlay, setAutoPlay] = useState(false);
-	const [videoItems, setVideoItems] = useState([]);
-	const [randomIndexes, setRandomIndexes] = useState([]);
 	const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [isRandom, setIsRandom] = useState(false);
 	const [player, setPlayer] = useState(null);
+
+	const randomIndexes = useMemo(
+		() => shuffle(videoItems.map((_, index) => index)),
+		[videoItems]
+	);
 
 	function onReady(event) {
 		setPlayer(event.target);
@@ -52,11 +54,15 @@ export default function YoutubeOffcanvas() {
 
 	function playVideo(index) {
 		setCurrentVideoIndex(index);
-		player.loadVideoById({ videoId: videoItems[index].video.id });
-		player.playVideo();
-		document.getElementById("scroll_queue").scrollTop =
-			getVideoItem(index).offsetTop -
-			document.getElementById("scroll_queue").offsetTop;
+		if (player) {
+			player.loadVideoById({ videoId: videoItems[index]?.video?.id });
+			player.playVideo();
+		}
+		const scrollQueue = document.getElementById("scroll_queue");
+		const itemElem = getVideoItem(index);
+		if (scrollQueue && itemElem) {
+			scrollQueue.scrollTop = itemElem.offsetTop - scrollQueue.offsetTop;
+		}
 	}
 
 	function onStateChange(event) {

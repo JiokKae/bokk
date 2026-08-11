@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { useState } from "react";
 import Weblink from "../../components/Weblink/Weblink";
 import {
 	BUILTIN_WEBLINKS,
@@ -7,15 +6,8 @@ import {
 } from "../../constants/querys";
 
 export default function BuiltinWeblink() {
-	const [builtinWeblinks, setBuiltinWeblinks] = useState([]);
-	const [hidedIds, setHidedIds] = useState([]);
-
-	const { refetch } = useQuery(BUILTIN_WEBLINKS, {
+	const { data, refetch } = useQuery(BUILTIN_WEBLINKS, {
 		variables: { input: { hided: true } },
-		onCompleted: (data) => {
-			setBuiltinWeblinks(data.builtinWeblinks.weblinks);
-			setHidedIds(data.builtinWeblinks.hidedIds);
-		},
 	});
 
 	const [toggleBuitinWeblink] = useMutation(TOGGLE_BUILTIN_WEBLINK, {
@@ -27,6 +19,9 @@ export default function BuiltinWeblink() {
 			alert("기본 웹 링크를 토글하는데 실패했습니다.");
 		},
 	});
+
+	const builtinWeblinks = data?.builtinWeblinks?.weblinks || [];
+	const hidedIds = data?.builtinWeblinks?.hidedIds || [];
 	return (
 		<>
 			<div>
