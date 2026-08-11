@@ -22,12 +22,13 @@ function VideoItem({ itemId, youtubeId, title, length }) {
 		deleteVideoItem({ variables: { itemId } });
 	};
 	return (
-		<a className="list-group-item list-group-item-action">
+		<div className="list-group-item">
 			<div className="row">
 				<div className="col-auto">
 					<img
 						className="rounded img-fluid"
 						src={thumbnailUrl(youtubeId)}
+						alt={title}
 					/>
 				</div>
 				<div className="col-8 me-auto">
@@ -38,7 +39,7 @@ function VideoItem({ itemId, youtubeId, title, length }) {
 					<CloseButton onClick={onClick} />
 				</div>
 			</div>
-		</a>
+		</div>
 	);
 }
 

@@ -8,14 +8,25 @@ export default function Weblink({
 	style,
 	onClick,
 }) {
+	if (onClick) {
+		return (
+			<button
+				type="button"
+				className={`btn ${styles.btnMd} m-1`}
+				style={{ color, backgroundColor, ...style }}
+				onClick={onClick}>
+				{name === "" ? "웹 링크" : name}
+			</button>
+		);
+	}
+
 	return (
 		<a
-			href={onClick ? undefined : url}
+			href={url}
 			target="_blank"
 			rel="noopener noreferrer"
 			className={`btn ${styles.btnMd} m-1`}
-			style={{ color, backgroundColor, ...style }}
-			onClick={onClick}>
+			style={{ color, backgroundColor, ...style }}>
 			{name === "" ? "웹 링크" : name}
 		</a>
 	);
