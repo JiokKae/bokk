@@ -116,7 +116,6 @@ export default function NaverSearch() {
 										maxLength="255"
 										className={styles.input_text}
 										tabIndex="1"
-										accessKey="s"
 										autoComplete="off"
 									/>
 								</span>

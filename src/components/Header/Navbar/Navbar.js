@@ -30,13 +30,13 @@ function UserMenu({ menuItems }) {
 			<span className="navbar-text">{data?.me?.name}님 환영합니다</span>
 			<ul className="navbar-nav">
 				<li className="nav-item dropdown">
-					<a
-						className={`nav-link dropdown-toggle ${styles.btn}`}
-						data-bs-toggle="dropdown"
-						href="#">
+					<button
+						type="button"
+						className={`nav-link dropdown-toggle bg-transparent border-0 ${styles.btn}`}
+						data-bs-toggle="dropdown">
 						{data?.me?.name}
 						<b className="caret"></b>
-					</a>
+					</button>
 					<div
 						className="dropdown-menu dropdown-menu-right"
 						aria-labelledby="navbarDropdown">
@@ -46,13 +46,14 @@ function UserMenu({ menuItems }) {
 							</Link>
 						))}
 						<div className="dropdown-divider"></div>
-						<a
+						<button
+							type="button"
 							className="dropdown-item pointer"
 							onClick={() => {
 								signout();
 							}}>
 							로그아웃
-						</a>
+						</button>
 					</div>
 				</li>
 			</ul>

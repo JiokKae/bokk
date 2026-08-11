@@ -12,7 +12,7 @@ export default function YoutubeVideoItem({
 		<button
 			type="button"
 			id={`videoItem${index}`}
-			className={`list-group-item list-group-item-action pointer ${
+			className={`list-group-item list-group-item-action pointer w-100 text-start ${
 				index === currentVideoIndex ? "bgc-bokk-light" : ""
 			}`}
 			onClick={onClick}>
