@@ -44,6 +44,7 @@ export default function Signup() {
 			<Link to="/">
 				<img
 					src={`${process.env.REACT_APP_BOKK_IMG}/볶음밥_logo.png`}
+					alt="볶음밥 로고"
 				/>
 			</Link>
 			<form className="formSign" onSubmit={onSubmit}>

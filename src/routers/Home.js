@@ -28,7 +28,7 @@ export default function Home() {
 							color={color}
 							backgroundColor={backgroundColor}
 						/>
-					)
+					),
 				)}
 			</div>
 			<div className={styles.weblinkRow}>
@@ -41,7 +41,7 @@ export default function Home() {
 							color={color}
 							backgroundColor={backgroundColor}
 						/>
-					)
+					),
 				)}
 				{isLoginData?.me === null ? (
 					<Link to="/signin/">
@@ -56,7 +56,10 @@ export default function Home() {
 					href="https://www.naver.com/"
 					target="_blank"
 					rel="noopener noreferrer">
-					<img src={`${process.env.REACT_APP_BOKK_IMG}/NAVER.png`} />
+					<img
+						src={`${process.env.REACT_APP_BOKK_IMG}/NAVER.png`}
+						alt="네이버"
+					/>
 				</a>
 				<a
 					className={`${styles.bgcNaver} ${styles.logoBtn}`}
@@ -79,7 +82,10 @@ export default function Home() {
 					href="https://www.daum.net"
 					target="_blank"
 					rel="noopener noreferrer">
-					<img src={`${process.env.REACT_APP_BOKK_IMG}/DAUM.png`} />
+					<img
+						src={`${process.env.REACT_APP_BOKK_IMG}/DAUM.png`}
+						alt="다음"
+					/>
 				</a>
 				<a
 					className={`${styles.bgcDaum} ${styles.logoBtn}`}

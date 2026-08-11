@@ -9,7 +9,8 @@ export default function YoutubeVideoItem({
 	length,
 }) {
 	return (
-		<a
+		<button
+			type="button"
 			id={`videoItem${index}`}
 			className={`list-group-item list-group-item-action pointer ${
 				index === currentVideoIndex ? "bgc-bokk-light" : ""
@@ -17,13 +18,17 @@ export default function YoutubeVideoItem({
 			onClick={onClick}>
 			<div className="row gx-3">
 				<div className="col-3">
-					<img className="rounded img-fluid" src={thumbnailUrl(id)} />
+					<img
+						className="rounded img-fluid"
+						src={thumbnailUrl(id)}
+						alt={title}
+					/>
 				</div>
 				<div className="col">
 					<p className="mb-1">{title}</p>
 					<small>{secondToDate(length)}</small>
 				</div>
 			</div>
-		</a>
+		</button>
 	);
 }
