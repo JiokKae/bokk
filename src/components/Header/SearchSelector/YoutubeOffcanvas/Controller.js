@@ -54,6 +54,7 @@ export default function Controller({
 						src={`${process.env.REACT_APP_BOKK_IMG}/${
 							button?.condition ? button.swap.id : button.id
 						}.png`}
+						alt={button?.condition ? button.swap.id : button.id}
 						style={{ width: "24px" }}
 					/>
 				</button>
