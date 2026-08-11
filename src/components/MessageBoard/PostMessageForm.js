@@ -41,14 +41,34 @@ class MyUploadAdapter {
 	}
 
 	upload() {
-		return this.loader.file.then(
-			(file) =>
-				new Promise((resolve, reject) => {
-					this._initRequest();
-					this._initListeners(resolve, reject, file);
-					this._sendRequest(file);
-				})
-		);
+		return this.loader.file
+			.then(
+				(file) =>
+					new Promise((resolve, reject) => {
+						try {
+							const safeBlob = file.slice(0, file.size, file.type);
+							const safeFile = new File(
+								[safeBlob],
+								file.name || "upload.jpg",
+								{ type: file.type || "image/jpeg" }
+							);
+							this._initRequest();
+							this._initListeners(resolve, reject, safeFile);
+							this._sendRequest(safeFile);
+						} catch (err) {
+							reject(err?.message || "파일을 읽을 수 없습니다.");
+						}
+					})
+			)
+			.catch((err) => {
+				return Promise.reject(
+					err?.name === "NotReadableError"
+						? "모바일 접근 권한 문제로 이미지를 읽지 못했습니다. 다른 이미지를 선택하거나 다시 시도해 주세요."
+						: typeof err === "string"
+						? err
+						: err?.message || "파일 업로드 중 오류가 발생했습니다."
+				);
+			});
 	}
 
 	abort() {
