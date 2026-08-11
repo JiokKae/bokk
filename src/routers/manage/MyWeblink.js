@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { useState } from "react";
 import UpdateWeblinkModal from "../../components/Weblink/UpdateWeblinkModal";
 import Weblink from "../../components/Weblink/Weblink";
 import { DELETE_WEBLINK, OWN_WEBLINKS } from "../../constants/querys";
@@ -50,12 +49,8 @@ function WeblinkManageItem({
 }
 
 export default function MyWeblink() {
-	const [weblinks, setWeblinks] = useState([]);
-	useQuery(OWN_WEBLINKS, {
-		onCompleted: (data) => {
-			setWeblinks(data.ownWeblinks);
-		},
-	});
+	const { data } = useQuery(OWN_WEBLINKS);
+	const weblinks = data?.ownWeblinks || [];
 
 	return (
 		<ul className="list-group list-group-flush">

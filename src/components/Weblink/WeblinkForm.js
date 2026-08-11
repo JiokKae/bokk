@@ -41,7 +41,7 @@ export default function WeblinkForm({
 					type="url"
 					id="url"
 					placeholder="https://example.com"
-					pattern="(http|https):\/\/[^'\s()]+"
+					pattern="https?://\S+"
 					required
 					value={url}
 					onChange={(e) => setUrl(e.target.value)}

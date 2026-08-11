@@ -41,9 +41,17 @@ export default function UpdateWeblinkModal({ weblink }) {
 			},
 		});
 	};
+	const handleOpen = () => {
+		setName(weblink.name);
+		setUrl(weblink.url);
+		setColor(weblink.color);
+		setBackgroundColor(weblink.backgroundColor);
+		setShow(true);
+	};
+
 	return (
 		<>
-			<button className="btn btn-secondary" onClick={() => setShow(true)}>
+			<button className="btn btn-secondary" onClick={handleOpen}>
 				수정
 			</button>
 			<Modal show={show} onHide={() => setShow(false)}>

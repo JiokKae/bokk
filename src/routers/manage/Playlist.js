@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { useState } from "react";
 import { CloseButton } from "react-bootstrap";
 import YoutubeVideoAdder from "../../components/Header/SearchSelector/YoutubeOffcanvas/YoutubeVideoAdder";
 import { DELETE_VIDEO_ITEM, MY_VIDEO_ITEMS } from "../../constants/querys";
@@ -44,14 +43,8 @@ function VideoItem({ itemId, youtubeId, title, length }) {
 }
 
 export default function Playlist() {
-	const [videosItems, setVideoItems] = useState([]);
-	useQuery(MY_VIDEO_ITEMS, {
-		onCompleted: (data) => {
-			if (data.myVideoItems) {
-				setVideoItems(data.myVideoItems);
-			}
-		},
-	});
+	const { data } = useQuery(MY_VIDEO_ITEMS);
+	const videosItems = data?.myVideoItems || [];
 
 	return (
 		<>
