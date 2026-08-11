@@ -39,7 +39,8 @@ export default function App() {
 		menu: [{ name: "비밀번호 변경", url: "/changePassword/" }],
 	};
 	return (
-		<BrowserRouter>
+		<BrowserRouter
+			future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
 			<Routes>
 				<Route element={<HeaderLayout items={ITEMS} searchSelector />}>
 					<Route path="/" element={<Home />} />
