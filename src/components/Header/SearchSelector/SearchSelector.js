@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useState } from "react";
 import { ME } from "../../../constants/querys";
+import FeatureHistoryModal from "./FeatureHistoryModal";
 import GoogleSearch from "./Searches/GoogleSearch";
 import NaverSearch from "./Searches/NaverSearch";
 import YoutubeOffcanvas from "./YoutubeOffcanvas/YoutubeOffcanvas";
@@ -33,6 +34,9 @@ export default function SearchSelector() {
 						src="https://www.google.com/favicon.ico"
 						alt="구글 검색 선택"
 					/>
+				</div>
+				<div className="col-auto">
+					<FeatureHistoryModal />
 				</div>
 				<div className="col-auto">
 					<img
