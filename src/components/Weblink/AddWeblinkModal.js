@@ -4,7 +4,7 @@ import { Button, Modal } from "react-bootstrap";
 import { ADD_WEBLINK, OWN_WEBLINKS } from "../../constants/querys";
 import WeblinkForm from "./WeblinkForm";
 
-export default function AddWeblinkModal() {
+export default function AddWeblinkModal({ position = "last" }) {
 	const [show, setShow] = useState(false);
 	const [name, setName] = useState("");
 	const [url, setUrl] = useState("");
@@ -21,6 +21,7 @@ export default function AddWeblinkModal() {
 					url,
 					color,
 					backgroundColor,
+					position,
 				},
 			},
 		});
@@ -28,7 +29,11 @@ export default function AddWeblinkModal() {
 	};
 	return (
 		<>
-			<button className="btn-dot m-1" onClick={() => setShow(true)}>
+			<button
+				className="btn-dot m-1 user-select-none"
+				style={{ userSelect: "none" }}
+				onMouseDown={(e) => e.preventDefault()}
+				onClick={() => setShow(true)}>
 				+
 			</button>
 			<Modal show={show} onHide={() => setShow(false)}>

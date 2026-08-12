@@ -1,59 +1,96 @@
-import { useState } from "react";
-import { Badge, Button, Modal } from "react-bootstrap";
+import { useMemo, useState } from "react";
+import { Badge, Modal } from "react-bootstrap";
+
+const initialCategories = [
+	{
+		id: "weblink",
+		mainTitle: "내 웹링크 관리 & 커스텀",
+		updates: [
+			{
+				date: "2026.08.13",
+				isNew: true,
+				title: "웹링크 추가 위치 지정 옵션",
+				description: "웹링크 추가 시 위치 선택 지원 (관리: 맨 위 / 메인: 맨 끝)",
+			},
+			{
+				date: "2026.08.12",
+				isNew: false,
+				title: "내 웹링크 순서 변경 (드래그 앤 드롭)",
+				description: "삼단줄(☰) 드래그로 간편하게 웹링크 순서 변경",
+			},
+			{
+				date: "2026.01.10",
+				isNew: false,
+				title: "나만의 웹링크 커스텀 등록",
+				description: "웹링크 이름, URL, 배경색 및 글자색 커스텀 등록",
+			},
+		],
+	},
+	{
+		id: "youtube",
+		mainTitle: "유튜브 연속 재생 플레이어",
+		updates: [
+			{
+				date: "2026.08.12",
+				isNew: true,
+				title: "유튜브 실시간 재생 제목 스크롤 티커",
+				description: "재생 중인 영상 제목이 가로 스크롤과 함께 헤더에 실시간 표출",
+			},
+			{
+				date: "2026.01.05",
+				isNew: false,
+				title: "유튜브 백그라운드 연속 재생",
+				description: "재생 목록 구성 및 백그라운드 연속 재생 지원",
+			},
+		],
+	},
+	{
+		id: "search",
+		mainTitle: "포털 통합 검색",
+		updates: [
+			{
+				date: "2026.01.01",
+				isNew: false,
+				title: "포털 통합 검색 (네이버 / 구글)",
+				description: "네이버 및 구글 원클릭 탭 전환 통합 검색",
+			},
+		],
+	},
+	{
+		id: "board",
+		mainTitle: "자유 게시판 & 소통",
+		updates: [
+			{
+				date: "2026.01.01",
+				isNew: false,
+				title: "자유 게시판 및 소통",
+				description: "게시글 작성, 댓글 및 좋아요 기능 제공",
+			},
+		],
+	},
+];
 
 export default function FeatureHistoryModal() {
 	const [show, setShow] = useState(false);
 
-	const historyList = [
-		{
-			date: "2026.08",
-			isNew: true,
-			badge: "신규",
-			title: "유튜브 실시간 재생 제목 스크롤 티커",
-			description:
-				"유튜브 동영상 재생 시 모달 밖에서도 현재 재생 중인 영상 제목이 가로로 부드럽게 스크롤되며 펼쳐지는 라이브 티커를 제공합니다.",
-		},
-		{
-			date: "2026.08",
-			isNew: false,
-			badge: "신규",
-			title: "내 웹링크 순서 변경 (드래그 앤 드롭)",
-			description:
-				"내 웹링크 편집 화면에서 삼단줄(☰) 아이콘을 잡고 끌어서 웹링크 순서를 원하는 대로 자유롭게 정렬할 수 있습니다.",
-		},
-		{
-			date: "2026",
-			isNew: false,
-			badge: "기능",
-			title: "유튜브 연속 재생 플레이어",
-			description:
-				"유튜브 동영상 재생 목록을 구성하고 백그라운드에서 끊김 없이 연속 재생할 수 있습니다.",
-		},
-		{
-			date: "2026",
-			isNew: false,
-			badge: "기능",
-			title: "포털 통합 검색 (네이버 / 구글)",
-			description:
-				"네이버와 구글 검색 탭을 손쉽게 전환하며 원하는 포털 검색을 빠르게 이용할 수 있습니다.",
-		},
-		{
-			date: "2026",
-			isNew: false,
-			badge: "기능",
-			title: "나만의 웹링크 커스텀 등록",
-			description:
-				"자주 방문하는 웹사이트를 등록하고 이름, URL, 버튼 배경색 및 글자색을 자유롭게 스타일링할 수 있습니다.",
-		},
-		{
-			date: "2026",
-			isNew: false,
-			badge: "기능",
-			title: "자유 게시판 및 소통",
-			description:
-				"게시글 작성, 댓글 등록 및 좋아요 표시 기능으로 자유롭게 소통할 수 있습니다.",
-		},
-	];
+	// Sort categories by the latest update date inside each category (descending)!
+	const sortedCategories = useMemo(() => {
+		return [...initialCategories].sort((a, b) => {
+			const latestA = Math.max(...a.updates.map((u) => new Date(u.date.replace(/\./g, "-")).getTime() || 0));
+			const latestB = Math.max(...b.updates.map((u) => new Date(u.date.replace(/\./g, "-")).getTime() || 0));
+			return latestB - latestA;
+		});
+	}, []);
+
+	// Default open the most recently updated category
+	const [openCategoryIds, setOpenCategoryIds] = useState({ weblink: true });
+
+	const toggleCategory = (id) => {
+		setOpenCategoryIds((prev) => ({
+			...prev,
+			[id]: !prev[id],
+		}));
+	};
 
 	return (
 		<>
@@ -71,34 +108,142 @@ export default function FeatureHistoryModal() {
 				<Modal.Header closeButton>
 					<Modal.Title as="h5">기능 추가 내역</Modal.Title>
 				</Modal.Header>
-				<Modal.Body style={{ maxHeight: "70vh", overflowY: "auto" }}>
-					<div className="list-group list-group-flush">
-						{historyList.map((item, index) => (
-							<div key={index} className="list-group-item px-2 py-3">
-								<div className="d-flex justify-content-between align-items-center mb-1">
-									<div className="d-flex align-items-center gap-2">
-										<Badge
-											bg={item.isNew ? "primary" : "light"}
-											text={item.isNew ? "white" : "dark"}
-											className="px-2 py-1 me-2 border"
-										>
-											{item.badge}
-										</Badge>
-										<h6 className="mb-0 fw-bold">{item.title}</h6>
+				<Modal.Body
+					className="always-scrollbar"
+					style={{
+						maxHeight: "70vh",
+						overflowY: "scroll",
+						overflowX: "hidden",
+						backgroundColor: "#f8f9fa",
+						padding: "16px 20px 16px 16px",
+					}}
+				>
+					<style>{`
+						.always-scrollbar::-webkit-scrollbar {
+							width: 8px !important;
+						}
+						.always-scrollbar::-webkit-scrollbar-thumb {
+							background-color: #94a3b8 !important;
+							border-radius: 4px !important;
+						}
+						.always-scrollbar::-webkit-scrollbar-thumb:hover {
+							background-color: #64748b !important;
+						}
+						.always-scrollbar::-webkit-scrollbar-track {
+							background-color: #e2e8f0 !important;
+							border-radius: 4px !important;
+						}
+					`}</style>
+					<div className="d-flex flex-column gap-2">
+						{sortedCategories.map((category) => {
+							const isOpen = Boolean(openCategoryIds[category.id]);
+							const latestUpdate = category.updates[0];
+							const hasNew = category.updates.some((u) => u.isNew);
+
+							return (
+								<div
+									key={category.id}
+									className={`card border overflow-hidden ${isOpen ? "shadow-sm" : ""}`}
+									style={{
+										borderRadius: "10px",
+										borderColor: isOpen ? "#b6e0fe" : "#e0e0e0",
+										transition: "all 0.3s ease",
+									}}
+								>
+									{/* Main Feature Category Header */}
+									<div
+										className="card-header d-flex justify-content-between align-items-center py-3 px-3 user-select-none"
+										onClick={() => toggleCategory(category.id)}
+										onMouseDown={(e) => e.preventDefault()}
+										style={{
+											cursor: "pointer",
+											backgroundColor: isOpen ? "#ffffff" : "#f1f3f5",
+											borderBottom: isOpen ? "1px solid #e9ecef" : "none",
+											transition: "background-color 0.3s ease",
+										}}
+									>
+										<div className="d-flex align-items-center gap-2">
+											<h6 className={`mb-0 fw-bold ${isOpen ? "text-dark" : "text-secondary"}`}>
+												{category.mainTitle}
+											</h6>
+											{hasNew && (
+												<Badge bg={isOpen ? "primary" : "secondary"} className="ms-2 px-2 py-1" style={{ fontSize: "11px" }}>
+													NEW
+												</Badge>
+											)}
+										</div>
+										<div className="d-flex align-items-center gap-2 text-secondary small">
+											<small className={isOpen ? "text-muted" : "text-secondary"} style={{ opacity: isOpen ? 1 : 0.8 }}>
+												{latestUpdate?.date}
+											</small>
+											<span
+												style={{
+													fontSize: "10px",
+													display: "inline-block",
+													transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+													transition: "transform 0.3s ease",
+													color: isOpen ? "#0699f9" : "#6c757d",
+												}}
+											>
+												▼
+											</span>
+										</div>
 									</div>
-									<small className="text-muted ms-2">{item.date}</small>
+
+									{/* Sub-features Accordion / Foldable Content with Smooth Animation */}
+									<div
+										style={{
+											maxHeight: isOpen ? "500px" : "0px",
+											opacity: isOpen ? 1 : 0,
+											transition: "max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease",
+											overflow: "hidden",
+											backgroundColor: "#ffffff",
+										}}
+									>
+										<div className="card-body py-2 px-3">
+											<div className="d-flex flex-column">
+												{category.updates.map((sub, idx) => (
+													<div
+														key={idx}
+														className={`py-2 ${idx !== category.updates.length - 1 ? "border-bottom" : ""}`}
+													>
+														<div className="d-flex justify-content-between align-items-center mb-1">
+															<div className="d-flex align-items-center gap-2">
+																<Badge
+																	bg={sub.isNew ? "primary" : "light"}
+																	text={sub.isNew ? "white" : "dark"}
+																	className="px-2 py-1 border"
+																	style={{ fontSize: "11px" }}
+																>
+																	{sub.isNew ? "신규" : "업데이트"}
+																</Badge>
+																<span className="fw-bold small">{sub.title}</span>
+															</div>
+															<small className="text-muted ms-2">{sub.date}</small>
+														</div>
+														<p
+															className="mb-0 text-secondary small ps-1 mt-1"
+															style={{ whiteSpace: "pre-line", wordBreak: "break-word", overflowWrap: "break-word" }}
+														>
+															{sub.description}
+														</p>
+													</div>
+												))}
+											</div>
+										</div>
+									</div>
 								</div>
-								<p className="mb-0 text-secondary small mt-1" style={{ whiteSpace: "pre-line" }}>
-									{item.description}
-								</p>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				</Modal.Body>
-				<Modal.Footer>
-					<Button variant="secondary" onClick={() => setShow(false)}>
-						닫기
-					</Button>
+				<Modal.Footer className="py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
+					<small className="text-muted" style={{ fontSize: "12px" }}>
+						볶음밥 유틸리티 서비스
+					</small>
+					<small className="text-muted" style={{ fontSize: "12px" }}>
+						Release Notes
+					</small>
 				</Modal.Footer>
 			</Modal>
 		</>

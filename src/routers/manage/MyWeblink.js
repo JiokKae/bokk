@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
+import AddWeblinkModal from "../../components/Weblink/AddWeblinkModal";
 import UpdateWeblinkModal from "../../components/Weblink/UpdateWeblinkModal";
 import Weblink from "../../components/Weblink/Weblink";
 import { DELETE_WEBLINK, OWN_WEBLINKS, REORDER_WEBLINKS } from "../../constants/querys";
@@ -142,6 +143,21 @@ export default function MyWeblink() {
 
 	return (
 		<ul className="list-group list-group-flush">
+			<li className="list-group-item">
+				<div className="row align-items-center">
+					<div className="col-12 col-sm-6 d-flex align-items-center">
+						<span
+							className="me-3 fs-4 user-select-none"
+							style={{ visibility: "hidden", lineHeight: 1 }}
+						>
+							☰
+						</span>
+						<div>
+							<AddWeblinkModal position="first" />
+						</div>
+					</div>
+				</div>
+			</li>
 			{weblinks.map((weblink, index) => (
 				<WeblinkManageItem
 					className="list-group-item"
