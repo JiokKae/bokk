@@ -67,14 +67,12 @@ export default function YoutubeOffcanvas() {
 
 	function onStateChange(event) {
 		if (event.data === YouTube.PlayerState.ENDED) {
-			setIsPlaying(!isPlaying);
+			setIsPlaying(false);
 			playVideo(getNextVideoIndex(currentVideoIndex));
-		}
-		if (
-			event.data === YouTube.PlayerState.PLAYING ||
-			event.data === YouTube.PlayerState.PAUSED
-		) {
-			setIsPlaying(!isPlaying);
+		} else if (event.data === YouTube.PlayerState.PLAYING) {
+			setIsPlaying(true);
+		} else if (event.data === YouTube.PlayerState.PAUSED) {
+			setIsPlaying(false);
 		}
 	}
 	function getRelativeVideoIndex(currentIndex, changeValue) {
@@ -104,18 +102,80 @@ export default function YoutubeOffcanvas() {
 		return document.getElementById("videoItem" + index);
 	}
 
+	const currentTitle = videoItems[currentVideoIndex]?.video?.title || "";
+
 	return (
 		<>
-			<a
-				data-bs-toggle="offcanvas"
-				href="#offcanvasYoutubeQueue"
-				role="button"
-				aria-controls="offcanvasYoutubeQueue">
-				<img
-					src={`${process.env.REACT_APP_BOKK_IMG}/YouTube-icon.png`}
-					alt="유튜브 재생 목록"
-				/>
-			</a>
+			<div className="d-flex align-items-center">
+				<a
+					data-bs-toggle="offcanvas"
+					href="#offcanvasYoutubeQueue"
+					role="button"
+					aria-controls="offcanvasYoutubeQueue"
+					onMouseDown={(e) => e.preventDefault()}
+					className="text-decoration-none"
+					title={isPlaying && currentTitle ? `재생 중: ${currentTitle}` : "유튜브 재생 목록"}
+					style={{
+						maxWidth: isPlaying && currentTitle ? "200px" : "0px",
+						opacity: isPlaying && currentTitle ? 1 : 0,
+						marginRight: isPlaying && currentTitle ? "8px" : "0px",
+						transformOrigin: "right center",
+						transition: "max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease, margin-right 0.4s ease",
+						overflow: "hidden",
+						whiteSpace: "nowrap",
+						display: "inline-block",
+						verticalAlign: "middle",
+						pointerEvents: isPlaying && currentTitle ? "auto" : "none",
+						userSelect: "none",
+					}}
+				>
+					<div
+						className="d-flex align-items-center px-2 py-1 rounded-pill shadow-sm"
+						style={{
+							backgroundColor: "#fff0f3",
+							border: "1px solid #ffccd5",
+							fontSize: "12px",
+							color: "#d90429",
+							overflow: "hidden",
+						}}
+					>
+						<span
+							className="spinner-grow spinner-grow-sm text-danger me-1 flex-shrink-0"
+							style={{ width: "7px", height: "7px" }}
+						/>
+						<div className="overflow-hidden position-relative w-100">
+							<style>{`
+								@keyframes youtubeTicker {
+									0% { transform: translateX(0%); }
+									100% { transform: translateX(-50%); }
+								}
+								.animate-youtube-ticker {
+									display: inline-block;
+									white-space: nowrap;
+									animation: youtubeTicker 12s linear infinite;
+								}
+							`}</style>
+							<div className="animate-youtube-ticker">
+								{currentTitle} &nbsp;&nbsp;🎵&nbsp;&nbsp; {currentTitle} &nbsp;&nbsp;🎵&nbsp;&nbsp;
+							</div>
+						</div>
+					</div>
+				</a>
+
+				<a
+					data-bs-toggle="offcanvas"
+					href="#offcanvasYoutubeQueue"
+					role="button"
+					aria-controls="offcanvasYoutubeQueue"
+					onMouseDown={(e) => e.preventDefault()}
+					style={{ userSelect: "none" }}
+				>
+					<img
+						src={`${process.env.REACT_APP_BOKK_IMG}/YouTube-icon.png`}
+						alt="유튜브 재생 목록"
+					/>
+				</a>
+			</div>
 			<div
 				className="offcanvas offcanvas-end"
 				id="offcanvasYoutubeQueue"

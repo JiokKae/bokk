@@ -9,6 +9,14 @@ export default function FeatureHistoryModal() {
 			date: "2026.08",
 			isNew: true,
 			badge: "신규",
+			title: "유튜브 실시간 재생 제목 스크롤 티커",
+			description:
+				"유튜브 동영상 재생 시 모달 밖에서도 현재 재생 중인 영상 제목이 가로로 부드럽게 스크롤되며 펼쳐지는 라이브 티커를 제공합니다.",
+		},
+		{
+			date: "2026.08",
+			isNew: false,
+			badge: "신규",
 			title: "내 웹링크 순서 변경 (드래그 앤 드롭)",
 			description:
 				"내 웹링크 편집 화면에서 삼단줄(☰) 아이콘을 잡고 끌어서 웹링크 순서를 원하는 대로 자유롭게 정렬할 수 있습니다.",
@@ -50,9 +58,10 @@ export default function FeatureHistoryModal() {
 	return (
 		<>
 			<button
-				className="btn btn-light border d-flex align-items-center justify-content-center p-1 shadow-sm"
-				style={{ width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer" }}
+				className="btn btn-light border d-flex align-items-center justify-content-center p-1 shadow-sm user-select-none"
+				style={{ width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", userSelect: "none" }}
 				onClick={() => setShow(true)}
+				onMouseDown={(e) => e.preventDefault()}
 				title="기능 추가 내역"
 			>
 				📋
