@@ -120,6 +120,12 @@ export const DELETE_WEBLINK = gql`
 	}
 `;
 
+export const REORDER_WEBLINKS = gql`
+	mutation ReorderWeblinks($weblinkIds: [Int!]!) {
+		reorderWeblinks(weblinkIds: $weblinkIds)
+	}
+`;
+
 export const MESSAGEBOARD = gql`
 	${CORE_MESSAGE_FIELDS}
 	query Messageboard($page: Int!) {
