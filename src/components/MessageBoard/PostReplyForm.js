@@ -5,7 +5,6 @@ import { ME, MESSAGEBOARD, POST_MESSAGE } from "../../constants/querys";
 export default function PostReplyForm({ messageId, currentPage }) {
 	const [writerName, setWriterName] = useState("");
 	const [password, setPassword] = useState("");
-	const [content, setContent] = useState("");
 	const contentInput = useRef();
 	const { data } = useQuery(ME);
 	const [postMessage] = useMutation(POST_MESSAGE, {
@@ -14,20 +13,23 @@ export default function PostReplyForm({ messageId, currentPage }) {
 		],
 	});
 	const submitReply = (messageId) => {
-		if (content === "") {
+		const replyContent = contentInput.current ? contentInput.current.value.trim() : "";
+		if (replyContent === "") {
 			return;
 		}
 		postMessage({
 			variables: {
 				input: {
-					content,
+					content: replyContent,
 					writerName,
 					password,
 					messageId,
 				},
 			},
 		});
-		contentInput.current.value = "";
+		if (contentInput.current) {
+			contentInput.current.value = "";
+		}
 	};
 	return (
 		<div className="bd-reply mt-2">
@@ -72,10 +74,7 @@ export default function PostReplyForm({ messageId, currentPage }) {
 					<textarea
 						className="form-control"
 						placeholder="내용"
-						ref={contentInput}
-						onChange={(e) =>
-							setContent(e.target.value.trim())
-						}></textarea>
+						ref={contentInput}></textarea>
 				</div>
 			</div>
 		</div>
