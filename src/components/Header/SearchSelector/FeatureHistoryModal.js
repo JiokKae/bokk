@@ -197,7 +197,7 @@ export default function FeatureHistoryModal() {
 												{category.mainTitle}
 											</h6>
 											{hasNew && (
-												<Badge bg={isOpen ? "primary" : "secondary"} className="ms-2 px-2 py-1" style={{ fontSize: "11px" }}>
+												<Badge bg="primary" className="ms-2 px-2 py-1" style={{ fontSize: "11px" }}>
 													NEW
 												</Badge>
 											)}
