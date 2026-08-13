@@ -135,7 +135,6 @@ function MyCustomUploadAdapterPlugin(editor) {
 }
 
 export default function PostMessageForm({ setCurrentPage }) {
-	const [content, setContent] = useState("");
 	const [writerName, setWriterName] = useState("");
 	const [password, setPassword] = useState("");
 	const [editor, setEditor] = useState(null);
@@ -145,10 +144,19 @@ export default function PostMessageForm({ setCurrentPage }) {
 	});
 	const onSubmit = (e) => {
 		e.preventDefault();
-		if (content === "") {
+		if (!editor) return;
+
+		const rawData = editor.getData();
+		const regex = /<p>([^/<>]*)<\/p>/g;
+		const content = rawData
+			.replaceAll("&nbsp;", " ")
+			.replaceAll(regex, "$1 ");
+
+		if (!content || content.trim() === "") {
 			editor.focus();
 			return;
 		}
+
 		postMessage({
 			variables: {
 				input: {
@@ -198,15 +206,6 @@ export default function PostMessageForm({ setCurrentPage }) {
 						}}
 						onReady={(editor) => {
 							setEditor(editor);
-						}}
-						onChange={(event, editor) => {
-							const regex = /<p>([^/<>]*)<\/p>/g;
-							setContent(
-								editor
-									.getData()
-									.replaceAll("&nbsp;", "")
-									.replaceAll(regex, "$1 ")
-							);
 						}}
 					/>
 				</CKEditorLayout>
