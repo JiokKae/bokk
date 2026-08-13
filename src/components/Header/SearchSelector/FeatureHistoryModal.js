@@ -11,21 +11,21 @@ const initialCategories = [
 				isNew: true,
 				tag: "추가",
 				title: "웹링크 추가 위치 지정 옵션",
-				description: "웹링크 추가 시 위치 선택 지원 (관리: 맨 위 / 메인: 맨 끝)",
+				description: "웹링크 생성 시 진입 경로에 따른 위치(최상단/최하단) 자동화 및 옵션 지원",
 			},
 			{
 				date: "2026.08.12",
 				isNew: false,
 				tag: "개선",
 				title: "내 웹링크 순서 변경 (드래그 앤 드롭)",
-				description: "삼단줄(☰) 드래그로 간편하게 웹링크 순서 변경",
+				description: "드래그 앤 드롭 방식을 통한 직관적인 웹링크 순서 변경 인터페이스 도입",
 			},
 			{
-				date: "2026.01.10",
+				date: "2022.11.11",
 				isNew: false,
 				tag: "추가",
 				title: "나만의 웹링크 커스텀 등록",
-				description: "웹링크 이름, URL, 배경색 및 글자색 커스텀 등록",
+				description: "개인화된 웹링크 등록 및 UI 색상 커스터마이징 시스템 구축",
 			},
 		],
 	},
@@ -38,14 +38,14 @@ const initialCategories = [
 				isNew: true,
 				tag: "추가",
 				title: "유튜브 실시간 재생 제목 스크롤 티커",
-				description: "재생 중인 영상 제목이 가로 스크롤과 함께 헤더에 실시간 표출",
+				description: "백그라운드 재생 상태를 직관적으로 확인할 수 있는 상단 스크롤 티커 UI 적용",
 			},
 			{
-				date: "2026.01.05",
+				date: "2022.11.09",
 				isNew: false,
 				tag: "추가",
 				title: "유튜브 백그라운드 연속 재생",
-				description: "재생 목록 구성 및 백그라운드 연속 재생 지원",
+				description: "커스텀 재생 목록 생성 및 백그라운드 영상 연속 재생 환경 구축",
 			},
 		],
 	},
@@ -54,11 +54,11 @@ const initialCategories = [
 		mainTitle: "포털 통합 검색",
 		updates: [
 			{
-				date: "2026.01.01",
+				date: "2022.11.04",
 				isNew: false,
 				tag: "추가",
 				title: "포털 통합 검색 (네이버 / 구글)",
-				description: "네이버 및 구글 원클릭 탭 전환 통합 검색",
+				description: "주요 포털(네이버, 구글) 간 탭 전환형 통합 검색 인터페이스 제공",
 			},
 		],
 	},
@@ -67,25 +67,25 @@ const initialCategories = [
 		mainTitle: "자유 게시판 & 소통",
 		updates: [
 			{
-				date: "2026.08.13",
+				date: "2026.08.14",
 				isNew: true,
 				tag: "수정",
-				title: "모바일 이미지 업로드 전면 개선 및 버그 수정",
-				description: "사진 첨부 체감 속도 최적화 및 모바일 기기에서 여러 장의 고해상도 사진 연속 업로드 시 브라우저가 뻗는 현상(메모리 초과) 완벽 해결",
+				title: "게시판 에디터 미디어 첨부 및 업로드 로직 개편",
+				description: "미리보기 지연 시간 최소화 및 모바일 다중 고해상도 이미지 업로드 시 발생하는 메모리 초과(OOM) 오류 원천 차단",
 			},
 			{
 				date: "2026.08.12",
 				isNew: false,
 				tag: "개선",
 				title: "모바일 전용 한글 호환 에디터 엔진 구축",
-				description: "모바일 환경(천지인 키보드 등)에서 글자가 자음/모음 단위로 분리되는 고질적인 현상을 해결한 네이티브 한글 조합 에디터 탑재",
+				description: "네이티브 조합 엔진 탑재를 통한 모바일 환경(천지인 등) 한글 자모 분리 현상 해결",
 			},
 			{
-				date: "2026.01.01",
+				date: "2022.11.04",
 				isNew: false,
 				tag: "추가",
 				title: "자유 게시판 및 소통",
-				description: "게시글 작성, 댓글 및 좋아요 기능 제공",
+				description: "사용자 간 소통을 위한 실시간 게시판, 댓글 및 추천 시스템 도입",
 			},
 		],
 	},
@@ -270,13 +270,8 @@ export default function FeatureHistoryModal() {
 						})}
 					</div>
 				</Modal.Body>
-				<Modal.Footer className="py-2 px-3 bg-light border-top d-flex justify-content-between align-items-center">
-					<small className="text-muted" style={{ fontSize: "12px" }}>
-						볶음밥 유틸리티 서비스
-					</small>
-					<small className="text-muted" style={{ fontSize: "12px" }}>
-						Release Notes
-					</small>
+				<Modal.Footer className="bg-light border-0 py-2 justify-content-center">
+					<span className="text-secondary small fw-bold">볶음밥</span>
 				</Modal.Footer>
 			</Modal>
 		</>
