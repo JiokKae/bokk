@@ -9,18 +9,21 @@ const initialCategories = [
 			{
 				date: "2026.08.13",
 				isNew: true,
+				tag: "기능 추가",
 				title: "웹링크 추가 위치 지정 옵션",
 				description: "웹링크 추가 시 위치 선택 지원 (관리: 맨 위 / 메인: 맨 끝)",
 			},
 			{
 				date: "2026.08.12",
 				isNew: false,
+				tag: "기능 개선",
 				title: "내 웹링크 순서 변경 (드래그 앤 드롭)",
 				description: "삼단줄(☰) 드래그로 간편하게 웹링크 순서 변경",
 			},
 			{
 				date: "2026.01.10",
 				isNew: false,
+				tag: "기능 추가",
 				title: "나만의 웹링크 커스텀 등록",
 				description: "웹링크 이름, URL, 배경색 및 글자색 커스텀 등록",
 			},
@@ -33,12 +36,14 @@ const initialCategories = [
 			{
 				date: "2026.08.12",
 				isNew: true,
+				tag: "기능 추가",
 				title: "유튜브 실시간 재생 제목 스크롤 티커",
 				description: "재생 중인 영상 제목이 가로 스크롤과 함께 헤더에 실시간 표출",
 			},
 			{
 				date: "2026.01.05",
 				isNew: false,
+				tag: "기능 추가",
 				title: "유튜브 백그라운드 연속 재생",
 				description: "재생 목록 구성 및 백그라운드 연속 재생 지원",
 			},
@@ -51,6 +56,7 @@ const initialCategories = [
 			{
 				date: "2026.01.01",
 				isNew: false,
+				tag: "기능 추가",
 				title: "포털 통합 검색 (네이버 / 구글)",
 				description: "네이버 및 구글 원클릭 탭 전환 통합 검색",
 			},
@@ -63,18 +69,21 @@ const initialCategories = [
 			{
 				date: "2026.08.13",
 				isNew: true,
+				tag: "버그 픽스",
 				title: "모바일 이미지 업로드 전면 개선 및 버그 수정",
 				description: "사진 첨부 체감 속도 최적화 및 모바일 기기에서 여러 장의 고해상도 사진 연속 업로드 시 브라우저가 뻗는 현상(메모리 초과) 완벽 해결",
 			},
 			{
 				date: "2026.08.12",
 				isNew: false,
+				tag: "기능 개선",
 				title: "모바일 전용 한글 호환 에디터 엔진 구축",
 				description: "모바일 환경(천지인 키보드 등)에서 글자가 자음/모음 단위로 분리되는 고질적인 현상을 해결한 네이티브 한글 조합 에디터 탑재",
 			},
 			{
 				date: "2026.01.01",
 				isNew: false,
+				tag: "기능 추가",
 				title: "자유 게시판 및 소통",
 				description: "게시글 작성, 댓글 및 좋아요 기능 제공",
 			},
@@ -150,7 +159,16 @@ export default function FeatureHistoryModal() {
 						{sortedCategories.map((category) => {
 							const isOpen = Boolean(openCategoryIds[category.id]);
 							const latestUpdate = category.updates[0];
-							const hasNew = category.updates.some((u) => u.isNew);
+							
+							// 2주(14일) 이내인지 판별
+							const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+							const now = new Date().getTime();
+							const isDateNew = (dateStr) => {
+								const time = new Date(dateStr.replace(/\./g, "-")).getTime();
+								return now - time <= TWO_WEEKS_MS;
+							};
+
+							const hasNew = category.updates.some((u) => isDateNew(u.date));
 
 							return (
 								<div
@@ -214,7 +232,9 @@ export default function FeatureHistoryModal() {
 									>
 										<div className="card-body py-2 px-3">
 											<div className="d-flex flex-column">
-												{category.updates.map((sub, idx) => (
+												{category.updates.map((sub, idx) => {
+													const isSubNew = isDateNew(sub.date);
+													return (
 													<div
 														key={idx}
 														className={`py-2 ${idx !== category.updates.length - 1 ? "border-bottom" : ""}`}
@@ -222,12 +242,12 @@ export default function FeatureHistoryModal() {
 														<div className="d-flex justify-content-between align-items-center mb-1">
 															<div className="d-flex align-items-center gap-2">
 																<Badge
-																	bg={sub.isNew ? "primary" : "light"}
-																	text={sub.isNew ? "white" : "dark"}
+																	bg={isSubNew ? "primary" : "light"}
+																	text={isSubNew ? "white" : "dark"}
 																	className="px-2 py-1 border"
 																	style={{ fontSize: "11px" }}
 																>
-																	{sub.isNew ? "신규" : "업데이트"}
+																	{sub.tag || (isSubNew ? "신규" : "업데이트")}
 																</Badge>
 																<span className="fw-bold small">{sub.title}</span>
 															</div>
@@ -240,7 +260,8 @@ export default function FeatureHistoryModal() {
 															{sub.description}
 														</p>
 													</div>
-												))}
+													);
+												})}
 											</div>
 										</div>
 									</div>
