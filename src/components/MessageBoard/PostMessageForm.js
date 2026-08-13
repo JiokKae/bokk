@@ -161,14 +161,14 @@ function IMESafeEditor({ onReady, placeholder = "내용", onUploading }) {
 	};
 
 	const handleAddLink = () => {
-		const url = prompt("웹사이트 주소(URL)를 입력하세요:", "https://");
+		const url = prompt("웹사이트 주소(URL)를 입력하세요.\n(예: https://...)", "");
 		if (url && url.trim() !== "") {
 			handleCommand("createLink", url.trim());
 		}
 	};
 
 	const handleAddVideo = () => {
-		const url = prompt("유튜브 동영상 주소(URL)를 입력하세요:", "https://www.youtube.com/watch?v=");
+		const url = prompt("유튜브 동영상 주소(URL)를 입력하세요.\n(예: https://www.youtube.com/watch?v=...)", "");
 		if (!url) return;
 
 		let videoId = "";
@@ -179,8 +179,15 @@ function IMESafeEditor({ onReady, placeholder = "내용", onUploading }) {
 		}
 
 		if (videoId) {
-			const videoHtml = `<div className="ratio ratio-16x9 my-2"><iframe src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p><br></p>`;
-			document.execCommand("insertHTML", false, videoHtml);
+			const videoHtml = `<div class="ratio ratio-16x9 my-2"><iframe src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p><br></p>`;
+			
+			if (contentRef.current) contentRef.current.focus();
+			
+			const success = document.execCommand("insertHTML", false, videoHtml);
+			if (!success && contentRef.current) {
+				contentRef.current.focus();
+				contentRef.current.insertAdjacentHTML("beforeend", videoHtml);
+			}
 		} else {
 			alert("올바른 유튜브 동영상 주소가 아닙니다.");
 		}
@@ -356,8 +363,30 @@ export default function PostMessageForm({ setCurrentPage }) {
 			return;
 		}
 
+		let processedData = rawData;
+		if (processedData.includes("<iframe")) {
+			const tempDiv = document.createElement("div");
+			tempDiv.innerHTML = processedData;
+			const iframes = tempDiv.querySelectorAll("iframe");
+			iframes.forEach((iframe) => {
+				const src = iframe.getAttribute("src");
+				if (src && src.includes("youtube.com/embed/")) {
+					const match = src.match(/embed\/([^?]+)/);
+					if (match) {
+						const videoId = match[1];
+						const oembed = document.createElement("oembed");
+						oembed.setAttribute("url", `https://www.youtube.com/watch?v=${videoId}`);
+						
+						// iframe만 oembed로 교체하고, 바깥을 감싸고 있는 div.ratio 껍데기는 유지하여 줄바꿈(Block) 특성을 보존합니다.
+						iframe.replaceWith(oembed);
+					}
+				}
+			});
+			processedData = tempDiv.innerHTML;
+		}
+
 		const regex = /<p>([^/<>]*)<\/p>/g;
-		const content = rawData
+		const content = processedData
 			.replaceAll("&nbsp;", " ")
 			.replaceAll(regex, "$1 ");
 
