@@ -61,6 +61,18 @@ const initialCategories = [
 		mainTitle: "자유 게시판 & 소통",
 		updates: [
 			{
+				date: "2026.08.13",
+				isNew: true,
+				title: "모바일 이미지 업로드 전면 개선 및 버그 수정",
+				description: "사진 첨부 체감 속도 최적화 및 모바일 기기에서 여러 장의 고해상도 사진 연속 업로드 시 브라우저가 뻗는 현상(메모리 초과) 완벽 해결",
+			},
+			{
+				date: "2026.08.12",
+				isNew: false,
+				title: "모바일 전용 한글 호환 에디터 엔진 구축",
+				description: "모바일 환경(천지인 키보드 등)에서 글자가 자음/모음 단위로 분리되는 고질적인 현상을 해결한 네이티브 한글 조합 에디터 탑재",
+			},
+			{
 				date: "2026.01.01",
 				isNew: false,
 				title: "자유 게시판 및 소통",
@@ -83,7 +95,7 @@ export default function FeatureHistoryModal() {
 	}, []);
 
 	// Default open the most recently updated category
-	const [openCategoryIds, setOpenCategoryIds] = useState({ weblink: true });
+	const [openCategoryIds, setOpenCategoryIds] = useState({ [sortedCategories[0].id]: true });
 
 	const toggleCategory = (id) => {
 		setOpenCategoryIds((prev) => ({
