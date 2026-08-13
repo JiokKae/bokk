@@ -35,6 +35,84 @@ function GuestInput({ setWriterName, setPassword }) {
 		</>
 	);
 }
+function processAndCompressImage(file, maxDimension = 1920, quality = 0.85) {
+	return new Promise((resolve, reject) => {
+		if (!file || !(file instanceof Blob)) {
+			return reject("유효한 파일이 아닙니다.");
+		}
+
+		if (file.type === "image/gif") {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				const blob = new Blob([e.target.result], { type: "image/gif" });
+				resolve(
+					new File([blob], file.name || "upload.gif", {
+						type: "image/gif",
+					})
+				);
+			};
+			reader.onerror = () => {
+				reject("모바일 접근 권한 문제로 이미지를 읽지 못했습니다. 다른 이미지를 선택하거나 다시 시도해 주세요.");
+			};
+			reader.readAsArrayBuffer(file);
+			return;
+		}
+
+		const reader = new FileReader();
+		reader.onload = (e) => {
+			const img = new Image();
+			img.onload = () => {
+				try {
+					let { width, height } = img;
+					if (width > maxDimension || height > maxDimension) {
+						if (width > height) {
+							height = Math.round((height * maxDimension) / width);
+							width = maxDimension;
+						} else {
+							width = Math.round((width * maxDimension) / height);
+							height = maxDimension;
+						}
+					}
+
+					const canvas = document.createElement("canvas");
+					canvas.width = width;
+					canvas.height = height;
+
+					const ctx = canvas.getContext("2d");
+					ctx.drawImage(img, 0, 0, width, height);
+
+					canvas.toBlob(
+						(blob) => {
+							if (!blob) {
+								return reject("이미지 변환에 실패했습니다.");
+							}
+							const newFileName = file.name
+								? file.name.replace(/\.[^/.]+$/, ".jpg")
+								: "upload.jpg";
+							const newFile = new File([blob], newFileName, {
+								type: "image/jpeg",
+							});
+							resolve(newFile);
+						},
+						"image/jpeg",
+						quality
+					);
+				} catch (err) {
+					reject("이미지 처리 중 오류가 발생했습니다.");
+				}
+			};
+			img.onerror = () => {
+				reject("이미지를 로드할 수 없습니다.");
+			};
+			img.src = e.target.result;
+		};
+		reader.onerror = () => {
+			reject("모바일 접근 권한 문제로 이미지를 읽지 못했습니다. 다른 이미지를 선택하거나 다시 시도해 주세요.");
+		};
+		reader.readAsDataURL(file);
+	});
+}
+
 class MyUploadAdapter {
 	constructor(loader) {
 		this.loader = loader;
@@ -42,32 +120,28 @@ class MyUploadAdapter {
 
 	upload() {
 		return this.loader.file
+			.then((file) => processAndCompressImage(file))
 			.then(
-				(file) =>
+				(processedFile) =>
 					new Promise((resolve, reject) => {
 						try {
-							const safeBlob = file.slice(0, file.size, file.type);
-							const safeFile = new File(
-								[safeBlob],
-								file.name || "upload.jpg",
-								{ type: file.type || "image/jpeg" }
-							);
 							this._initRequest();
-							this._initListeners(resolve, reject, safeFile);
-							this._sendRequest(safeFile);
+							this._initListeners(resolve, reject, processedFile);
+							this._sendRequest(processedFile);
 						} catch (err) {
 							reject(err?.message || "파일을 읽을 수 없습니다.");
 						}
 					})
 			)
 			.catch((err) => {
-				return Promise.reject(
-					err?.name === "NotReadableError"
-						? "모바일 접근 권한 문제로 이미지를 읽지 못했습니다. 다른 이미지를 선택하거나 다시 시도해 주세요."
-						: typeof err === "string"
+				const message =
+					typeof err === "string"
 						? err
-						: err?.message || "파일 업로드 중 오류가 발생했습니다."
-				);
+						: err?.message ||
+						  (err?.name === "NotReadableError"
+								? "모바일 접근 권한 문제로 이미지를 읽지 못했습니다. 다른 이미지를 선택하거나 다시 시도해 주세요."
+								: "파일 업로드 중 오류가 발생했습니다.");
+				return Promise.reject(message);
 			});
 	}
 
