@@ -106,17 +106,17 @@ export default function YoutubeOffcanvas() {
 
 	return (
 		<>
-			<div className="d-flex align-items-center">
+			<div className="d-flex align-items-center flex-shrink-1" style={{ minWidth: 0 }}>
 				<a
 					data-bs-toggle="offcanvas"
 					href="#offcanvasYoutubeQueue"
 					role="button"
 					aria-controls="offcanvasYoutubeQueue"
 					onMouseDown={(e) => e.preventDefault()}
-					className="text-decoration-none"
+					className="text-decoration-none flex-shrink-1"
 					title={isPlaying && currentTitle ? `재생 중: ${currentTitle}` : "유튜브 재생 목록"}
 					style={{
-						maxWidth: isPlaying && currentTitle ? "200px" : "0px",
+						maxWidth: isPlaying && currentTitle ? "min(200px, calc(100vw - 230px))" : "0px",
 						opacity: isPlaying && currentTitle ? 1 : 0,
 						marginRight: isPlaying && currentTitle ? "8px" : "0px",
 						transformOrigin: "right center",
@@ -127,6 +127,7 @@ export default function YoutubeOffcanvas() {
 						verticalAlign: "middle",
 						pointerEvents: isPlaying && currentTitle ? "auto" : "none",
 						userSelect: "none",
+						minWidth: 0,
 					}}
 				>
 					<div
@@ -169,6 +170,7 @@ export default function YoutubeOffcanvas() {
 					aria-controls="offcanvasYoutubeQueue"
 					onMouseDown={(e) => e.preventDefault()}
 					style={{ userSelect: "none" }}
+					className="flex-shrink-0"
 				>
 					<img
 						src={`${process.env.REACT_APP_BOKK_IMG}/YouTube-icon.png`}
