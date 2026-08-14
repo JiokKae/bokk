@@ -8,12 +8,8 @@ import { BUILTIN_WEBLINKS, ME, OWN_WEBLINKS } from "../constants/querys";
 import styles from "./Home.module.css";
 
 export default function Home() {
-	const [builtinWeblinks, setBuiltinWeblinks] = useState([]);
-	useQuery(BUILTIN_WEBLINKS, {
-		onCompleted: (data) => {
-			setBuiltinWeblinks(data.builtinWeblinks.weblinks);
-		},
-	});
+	const { data: builtinData } = useQuery(BUILTIN_WEBLINKS);
+	const builtinWeblinks = builtinData?.builtinWeblinks?.weblinks || [];
 	const { data: ownWeblinksData } = useQuery(OWN_WEBLINKS);
 	const { data: isLoginData } = useQuery(ME);
 	return (
