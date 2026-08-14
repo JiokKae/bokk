@@ -1,5 +1,4 @@
 import { useQuery } from "@apollo/client";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import AddWeblinkModal from "../components/Weblink/AddWeblinkModal";
 import ThumbnailModal from "../components/Weblink/ThumbnailModal";
