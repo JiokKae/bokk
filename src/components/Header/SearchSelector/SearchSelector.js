@@ -12,7 +12,7 @@ export default function SearchSelector() {
 	const { data } = useQuery(ME);
 	return (
 		<div>
-			<div className="row m-2 gx-2">
+			<div className="row m-2 gx-2 flex-nowrap align-items-center overflow-hidden">
 				<div
 					id="tab_naver"
 					className="col-auto pointer"
@@ -47,7 +47,7 @@ export default function SearchSelector() {
 					<div id="status_minecraft"></div>
 				</div>
 				{data?.me ? (
-					<div className="col-auto">
+					<div className="col-auto flex-shrink-1 d-flex" style={{ minWidth: 0 }}>
 						<YoutubeOffcanvas />
 					</div>
 				) : null}
