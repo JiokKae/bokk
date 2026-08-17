@@ -41,6 +41,7 @@ export default function YoutubeOffcanvas() {
 	const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [isRandom, setIsRandom] = useState(false);
+	const [isRepeatOne, setIsRepeatOne] = useState(false);
 	const [player, setPlayer] = useState(null);
 
 	const randomIndexes = useMemo(
@@ -68,7 +69,11 @@ export default function YoutubeOffcanvas() {
 	function onStateChange(event) {
 		if (event.data === YouTube.PlayerState.ENDED) {
 			setIsPlaying(false);
-			playVideo(getNextVideoIndex(currentVideoIndex));
+			if (isRepeatOne) {
+				playVideo(currentVideoIndex);
+			} else {
+				playVideo(getNextVideoIndex(currentVideoIndex));
+			}
 		} else if (event.data === YouTube.PlayerState.PLAYING) {
 			setIsPlaying(true);
 		} else if (event.data === YouTube.PlayerState.PAUSED) {
@@ -229,6 +234,10 @@ export default function YoutubeOffcanvas() {
 									}
 									onRandomPlay={() => setIsRandom(!isRandom)}
 									isRandom={isRandom}
+									onRepeatOnePlay={() =>
+										setIsRepeatOne(!isRepeatOne)
+									}
+									isRepeatOne={isRepeatOne}
 								/>
 							</>
 						) : null}

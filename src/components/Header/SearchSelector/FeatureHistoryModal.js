@@ -7,6 +7,13 @@ const initialCategories = [
 		mainTitle: "내 웹링크 관리 & 커스텀",
 		updates: [
 			{
+				date: "2026.08.14",
+				isNew: true,
+				tag: "수정",
+				title: "기본 웹링크 캐시 반응성 버그 수정",
+				description: "로그인 및 로그아웃 시 기본 웹링크 토글 상태가 즉각적으로 반영되도록 동기화 개선",
+			},
+			{
 				date: "2026.08.13",
 				isNew: true,
 				tag: "추가",
@@ -33,6 +40,27 @@ const initialCategories = [
 		id: "youtube",
 		mainTitle: "유튜브 연속 재생 플레이어",
 		updates: [
+			{
+				date: "2026.08.17",
+				isNew: true,
+				tag: "추가",
+				title: "유튜브 한곡 반복 재생 (Single Loop)",
+				description: "유튜브 컨트롤러에 한곡 반복 버튼을 추가하여 현재 곡 연속 재생 지원",
+			},
+			{
+				date: "2026.08.17",
+				isNew: true,
+				tag: "개선",
+				title: "재생 불가/삭제 영상 자동 건너뛰기",
+				description: "삭제되거나 국가 제한 등으로 재생이 불가능한 영상 감지 시 자동으로 다음 곡 재생",
+			},
+			{
+				date: "2026.08.14",
+				isNew: true,
+				tag: "개선",
+				title: "모바일 헤더 유튜브 버튼 UI 최적화",
+				description: "좁은 모바일 화면에서 아이콘 잘림 및 줄바꿈을 방지하고 유동적 티커 너비 적용",
+			},
 			{
 				date: "2026.08.12",
 				isNew: true,
@@ -270,8 +298,8 @@ export default function FeatureHistoryModal() {
 						})}
 					</div>
 				</Modal.Body>
-				<Modal.Footer className="bg-light border-0 py-2 justify-content-center">
-					<span className="text-secondary small fw-bold">볶음밥</span>
+				<Modal.Footer className="bg-light border-0 py-2 justify-content-end px-3">
+					<span className="text-secondary small">Release Note</span>
 				</Modal.Footer>
 			</Modal>
 		</>
