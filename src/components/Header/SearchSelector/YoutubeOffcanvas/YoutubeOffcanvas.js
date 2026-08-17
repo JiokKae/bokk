@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CloseButton } from "react-bootstrap";
 import YouTube from "react-youtube";
 import { ME, MY_VIDEO_ITEMS } from "../../../../constants/querys";
@@ -24,25 +24,21 @@ function shuffle(array) {
 }
 
 export default function YoutubeOffcanvas() {
-	const { data: meData, loading } = useQuery(ME, {
-		onCompleted: (data) => {
-			if (data?.me?.config) {
-				setAutoPlay(data.me.config.videoAutoPlay);
-			}
-		},
-	});
+	const { data: meData, loading } = useQuery(ME);
+	const autoPlay = Boolean(meData?.me?.config?.videoAutoPlay);
 	const { data: myVideoData } = useQuery(MY_VIDEO_ITEMS);
 	const videoItems = useMemo(
 		() => myVideoData?.myVideoItems || [],
 		[myVideoData]
 	);
 
-	const [autoPlay, setAutoPlay] = useState(false);
 	const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [isRandom, setIsRandom] = useState(false);
 	const [isRepeatOne, setIsRepeatOne] = useState(false);
+	const [hasStarted, setHasStarted] = useState(false);
 	const [player, setPlayer] = useState(null);
+	const hasAutoPlayedRef = useRef(false);
 
 	const randomIndexes = useMemo(
 		() => shuffle(videoItems.map((_, index) => index)),
@@ -51,7 +47,44 @@ export default function YoutubeOffcanvas() {
 
 	function onReady(event) {
 		setPlayer(event.target);
+		if (autoPlay && !hasAutoPlayedRef.current) {
+			try {
+				event.target.playVideo();
+			} catch (e) {}
+		}
 	}
+
+	useEffect(() => {
+		if (!autoPlay || !player || typeof player.playVideo !== "function" || hasAutoPlayedRef.current) return;
+
+		// 1. 플레이어와 autoPlay 설정이 준비되면 백그라운드 재생 시도
+		try {
+			player.playVideo();
+		} catch (e) {}
+
+		// 2. 브라우저의 소리 있는 자동재생 차단 정책(Autoplay Policy) 대응:
+		// 사용자가 페이지 내 어디든 처음 클릭/터치하는 순간 즉각 백그라운드 재생 트리거
+		const handleFirstInteraction = () => {
+			if (player && typeof player.playVideo === "function") {
+				try {
+					player.playVideo();
+				} catch (e) {}
+			}
+			window.removeEventListener("click", handleFirstInteraction);
+			window.removeEventListener("keydown", handleFirstInteraction);
+			window.removeEventListener("touchstart", handleFirstInteraction);
+		};
+
+		window.addEventListener("click", handleFirstInteraction, { once: true });
+		window.addEventListener("keydown", handleFirstInteraction, { once: true });
+		window.addEventListener("touchstart", handleFirstInteraction, { once: true });
+
+		return () => {
+			window.removeEventListener("click", handleFirstInteraction);
+			window.removeEventListener("keydown", handleFirstInteraction);
+			window.removeEventListener("touchstart", handleFirstInteraction);
+		};
+	}, [autoPlay, player]);
 
 	function playVideo(index) {
 		setCurrentVideoIndex(index);
@@ -75,6 +108,8 @@ export default function YoutubeOffcanvas() {
 				playVideo(getNextVideoIndex(currentVideoIndex));
 			}
 		} else if (event.data === YouTube.PlayerState.PLAYING) {
+			hasAutoPlayedRef.current = true;
+			setHasStarted(true);
 			setIsPlaying(true);
 		} else if (event.data === YouTube.PlayerState.PAUSED) {
 			setIsPlaying(false);
@@ -116,6 +151,9 @@ export default function YoutubeOffcanvas() {
 	}
 
 	const currentTitle = videoItems[currentVideoIndex]?.video?.title || "";
+	const showTicker = isPlaying && Boolean(currentTitle);
+	const showAutoPlayNotice = !isPlaying && autoPlay && !hasStarted;
+	const showBadge = showTicker || showAutoPlayNotice;
 
 	return (
 		<>
@@ -127,53 +165,82 @@ export default function YoutubeOffcanvas() {
 					aria-controls="offcanvasYoutubeQueue"
 					onMouseDown={(e) => e.preventDefault()}
 					className="text-decoration-none flex-shrink-1"
-					title={isPlaying && currentTitle ? `재생 중: ${currentTitle}` : "유튜브 재생 목록"}
+					title={
+						showTicker
+							? `재생 중: ${currentTitle}`
+							: showAutoPlayNotice
+							? "자동 재생 켜짐: 화면 터치/조작 시 자동 재생됩니다"
+							: "유튜브 재생 목록"
+					}
 					style={{
-						maxWidth: isPlaying && currentTitle ? "min(200px, calc(100vw - 230px))" : "0px",
-						opacity: isPlaying && currentTitle ? 1 : 0,
-						marginRight: isPlaying && currentTitle ? "8px" : "0px",
+						maxWidth: showBadge ? "min(200px, calc(100vw - 230px))" : "0px",
+						opacity: showBadge ? 1 : 0,
+						marginRight: showBadge ? "8px" : "0px",
 						transformOrigin: "right center",
 						transition: "max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease, margin-right 0.4s ease",
 						overflow: "hidden",
 						whiteSpace: "nowrap",
 						display: "inline-block",
 						verticalAlign: "middle",
-						pointerEvents: isPlaying && currentTitle ? "auto" : "none",
+						pointerEvents: showBadge ? "auto" : "none",
 						userSelect: "none",
 						minWidth: 0,
 					}}
 				>
-					<div
-						className="d-flex align-items-center px-2 py-1 rounded-pill shadow-sm"
-						style={{
-							backgroundColor: "#fff0f3",
-							border: "1px solid #ffccd5",
-							fontSize: "12px",
-							color: "#d90429",
-							overflow: "hidden",
-						}}
-					>
-						<span
-							className="spinner-grow spinner-grow-sm text-danger me-1 flex-shrink-0"
-							style={{ width: "7px", height: "7px" }}
-						/>
-						<div className="overflow-hidden position-relative w-100">
-							<style>{`
-								@keyframes youtubeTicker {
-									0% { transform: translateX(0%); }
-									100% { transform: translateX(-50%); }
-								}
-								.animate-youtube-ticker {
-									display: inline-block;
-									white-space: nowrap;
-									animation: youtubeTicker 12s linear infinite;
-								}
-							`}</style>
-							<div className="animate-youtube-ticker">
-								{currentTitle} &nbsp;&nbsp;🎵&nbsp;&nbsp; {currentTitle} &nbsp;&nbsp;🎵&nbsp;&nbsp;
+					{showTicker ? (
+						<div
+							className="d-flex align-items-center px-2 py-1 rounded-pill shadow-sm"
+							style={{
+								backgroundColor: "#fff0f3",
+								border: "1px solid #ffccd5",
+								fontSize: "12px",
+								color: "#d90429",
+								overflow: "hidden",
+							}}
+						>
+							<span
+								className="spinner-grow spinner-grow-sm text-danger me-1 flex-shrink-0"
+								style={{ width: "7px", height: "7px" }}
+							/>
+							<div className="overflow-hidden position-relative w-100">
+								<style>{`
+									@keyframes youtubeTicker {
+										0% { transform: translateX(0%); }
+										100% { transform: translateX(-50%); }
+									}
+									.animate-youtube-ticker {
+										display: inline-block;
+										white-space: nowrap;
+										animation: youtubeTicker 12s linear infinite;
+									}
+								`}</style>
+								<div className="animate-youtube-ticker">
+									{currentTitle} &nbsp;&nbsp;🎵&nbsp;&nbsp; {currentTitle} &nbsp;&nbsp;🎵&nbsp;&nbsp;
+								</div>
 							</div>
 						</div>
-					</div>
+					) : showAutoPlayNotice ? (
+						<div
+							className="d-flex align-items-center px-2 py-1 rounded-pill shadow-sm"
+							style={{
+								backgroundColor: "#e0f2fe",
+								border: "1px solid #bae6fd",
+								fontSize: "11px",
+								color: "#0369a1",
+								overflow: "hidden",
+								whiteSpace: "nowrap",
+								fontWeight: 500,
+							}}
+						>
+							<span
+								className="spinner-grow spinner-grow-sm text-info me-1 flex-shrink-0"
+								style={{ width: "6px", height: "6px" }}
+							/>
+							<span className="text-truncate">
+								조작 시 자동 재생 🎵
+							</span>
+						</div>
+					) : null}
 				</a>
 
 				<a
@@ -210,7 +277,7 @@ export default function YoutubeOffcanvas() {
 								<YoutubePlayer
 									className="ratio ratio-16x9 mb-2"
 									firstVideoId={videoItems[0].video.id}
-									autoPlay={meData.me.config.videoAutoPlay}
+									autoPlay={autoPlay}
 									onReady={onReady}
 									onStateChange={onStateChange}
 									onError={onError}
@@ -218,7 +285,6 @@ export default function YoutubeOffcanvas() {
 								<Controller
 									isPlaying={isPlaying}
 									autoPlay={autoPlay}
-									setAutoPlay={setAutoPlay}
 									player={player}
 									onNextPlay={() =>
 										playVideo(

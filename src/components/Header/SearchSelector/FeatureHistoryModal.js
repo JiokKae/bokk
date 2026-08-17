@@ -43,6 +43,13 @@ const initialCategories = [
 			{
 				date: "2026.08.17",
 				isNew: true,
+				tag: "수정",
+				title: "유튜브 자동 재생(AutoPlay) 상태 동기화 및 실행 오류 수정",
+				description: "브라우저 정책 호환을 위한 조작 시 자동 재생 안내 뱃지 추가 및 설정 동기화 최적화",
+			},
+			{
+				date: "2026.08.17",
+				isNew: true,
 				tag: "추가",
 				title: "유튜브 한곡 반복 재생 (Single Loop)",
 				description: "유튜브 컨트롤러에 한곡 반복 버튼을 추가하여 현재 곡 연속 재생 지원",
