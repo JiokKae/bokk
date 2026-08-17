@@ -75,6 +75,14 @@ export default function YoutubeOffcanvas() {
 			setIsPlaying(false);
 		}
 	}
+	function onError(event) {
+		setIsPlaying(false);
+		// 삭제된 영상 등으로 에러 발생 시 무한 루프 폭주를 막기 위해 1.5초 후 다음 곡 재생
+		setTimeout(() => {
+			playVideo(getNextVideoIndex(currentVideoIndex));
+		}, 1500);
+	}
+
 	function getRelativeVideoIndex(currentIndex, changeValue) {
 		function mod(n, m) {
 			return ((n % m) + m) % m;
@@ -200,6 +208,7 @@ export default function YoutubeOffcanvas() {
 									autoPlay={meData.me.config.videoAutoPlay}
 									onReady={onReady}
 									onStateChange={onStateChange}
+									onError={onError}
 								/>
 								<Controller
 									isPlaying={isPlaying}
