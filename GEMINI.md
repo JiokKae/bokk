@@ -112,3 +112,9 @@
 ### 5.13 업데이트 내역 모달(Release Note) 최신화 및 푸터 변경 (`FeatureHistoryModal.js`)
 - **푸터 텍스트**: 모달 푸터 하단 문구를 'Release Note'로 변경하여 모달의 정체성 명확화.
 - **히스토리 데이터 동기화**: 최근 추가/개선된 주요 기능들(웹링크 캐시 반응성 수정, 유튜브 모바일 UI 픽스, 재생 불가 영상 자동 건너뛰기, 유튜브 한곡 반복 기능)을 모달 내역 목록에 모두 최신화 반영.
+
+### 5.14 유튜브 자동 재생(AutoPlay) 상태 동기화 및 실행 버그 수정 (`YoutubeOffcanvas.js`, `Controller.js`)
+- **원인 1 (체크박스 비동기)**: `Controller.js`의 옵션 팝오버에서 `<Form.Check>`가 `defaultChecked`를 사용하고 있어 상태 변경 시 체크박스 UI가 갱신되지 않던 문제.
+- **원인 2 (Apollo 캐시 단절)**: `useQuery(ME)`의 `onCompleted`에서 로컬 `useState`로 복사하던 구조로 인해 캐시 히트 시 `autoPlay`가 항상 `false`로 남아있던 현상.
+- **원인 3 (실행 트리거 부재)**: 플레이어 준비(`onReady`) 및 오프캔버스 열림(`shown.bs.offcanvas`) 시 `autoPlay`가 켜져 있어도 `playVideo()`를 명시적으로 호출하지 않아 브라우저 정책에 의해 자동 재생이 정지되던 현상.
+- **해결**: `autoPlay` 상태를 Apollo 캐시와 직접 연동하고 `checked` 제어 컴포넌트로 개편하였으며, `onReady` 및 오프캔버스 오픈 이벤트 리스너를 통해 조건 충족 시 즉각 `playVideo()`가 트리거되도록 수정.

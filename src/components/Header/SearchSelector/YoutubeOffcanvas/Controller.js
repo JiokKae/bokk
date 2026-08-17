@@ -7,7 +7,6 @@ import styles from "./Controller.module.css";
 export default function Controller({
 	isPlaying,
 	autoPlay,
-	setAutoPlay,
 	player,
 	onPreviousPlay,
 	onNextPlay,
@@ -19,6 +18,25 @@ export default function Controller({
 	const [showOption, setShowOption] = useState(false);
 	const [setUserConfig] = useMutation(SET_USER_CONFIG, {
 		refetchQueries: [{ query: ME }],
+		update(cache, { data: { setUserConfig } }) {
+			if (setUserConfig?.config) {
+				const existingMe = cache.readQuery({ query: ME });
+				if (existingMe?.me) {
+					cache.writeQuery({
+						query: ME,
+						data: {
+							me: {
+								...existingMe.me,
+								config: {
+									...existingMe.me.config,
+									videoAutoPlay: setUserConfig.config.videoAutoPlay,
+								},
+							},
+						},
+					});
+				}
+			}
+		},
 	});
 	const buttons = [
 		{ id: "previous_play", onClick: onPreviousPlay },
@@ -73,7 +91,7 @@ export default function Controller({
 						<Form.Check
 							type="checkbox"
 							label="자동 재생"
-							defaultChecked={autoPlay}
+							checked={Boolean(autoPlay)}
 							onChange={() => {
 								setUserConfig({
 									variables: {
@@ -82,7 +100,6 @@ export default function Controller({
 										},
 									},
 								});
-								setAutoPlay(!autoPlay);
 							}}
 						/>
 					</div>
