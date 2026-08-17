@@ -86,8 +86,15 @@ const initialCategories = [
 	},
 	{
 		id: "search",
-		mainTitle: "포털 통합 검색",
+		mainTitle: "포털 & 전적 통합 검색",
 		updates: [
+			{
+				date: "2026.08.17",
+				isNew: true,
+				tag: "개선",
+				title: "OP.GG 전적 검색 방식 최신화",
+				description: "OP.GG 최신 검색 라우팅 구조(q, region=kr) 적용 및 빠른 소환사 이동 링크 최신화",
+			},
 			{
 				date: "2022.11.04",
 				isNew: false,
