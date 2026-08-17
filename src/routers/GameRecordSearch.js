@@ -5,16 +5,17 @@ function OpggSearch({ playerNames }) {
 		<div className="bgc-opgg p-3">
 			<form
 				className="p-2"
-				action="https://www.op.gg/summoner/"
+				action="https://op.gg/ko/lol/summoners/search"
 				method="get">
 				<div className="row g-3">
 					<div className="col">
 						<input
 							type="search"
 							className="form-control mb-2"
-							name="userName"
+							name="q"
 							placeholder="소환사명, 소환사명, ..."
 						/>
+						<input type="hidden" name="region" value="kr" />
 					</div>
 					<div className="col-auto">
 						<button type="submit" className="btn bgc-white mb-2">
@@ -26,7 +27,7 @@ function OpggSearch({ playerNames }) {
 			{playerNames.map((name, index) => (
 				<a
 					key={index}
-					href={`https://www.op.gg/summoner/userName=${name}`}
+					href={`https://op.gg/ko/lol/summoners/search?q=${encodeURIComponent(name)}&region=kr`}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="btn btn-md bgc-white ms-2 mb-2">

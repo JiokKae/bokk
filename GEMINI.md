@@ -118,3 +118,7 @@
 - **원인 2 (Apollo 캐시 단절)**: `useQuery(ME)`의 `onCompleted`에서 로컬 `useState`로 복사하던 구조로 인해 캐시 히트 시 `autoPlay`가 항상 `false`로 남아있던 현상.
 - **원인 3 (실행 트리거 부재)**: 플레이어 준비(`onReady`) 및 오프캔버스 열림(`shown.bs.offcanvas`) 시 `autoPlay`가 켜져 있어도 `playVideo()`를 명시적으로 호출하지 않아 브라우저 정책에 의해 자동 재생이 정지되던 현상.
 - **해결**: `autoPlay` 상태를 Apollo 캐시와 직접 연동하고 `checked` 제어 컴포넌트로 개편하였으며, `onReady` 및 오프캔버스 오픈 이벤트 리스너를 통해 조건 충족 시 즉각 `playVideo()`가 트리거되도록 수정.
+
+### 5.15 OP.GG 전적 검색 엔드포인트 및 파라미터 최신화 (`GameRecordSearch.js`)
+- **기존**: `https://www.op.gg/summoner/` 및 `userName` 파라미터를 사용하던 레거시 검색 방식
+- **개선**: OP.GG 최신 검색 라우팅 구조인 `https://op.gg/ko/lol/summoners/search` 및 쿼리 파라미터(`q`, `region=kr`)로 폼 및 빠른 소환사 버튼 링크 전면 갱신.
