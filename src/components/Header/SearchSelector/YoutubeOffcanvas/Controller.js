@@ -13,6 +13,8 @@ export default function Controller({
 	onNextPlay,
 	onRandomPlay,
 	isRandom,
+	onRepeatOnePlay,
+	isRepeatOne,
 }) {
 	const [showOption, setShowOption] = useState(false);
 	const [setUserConfig] = useMutation(SET_USER_CONFIG, {
@@ -31,6 +33,12 @@ export default function Controller({
 			id: "random_play",
 			onClick: onRandomPlay,
 			classCond: isRandom,
+			class: "",
+		},
+		{
+			id: "play_one",
+			onClick: onRepeatOnePlay,
+			classCond: isRepeatOne,
 			class: "",
 		},
 		{ id: "gear", onClick: () => setShowOption(!showOption) },
