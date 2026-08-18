@@ -41,6 +41,13 @@ const initialCategories = [
 		mainTitle: "유튜브 연속 재생 플레이어",
 		updates: [
 			{
+				date: "2026.08.18",
+				isNew: true,
+				tag: "추가",
+				title: "유튜브 대화면 확장 및 드래그 리사이징 핸들 (<<)",
+				description: "오프캔버스 좌측 플랫 버튼을 통해 너비를 최대 2배(1000px)까지 자유롭게 드래그/원클릭 확장 지원",
+			},
+			{
 				date: "2026.08.17",
 				isNew: true,
 				tag: "수정",
