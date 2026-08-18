@@ -32,6 +32,9 @@ export default function YoutubeOffcanvas() {
 		[myVideoData]
 	);
 
+	const DEFAULT_WIDTH = 500;
+	const MIN_WINDOW_WIDTH_FOR_EXPAND = 1000;
+
 	const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [isRandom, setIsRandom] = useState(false);
@@ -39,6 +42,73 @@ export default function YoutubeOffcanvas() {
 	const [hasStarted, setHasStarted] = useState(false);
 	const [player, setPlayer] = useState(null);
 	const hasAutoPlayedRef = useRef(false);
+
+	const [offcanvasWidth, setOffcanvasWidth] = useState(DEFAULT_WIDTH);
+	const [isDragging, setIsDragging] = useState(false);
+	const [windowWidth, setWindowWidth] = useState(
+		typeof window !== "undefined" ? window.innerWidth : 1200
+	);
+
+	useEffect(() => {
+		const handleResize = () => {
+			const currentWinWidth = window.innerWidth;
+			setWindowWidth(currentWinWidth);
+			setOffcanvasWidth((prev) =>
+				Math.min(prev, Math.max(DEFAULT_WIDTH, currentWinWidth - 20))
+			);
+		};
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	const canExpand = windowWidth >= MIN_WINDOW_WIDTH_FOR_EXPAND;
+	const maxExpandWidth = Math.min(1000, windowWidth - 40);
+	const isExpanded = offcanvasWidth > DEFAULT_WIDTH + 50;
+
+	const handleDragStart = (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const startX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
+		const startWidth = offcanvasWidth;
+		let moved = false;
+
+		setIsDragging(true);
+
+		const handleMove = (moveEvent) => {
+			const currentX = moveEvent.type.includes("touch")
+				? moveEvent.touches[0].clientX
+				: moveEvent.clientX;
+			const dx = startX - currentX;
+			if (Math.abs(dx) > 3) {
+				moved = true;
+			}
+			const targetWidth = Math.max(
+				DEFAULT_WIDTH,
+				Math.min(maxExpandWidth, startWidth + dx)
+			);
+			setOffcanvasWidth(targetWidth);
+		};
+
+		const handleEnd = () => {
+			setIsDragging(false);
+			if (!moved) {
+				// 클릭(단순 탭) 시 기본 크기 ↔ 최대 확장 크기 토글
+				setOffcanvasWidth((prev) =>
+					prev > DEFAULT_WIDTH + 50 ? DEFAULT_WIDTH : maxExpandWidth
+				);
+			}
+			window.removeEventListener("mousemove", handleMove);
+			window.removeEventListener("mouseup", handleEnd);
+			window.removeEventListener("touchmove", handleMove);
+			window.removeEventListener("touchend", handleEnd);
+		};
+
+		window.addEventListener("mousemove", handleMove);
+		window.addEventListener("mouseup", handleEnd);
+		window.addEventListener("touchmove", handleMove, { passive: false });
+		window.addEventListener("touchend", handleEnd);
+	};
 
 	const randomIndexes = useMemo(
 		() => shuffle(videoItems.map((_, index) => index)),
@@ -259,11 +329,81 @@ export default function YoutubeOffcanvas() {
 				</a>
 			</div>
 			<div
-				className="offcanvas offcanvas-end"
+				className="offcanvas offcanvas-end shadow-lg"
 				id="offcanvasYoutubeQueue"
 				aria-labelledby="offcanvasYoutubeQueue"
 				tabIndex="-1"
-				style={{ width: "500px" }}>
+				style={{
+					width: `${Math.min(offcanvasWidth, windowWidth)}px`,
+					maxWidth: "100vw",
+					transition: isDragging
+						? "none"
+						: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+					overflow: "visible",
+				}}>
+				{canExpand && (
+					<button
+						type="button"
+						onMouseDown={handleDragStart}
+						onTouchStart={handleDragStart}
+						title={
+							isExpanded
+								? "기본 크기로 축소 (클릭 또는 오른쪽으로 드래그)"
+								: "대화면으로 확장 (클릭 또는 왼쪽으로 드래그)"
+						}
+						className="d-flex flex-column align-items-center justify-content-center border"
+						style={{
+							position: "absolute",
+							left: "-28px",
+							top: "50%",
+							transform: "translateY(-50%)",
+							width: "28px",
+							height: "76px",
+							borderRadius: "10px 0 0 10px",
+							backgroundColor: isDragging ? "#e9ecef" : "#ffffff",
+							borderColor: "#dee2e6",
+							borderRight: "none",
+							cursor: "ew-resize",
+							zIndex: 1060,
+							padding: 0,
+							outline: "none",
+							userSelect: "none",
+							color: "#495057",
+							transition: "background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease",
+							boxShadow: isDragging
+								? "-4px 0 12px rgba(6, 153, 249, 0.25)"
+								: "-3px 0 8px rgba(0, 0, 0, 0.12)",
+						}}
+					>
+						<span
+							style={{
+								fontSize: "14px",
+								fontWeight: "bold",
+								letterSpacing: "-2px",
+								marginLeft: "-2px",
+								lineHeight: 1,
+								color: isExpanded ? "#057ecf" : "#6c757d",
+								pointerEvents: "none",
+							}}
+						>
+							{isExpanded ? ">>" : "<<"}
+						</span>
+					</button>
+				)}
+
+				{isDragging && (
+					<div
+						style={{
+							position: "fixed",
+							top: 0,
+							left: 0,
+							right: 0,
+							bottom: 0,
+							zIndex: 99999,
+							cursor: "ew-resize",
+						}}
+					/>
+				)}
 				<div className="offcanvas-header">
 					<h5 className="offcanvas-title" id="offcanvasYoutubeQueue">
 						유튜브 재생 목록
