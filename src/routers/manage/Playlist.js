@@ -54,7 +54,7 @@ function VideoItem({
 					>
 						<img
 							className="w-100 h-100"
-							src={thumbnailUrl(youtubeId, RESOLUTION.MAX)}
+							src={thumbnailUrl(youtubeId, RESOLUTION.MQ)}
 							alt={title}
 							loading="lazy"
 							style={{
@@ -62,8 +62,17 @@ function VideoItem({
 								transform: "translateZ(0)",
 								backfaceVisibility: "hidden",
 							}}
+							onLoad={(e) => {
+								// 유튜브는 없는 썸네일(404) 요청 시 120x90 더미 이미지를 성공 상태로 반환하므로 감지하여 폴백
+								if (e.target.naturalWidth === 120 && e.target.naturalHeight === 90) {
+									const fallbackUrl = thumbnailUrl(youtubeId, "hq");
+									if (e.target.src !== fallbackUrl) {
+										e.target.src = fallbackUrl;
+									}
+								}
+							}}
 							onError={(e) => {
-								const fallbackUrl = thumbnailUrl(youtubeId, RESOLUTION.MQ);
+								const fallbackUrl = thumbnailUrl(youtubeId, "hq");
 								if (e.target.src !== fallbackUrl) {
 									e.target.src = fallbackUrl;
 								}
@@ -79,11 +88,19 @@ function VideoItem({
 						<small className="text-muted">{secondToDate(length)}</small>
 						<button
 							type="button"
-							className="btn btn-sm btn-link p-0 text-decoration-none text-muted"
-							style={{ fontSize: "12px" }}
+							className={`btn btn-sm py-0 px-1.5 border ${
+								playlists.length > 0 ? "text-primary fw-medium" : "text-muted"
+							}`}
+							style={{
+								fontSize: "11px",
+								borderRadius: "4px",
+								backgroundColor: playlists.length > 0 ? "#e7f5ff" : "#f8f9fa",
+								borderColor: playlists.length > 0 ? "#d0ebff" : "#dee2e6",
+							}}
+							title="플레이리스트에 담기 / 변경"
 							onClick={onOpenTagModal}
 						>
-							🏷️ {playlists.length > 0 ? `태그(${playlists.length})` : "+ 태그 설정"}
+							{playlists.length > 0 ? `담김 ${playlists.length}` : "+ 담기"}
 						</button>
 					</div>
 					{playlists.length > 0 && (

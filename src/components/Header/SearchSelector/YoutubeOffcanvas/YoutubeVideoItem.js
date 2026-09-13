@@ -42,11 +42,20 @@ export default function YoutubeVideoItem({
 					<div className={styles.thumbnailWrapper}>
 						<img
 							className={styles.thumbnailImg}
-							src={thumbnailUrl(id, RESOLUTION.MAX)}
+							src={thumbnailUrl(id, RESOLUTION.MQ)}
 							alt={title}
 							loading="lazy"
+							onLoad={(e) => {
+								// 유튜브는 없는 썸네일(404) 요청 시 120x90 더미 이미지를 성공 상태로 반환하므로 감지하여 폴백
+								if (e.target.naturalWidth === 120 && e.target.naturalHeight === 90) {
+									const fallbackUrl = thumbnailUrl(id, "hq");
+									if (e.target.src !== fallbackUrl) {
+										e.target.src = fallbackUrl;
+									}
+								}
+							}}
 							onError={(e) => {
-								const fallbackUrl = thumbnailUrl(id, RESOLUTION.MQ);
+								const fallbackUrl = thumbnailUrl(id, "hq");
 								if (e.target.src !== fallbackUrl) {
 									e.target.src = fallbackUrl;
 								}

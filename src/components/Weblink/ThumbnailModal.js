@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -7,6 +7,14 @@ import styles from "./ThumbnailModal.module.css";
 import { RESOLUTION, thumbnailUrl, videoId } from "../../utils/youtubeUtil";
 
 function YoutubeThumbnail({ youtubeId }) {
+	const [imgUrl, setImgUrl] = useState("");
+
+	useEffect(() => {
+		if (youtubeId) {
+			setImgUrl(thumbnailUrl(youtubeId, RESOLUTION.MAX));
+		}
+	}, [youtubeId]);
+
 	return youtubeId === "" ? (
 		<img
 			src={`${process.env.REACT_APP_BOKK_IMG}/youtube_share_link.png`}
@@ -14,10 +22,21 @@ function YoutubeThumbnail({ youtubeId }) {
 		/>
 	) : (
 		<a
-			href={thumbnailUrl(youtubeId, RESOLUTION.MAX)}
+			href={imgUrl || thumbnailUrl(youtubeId, RESOLUTION.MAX)}
 			target="_blank"
 			rel="noopener noreferrer">
-			<img src={thumbnailUrl(youtubeId, RESOLUTION.MAX)} alt="섬네일" />
+			<img
+				src={imgUrl || thumbnailUrl(youtubeId, RESOLUTION.MAX)}
+				alt="섬네일"
+				onLoad={(e) => {
+					if (e.target.naturalWidth === 120 && e.target.naturalHeight === 90) {
+						setImgUrl(thumbnailUrl(youtubeId, "hq"));
+					}
+				}}
+				onError={() => {
+					setImgUrl(thumbnailUrl(youtubeId, "hq"));
+				}}
+			/>
 		</a>
 	);
 }
