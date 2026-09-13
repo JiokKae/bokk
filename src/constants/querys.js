@@ -207,6 +207,22 @@ export const MY_VIDEO_ITEMS = gql`
 				title
 				length
 			}
+			playlists {
+				id
+				name
+				videoCount
+			}
+		}
+	}
+`;
+
+export const MY_PLAYLISTS = gql`
+	query MyPlaylists {
+		myPlaylists {
+			id
+			name
+			videoCount
+			shareCode
 		}
 	}
 `;
@@ -229,10 +245,60 @@ export const DELETE_VIDEO_ITEM = gql`
 	}
 `;
 
+export const CREATE_PLAYLIST = gql`
+	mutation CreatePlaylist($name: String!) {
+		createPlaylist(name: $name) {
+			id
+			name
+			videoCount
+			shareCode
+		}
+	}
+`;
+
+export const UPDATE_PLAYLIST = gql`
+	mutation UpdatePlaylist($id: Int!, $name: String!) {
+		updatePlaylist(id: $id, name: $name) {
+			id
+			name
+			videoCount
+			shareCode
+		}
+	}
+`;
+
+export const DELETE_PLAYLIST = gql`
+	mutation DeletePlaylist($id: Int!) {
+		deletePlaylist(id: $id)
+	}
+`;
+
+export const SET_VIDEO_PLAYLISTS = gql`
+	mutation SetVideoPlaylists($queueItemId: Int!, $playlistIds: [Int!]!) {
+		setVideoPlaylists(queueItemId: $queueItemId, playlistIds: $playlistIds) {
+			id
+			name
+			videoCount
+		}
+	}
+`;
+
+export const IMPORT_PLAYLIST = gql`
+	mutation ImportPlaylist($shareCode: String!, $name: String) {
+		importPlaylist(shareCode: $shareCode, name: $name) {
+			id
+			name
+			videoCount
+			shareCode
+		}
+	}
+`;
+
 export const QUERIES_AFFECTED_BY_SIGN = [
 	{ query: ME },
 	{ query: FILES },
 	{ query: OWN_WEBLINKS },
 	{ query: BUILTIN_WEBLINKS },
 	{ query: MY_VIDEO_ITEMS },
+	{ query: MY_PLAYLISTS },
 ];

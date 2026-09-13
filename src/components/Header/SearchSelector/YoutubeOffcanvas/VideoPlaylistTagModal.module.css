@@ -1,0 +1,105 @@
+.modalDialog {
+	max-width: 440px;
+	width: calc(100% - 32px);
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.listContainer {
+	max-height: 300px;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #ced4da transparent;
+}
+
+.listContainer::-webkit-scrollbar {
+	width: 5px;
+}
+
+.listContainer::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.listContainer::-webkit-scrollbar-thumb {
+	background: #ced4da;
+	border-radius: 3px;
+}
+
+.listContainer::-webkit-scrollbar-thumb:hover {
+	background: #adb5bd;
+}
+
+.playlistRow {
+	cursor: pointer;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.playlistRow:hover {
+	background-color: #f8f9fa;
+}
+
+.playlistRow:focus-visible {
+	outline: 2px solid #339af0;
+	outline-offset: -2px;
+}
+
+.checkedRow {
+	background-color: #f0f7ff;
+}
+
+.checkedRow:hover {
+	background-color: #e7f5ff;
+}
+
+.cancelBtn {
+	background-color: #f8f9fa;
+	border: 1px solid #ced4da;
+	color: #495057;
+	font-size: 13px;
+	font-weight: 500;
+	padding: 5px 14px;
+	border-radius: 6px;
+	transition: all 0.15s ease;
+}
+
+.cancelBtn:hover {
+	background-color: #e9ecef;
+	border-color: #adb5bd;
+	color: #212529;
+}
+
+.saveBtn {
+	background-color: #e7f5ff;
+	border: 1px solid #74c0fc;
+	color: #1971c2;
+	font-size: 13px;
+	font-weight: 600;
+	padding: 5px 16px;
+	border-radius: 6px;
+	box-shadow: 0 1px 2px rgba(25, 113, 194, 0.06);
+	transition: all 0.15s ease;
+}
+
+.saveBtn:hover:not(:disabled) {
+	background-color: #1971c2;
+	border-color: #1971c2;
+	color: #ffffff;
+	box-shadow: 0 2px 5px rgba(25, 113, 194, 0.2);
+}
+
+.saveBtn:active:not(:disabled) {
+	background-color: #1864ab;
+	border-color: #1864ab;
+}
+
+.saveBtn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.createBtn {
+	font-size: 12.5px;
+	font-weight: 500;
+	padding: 4px 12px;
+}
+

@@ -9,3 +9,19 @@
 	right: 0;
 	left: auto;
 }
+
+.controllerBtn {
+	width: 36px;
+	height: 36px;
+	border-radius: 6px;
+	transition: background-color 0.15s ease, transform 0.1s ease;
+	-webkit-tap-highlight-color: transparent;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.controllerBtn:active {
+	transform: scale(0.9);
+	background-color: #e9ecef !important;
+}

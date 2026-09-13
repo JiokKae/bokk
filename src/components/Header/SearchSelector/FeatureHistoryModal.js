@@ -28,11 +28,18 @@ const initialCategories = [
 				description: "드래그 앤 드롭 방식을 통한 직관적인 웹링크 순서 변경 인터페이스 도입",
 			},
 			{
-				date: "2022.11.11",
+				date: "2022.11.15",
+				isNew: false,
+				tag: "추가",
+				title: "등록된 웹링크 수정 기능",
+				description: "이미 등록한 나만의 웹링크의 이름, 주소(URL), 배경 색상 편집 기능 지원",
+			},
+			{
+				date: "2018.05.04",
 				isNew: false,
 				tag: "추가",
 				title: "나만의 웹링크 커스텀 등록",
-				description: "개인화된 웹링크 등록 및 UI 색상 커스터마이징 시스템 구축",
+				description: "개인화된 웹링크 등록 및 UI 색상 커스터마이징 시스템 최초 구축",
 			},
 		],
 	},
@@ -41,11 +48,39 @@ const initialCategories = [
 		mainTitle: "유튜브 연속 재생 플레이어",
 		updates: [
 			{
-				date: "2026.08.18",
+				date: "2026.09.14",
 				isNew: true,
 				tag: "추가",
-				title: "유튜브 대화면 확장 및 드래그 리사이징 핸들 (<<)",
-				description: "오프캔버스 좌측 플랫 버튼을 통해 너비를 최대 2배(1000px)까지 자유롭게 드래그/원클릭 확장 지원",
+				title: "플레이리스트 생성 및 한 곡 다중 담기",
+				description: "원하는 이름으로 재생 목록을 자유롭게 만들고, 영상마다 여러 개의 플레이리스트를 골라 담아 취향대로 분류해 들을 수 있습니다.",
+			},
+			{
+				date: "2026.09.14",
+				isNew: true,
+				tag: "추가",
+				title: "8자리 코드로 플레이리스트 공유 및 가져오기",
+				description: "8자리 고유 공유코드로 내가 만든 플레이리스트를 친구와 공유하거나, 다른 사람의 플레이리스트를 내 보관함에 바로 복사해 올 수 있습니다.",
+			},
+			{
+				date: "2026.09.14",
+				isNew: true,
+				tag: "추가",
+				title: "끊김 없는 플레이리스트 둘러보기 & 라이브 이퀄라이저",
+				description: "음악을 듣는 도중 다른 플레이리스트를 자유롭게 둘러보아도 노래가 멈추지 않으며, 현재 재생 중인 목록에는 실시간 이퀄라이저가 표시됩니다.",
+			},
+			{
+				date: "2026.09.14",
+				isNew: true,
+				tag: "개선",
+				title: "재생 목록 창 크기 조절 편의성 향상",
+				description: "브라우저 창을 좁게 쓰거나 화면을 분할해 사용할 때도 창 크기 조절 손잡이가 사라지지 않고 항상 편리하게 넓힐 수 있습니다.",
+			},
+			{
+				date: "2026.08.18",
+				isNew: false,
+				tag: "추가",
+				title: "유튜브 대화면 확장 및 내장형 도트 핸들 리사이저",
+				description: "오프캔버스 좌측 도트 핸들을 통해 너비를 최대 2배(1000px)까지 자유롭게 드래그/원클릭 확장 지원",
 			},
 			{
 				date: "2026.08.17",
@@ -83,11 +118,11 @@ const initialCategories = [
 				description: "백그라운드 재생 상태를 직관적으로 확인할 수 있는 상단 스크롤 티커 UI 적용",
 			},
 			{
-				date: "2022.11.09",
+				date: "2018.12.28",
 				isNew: false,
 				tag: "추가",
-				title: "유튜브 백그라운드 연속 재생",
-				description: "커스텀 재생 목록 생성 및 백그라운드 영상 연속 재생 환경 구축",
+				title: "유튜브 백그라운드 연속 재생 플레이어",
+				description: "커스텀 재생 목록 등록 및 백그라운드 영상 연속 재생 플레이어 최초 도입",
 			},
 		],
 	},
@@ -103,11 +138,11 @@ const initialCategories = [
 				description: "OP.GG 최신 검색 라우팅 구조(q, region=kr) 적용 및 빠른 소환사 이동 링크 최신화",
 			},
 			{
-				date: "2022.11.04",
+				date: "2018.11.21",
 				isNew: false,
 				tag: "추가",
 				title: "포털 통합 검색 (네이버 / 구글)",
-				description: "주요 포털(네이버, 구글) 간 탭 전환형 통합 검색 인터페이스 제공",
+				description: "주요 포털(네이버, 구글) 간 탭 전환형 통합 검색 인터페이스 구축",
 			},
 		],
 	},
@@ -130,11 +165,18 @@ const initialCategories = [
 				description: "네이티브 조합 엔진 탑재를 통한 모바일 환경(천지인 등) 한글 자모 분리 현상 해결",
 			},
 			{
-				date: "2022.11.04",
+				date: "2022.12.15",
+				isNew: false,
+				tag: "개선",
+				title: "게시판 미디어(이미지/영상) 첨부 지원",
+				description: "게시글 작성 시 이미지(WebP) 첨부 및 유튜브 영상 임베드 기능 도입",
+			},
+			{
+				date: "2018.05.06",
 				isNew: false,
 				tag: "추가",
 				title: "자유 게시판 및 소통",
-				description: "사용자 간 소통을 위한 실시간 게시판, 댓글 및 추천 시스템 도입",
+				description: "사용자 간 자유로운 의견 교환을 위한 실시간 게시판 및 댓글 시스템 최초 오픈",
 			},
 		],
 	},
@@ -154,9 +196,17 @@ export default function FeatureHistoryModal() {
 
 	// Default open the most recently updated category
 	const [openCategoryIds, setOpenCategoryIds] = useState({ [sortedCategories[0].id]: true });
+	const [expandedCategoryIds, setExpandedCategoryIds] = useState({});
 
 	const toggleCategory = (id) => {
 		setOpenCategoryIds((prev) => ({
+			...prev,
+			[id]: !prev[id],
+		}));
+	};
+
+	const toggleExpandCategory = (id) => {
+		setExpandedCategoryIds((prev) => ({
 			...prev,
 			[id]: !prev[id],
 		}));
@@ -207,6 +257,7 @@ export default function FeatureHistoryModal() {
 					<div className="d-flex flex-column gap-2">
 						{sortedCategories.map((category) => {
 							const isOpen = Boolean(openCategoryIds[category.id]);
+							const isExpanded = Boolean(expandedCategoryIds[category.id]);
 							const latestUpdate = category.updates[0];
 							
 							// 2주(14일) 이내인지 판별
@@ -218,6 +269,20 @@ export default function FeatureHistoryModal() {
 							};
 
 							const hasNew = category.updates.some((u) => isDateNew(u.date));
+
+							// 기본 노출 개수: 최신 릴리즈 일자의 항목들(1~6개)을 온전히 기본 노출하고, 이전 날짜의 내역은 '더보기'로 제공
+							const getInitialVisibleCount = (updates) => {
+								if (updates.length <= 5) return updates.length;
+								const latestDate = updates[0]?.date;
+								const sameDateCount = updates.filter((u) => u.date === latestDate).length;
+								if (sameDateCount >= 1 && sameDateCount <= 6) return sameDateCount;
+								return 5;
+							};
+
+							const visibleCount = getInitialVisibleCount(category.updates);
+							const hasMore = category.updates.length > visibleCount;
+							const displayedUpdates = isExpanded ? category.updates : category.updates.slice(0, visibleCount);
+							const hiddenCount = category.updates.length - visibleCount;
 
 							return (
 								<div
@@ -272,21 +337,21 @@ export default function FeatureHistoryModal() {
 									{/* Sub-features Accordion / Foldable Content with Smooth Animation */}
 									<div
 										style={{
-											maxHeight: isOpen ? "500px" : "0px",
+											maxHeight: isOpen ? (isExpanded ? "3000px" : "800px") : "0px",
 											opacity: isOpen ? 1 : 0,
-											transition: "max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease",
+											transition: "max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease",
 											overflow: "hidden",
 											backgroundColor: "#ffffff",
 										}}
 									>
 										<div className="card-body py-2 px-3">
 											<div className="d-flex flex-column">
-												{category.updates.map((sub, idx) => {
+												{displayedUpdates.map((sub, idx) => {
 													const isSubNew = isDateNew(sub.date);
 													return (
 													<div
 														key={idx}
-														className={`py-2 ${idx !== category.updates.length - 1 ? "border-bottom" : ""}`}
+														className={`py-2 ${idx !== displayedUpdates.length - 1 ? "border-bottom" : ""}`}
 													>
 														<div className="d-flex justify-content-between align-items-center mb-1">
 															<div className="d-flex align-items-center gap-2">
@@ -312,6 +377,50 @@ export default function FeatureHistoryModal() {
 													);
 												})}
 											</div>
+
+											{hasMore && (
+												<div className="pt-2 pb-1 text-center">
+													<button
+														type="button"
+														className="btn btn-sm w-100 py-1.5 d-flex align-items-center justify-content-center gap-1.5 user-select-none"
+														style={{
+															fontSize: "12px",
+															fontWeight: 500,
+															borderRadius: "8px",
+															backgroundColor: isExpanded ? "#f1f5f9" : "#f8fafc",
+															border: "1px solid #e2e8f0",
+															color: "#475569",
+															transition: "all 0.2s ease",
+														}}
+														onMouseEnter={(e) => {
+															e.currentTarget.style.backgroundColor = "#edf2f7";
+															e.currentTarget.style.borderColor = "#cbd5e1";
+															e.currentTarget.style.color = "#1e293b";
+														}}
+														onMouseLeave={(e) => {
+															e.currentTarget.style.backgroundColor = isExpanded ? "#f1f5f9" : "#f8fafc";
+															e.currentTarget.style.borderColor = "#e2e8f0";
+															e.currentTarget.style.color = "#475569";
+														}}
+														onClick={(e) => {
+															e.stopPropagation();
+															toggleExpandCategory(category.id);
+														}}
+													>
+														{isExpanded ? (
+															<>
+																<span style={{ fontSize: "10px", color: "#64748b" }}>▲</span>
+																<span>이전 업데이트 접기</span>
+															</>
+														) : (
+															<>
+																<span style={{ fontSize: "10px", color: "#0699f9" }}>▼</span>
+																<span>이전 업데이트 {hiddenCount}개 더보기</span>
+															</>
+														)}
+													</button>
+												</div>
+											)}
 										</div>
 									</div>
 								</div>
