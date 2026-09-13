@@ -39,38 +39,43 @@ export default function Controller({
 		},
 	});
 	const buttons = [
-		{ id: "previous_play", onClick: onPreviousPlay },
+		{ id: "previous_play", onClick: onPreviousPlay, title: "이전 곡" },
 		{
 			id: "play",
 			onClick: () => player?.playVideo(),
 			condition: isPlaying,
 			swap: { id: "pause", onClick: () => player?.pauseVideo() },
+			title: isPlaying ? "일시 정지" : "재생",
 		},
-		{ id: "next_play", onClick: onNextPlay },
+		{ id: "next_play", onClick: onNextPlay, title: "다음 곡" },
 		{
 			id: "random_play",
 			onClick: onRandomPlay,
 			classCond: isRandom,
-			class: "",
+			title: "셔플 재생",
 		},
 		{
 			id: "play_one",
 			onClick: onRepeatOnePlay,
 			classCond: isRepeatOne,
-			class: "",
+			title: "한곡 반복",
 		},
-		{ id: "gear", onClick: () => setShowOption(!showOption) },
+		{ id: "gear", onClick: () => setShowOption(!showOption), title: "설정" },
 	];
 
 	return (
-		<div className="float-end mb-3" style={{ position: "relative" }}>
+		<div
+			className="d-flex align-items-center flex-shrink-0 w-100 justify-content-between justify-content-sm-end"
+			style={{ position: "relative" }}
+		>
 			{buttons.map((button) => (
 				<button
 					key={button.id}
-					className={`btn ${
+					className={`btn btn-sm p-1 border-0 ${styles.controllerBtn} ${
 						button?.classCond ? "bgc-bokk-light" : ""
 					}`}
 					type="button"
+					title={button.title || ""}
 					onClick={
 						button?.condition
 							? button.swap?.onClick
@@ -81,12 +86,12 @@ export default function Controller({
 							button?.condition ? button.swap.id : button.id
 						}.png`}
 						alt={button?.condition ? button.swap.id : button.id}
-						style={{ width: "24px" }}
+						style={{ width: "20px", height: "20px", objectFit: "contain" }}
 					/>
 				</button>
 			))}
 			{showOption ? (
-				<div className={`px-4 py-3 ${styles.popover}`}>
+				<div className={`px-4 py-3 ${styles.popover}`} style={{ top: "100%", right: 0, marginTop: "4px" }}>
 					<div>
 						<Form.Check
 							type="checkbox"

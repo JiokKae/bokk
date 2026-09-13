@@ -1,0 +1,473 @@
+.resizer {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: -5px;
+	width: 10px;
+	cursor: col-resize;
+	z-index: 1060;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	user-select: none;
+	touch-action: none;
+}
+
+/* 전체 세로 라인 호버 및 드래그 인터랙션 하이라이트 */
+.resizer::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 4px;
+	width: 2px;
+	background-color: transparent;
+	transition: background-color 0.2s ease;
+}
+
+.resizer:hover::before,
+.isDragging::before {
+	background-color: #0d6efd;
+}
+
+/* 내장형 드래그 핸들 그립 캡슐 */
+.handleGrip {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 12px;
+	height: 38px;
+	background-color: #ffffff;
+	border: 1px solid #dee2e6;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+	pointer-events: none;
+	z-index: 1;
+}
+
+.resizer:hover .handleGrip,
+.isDragging .handleGrip {
+	border-color: #0d6efd;
+	box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+}
+
+/* Draggable Handle Dots (2열 3행 dot style) */
+.dots {
+	display: grid;
+	grid-template-columns: repeat(2, 2.5px);
+	grid-template-rows: repeat(3, 2.5px);
+	gap: 2.5px;
+	justify-content: center;
+	align-content: center;
+}
+
+.dot {
+	width: 2.5px;
+	height: 2.5px;
+	border-radius: 50%;
+	background-color: #adb5bd;
+	transition: background-color 0.2s ease;
+}
+
+.resizer:hover .dot,
+.isDragging .dot {
+	background-color: #0d6efd;
+}
+
+/* 플레이리스트 커스텀 드롭다운 스타일 */
+.playlistDropdownToggle {
+	font-size: 13px;
+	height: 38px;
+	padding: 6px 12px;
+	border-radius: 6px;
+	background-color: #ffffff;
+	border: 1px solid #ced4da;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.playlistDropdownToggle:hover,
+.playlistDropdownToggle:focus {
+	background-color: #ffffff !important;
+	border-color: #86b7fe;
+	box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+	color: inherit !important;
+}
+
+.playlistDropdownMenu {
+	max-height: 280px;
+	overflow-y: auto;
+	font-size: 13px;
+	border-radius: 8px;
+	z-index: 1070;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+	border: 1px solid #dee2e6 !important;
+	padding: 4px 0;
+}
+
+.dropdownItem {
+	padding: 8px 14px;
+	font-size: 13px;
+	line-height: 1.5;
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.dropdownItem:hover {
+	background-color: #f8f9fa;
+}
+
+.playingItem {
+	background-color: #e7f5ff !important;
+	color: #1864ab !important;
+	font-weight: 600;
+}
+
+.playingItem:hover {
+	background-color: #d0ebff !important;
+}
+
+.playingItem .equalizerBar,
+.playlistDropdownToggle .equalizerBar {
+	background-color: #1971c2;
+}
+
+.playingItem .paused .equalizerBar,
+.playlistDropdownToggle .paused .equalizerBar {
+	background-color: #94a3b8;
+}
+
+/* 모바일 반응형 컨트롤 바 레이아웃 */
+.controlBar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 12px;
+	flex-wrap: nowrap;
+}
+
+.selectorGroup {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex: 1 1 0;
+	max-width: 360px;
+	min-width: 0;
+}
+
+.controllerWrapper {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-shrink: 0;
+}
+
+/* 대화면 풀스크린 플레이어 (100% 가득 찬 시원한 대형 뷰) */
+.playerWrapper {
+	width: 100%;
+}
+
+/* 재생 목록 리스트 슬림 모던 스크롤바 */
+.queueContainer {
+	scrollbar-width: thin;
+	scrollbar-color: #ced4da transparent;
+}
+
+.queueContainer::-webkit-scrollbar {
+	width: 6px;
+}
+
+.queueContainer::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.queueContainer::-webkit-scrollbar-thumb {
+	background-color: #ced4da;
+	border-radius: 4px;
+}
+
+.queueContainer::-webkit-scrollbar-thumb:hover {
+	background-color: #adb5bd;
+}
+
+@media (max-width: 480px) {
+	.controlBar {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 8px;
+		margin-bottom: 10px;
+	}
+
+	.selectorGroup {
+		width: 100%;
+		flex: none;
+		max-width: none;
+	}
+
+	.controllerWrapper {
+		width: 100%;
+		justify-content: space-between;
+		padding: 4px 8px;
+		background-color: #f8f9fa;
+		border-radius: 8px;
+		border: 1px solid #e9ecef;
+	}
+}
+
+/* 상단 헤더 현재 재생 중인 플레이리스트 라이브 뱃지 */
+.playingBadge {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 4px 12px 4px 10px;
+	background-color: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	font-size: 12.5px;
+	line-height: 1.4;
+	max-width: 240px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+	user-select: none;
+	cursor: default;
+}
+
+.playingBadge:hover {
+	background-color: #f1f5f9;
+	border-color: #cbd5e1;
+}
+
+/* 재생 중 이퀄라이저 인디케이터 */
+.equalizer {
+	display: inline-flex;
+	align-items: flex-end;
+	gap: 2px;
+	height: 13px;
+	flex-shrink: 0;
+}
+
+.equalizerBar {
+	width: 2.5px;
+	background-color: #0d6efd;
+	border-radius: 1px;
+}
+
+.bar1 {
+	height: 50%;
+	animation: bounce1 0.8s ease-in-out infinite alternate;
+}
+
+.bar2 {
+	height: 100%;
+	animation: bounce2 0.7s ease-in-out 0.15s infinite alternate;
+}
+
+.bar3 {
+	height: 40%;
+	animation: bounce3 0.9s ease-in-out 0.3s infinite alternate;
+}
+
+/* 정지(Pause) 상태 시 고정된 차분한 바 */
+.paused .equalizerBar {
+	background-color: #94a3b8 !important;
+	animation: none !important;
+}
+.paused .bar1 { height: 40% !important; }
+.paused .bar2 { height: 75% !important; }
+.paused .bar3 { height: 35% !important; }
+
+@keyframes bounce1 {
+	0% { height: 25%; }
+	100% { height: 90%; }
+}
+
+@keyframes bounce2 {
+	0% { height: 35%; }
+	100% { height: 100%; }
+}
+
+@keyframes bounce3 {
+	0% { height: 20%; }
+	100% { height: 80%; }
+}
+
+.badgeLabel {
+	color: #64748b;
+	font-size: 12px;
+	font-weight: 500;
+	flex-shrink: 0;
+	letter-spacing: -0.2px;
+}
+
+.badgeDivider {
+	width: 1px;
+	height: 10px;
+	background-color: #cbd5e1;
+	flex-shrink: 0;
+}
+
+.badgeValue {
+	color: #0f172a;
+	font-weight: 600;
+	font-size: 12.5px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	letter-spacing: -0.2px;
+}
+
+/* 초소형 모바일 화면(360px 이하)에서 여백 확보를 위한 축약 */
+@media (max-width: 380px) {
+	.badgeLabel,
+	.badgeDivider {
+		display: none;
+	}
+}
+
+/* 헤더 실시간 재생 티커 뱃지 (모던 테마 동기화) */
+.headerTickerBadge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 3.5px 10px 3.5px 8px;
+	background-color: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 20px;
+	font-size: 12px;
+	color: #1e293b;
+	overflow: hidden;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+	width: 100%;
+}
+
+.headerTickerBadge:hover {
+	background-color: #f1f5f9;
+	border-color: #cbd5e1;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.tickerMarqueeWrapper {
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+	mask-image: linear-gradient(to right, transparent, black 6px, black calc(100% - 6px), transparent);
+	-webkit-mask-image: linear-gradient(to right, transparent, black 6px, black calc(100% - 6px), transparent);
+}
+
+.tickerMarquee {
+	display: inline-block;
+	white-space: nowrap;
+	animation: youtubeTicker 14s linear infinite;
+	font-weight: 500;
+	letter-spacing: -0.2px;
+	color: #1e293b;
+}
+
+@keyframes youtubeTicker {
+	0% {
+		transform: translateX(0%);
+	}
+	100% {
+		transform: translateX(-50%);
+	}
+}
+
+.tickerNoticeBadge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 3.5px 10px 3.5px 8px;
+	background-color: #f0f7ff;
+	border: 1px solid #d0ebff;
+	border-radius: 20px;
+	font-size: 11.5px;
+	color: #1971c2;
+	overflow: hidden;
+	white-space: nowrap;
+	font-weight: 500;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+	width: 100%;
+}
+
+/* 다른 플레이리스트 탐색 중일 때 현재 재생 중인 플레이리스트 안내 및 원클릭 복귀 바 */
+.returnBanner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 12px;
+	margin-bottom: 10px;
+	background-color: #f0f7ff;
+	border: 1px solid #d0ebff;
+	border-radius: 8px;
+	box-shadow: 0 1px 3px rgba(13, 110, 253, 0.04);
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+	flex-wrap: nowrap;
+}
+
+.returnBannerLeft {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	min-width: 0;
+	margin-right: 8px;
+}
+
+.returnLabel {
+	color: #495057;
+	font-size: 12.5px;
+	font-weight: 500;
+	flex-shrink: 0;
+	letter-spacing: -0.2px;
+}
+
+.returnDivider {
+	width: 1px;
+	height: 11px;
+	background-color: #b0d4f1;
+	flex-shrink: 0;
+}
+
+.returnPlaylistName {
+	color: #1864ab;
+	font-weight: 700;
+	font-size: 13px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	letter-spacing: -0.2px;
+}
+
+.returnBtn {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 10px;
+	background-color: #ffffff;
+	border: 1px solid #74c0fc;
+	border-radius: 6px;
+	color: #1971c2;
+	font-size: 12px;
+	font-weight: 600;
+	flex-shrink: 0;
+	text-decoration: none;
+	cursor: pointer;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+	transition: all 0.15s ease;
+	line-height: 1.4;
+}
+
+.returnBtn:hover {
+	background-color: #1971c2;
+	border-color: #1971c2;
+	color: #ffffff;
+	box-shadow: 0 2px 5px rgba(25, 113, 194, 0.25);
+}
+
+
+
