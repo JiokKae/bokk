@@ -850,11 +850,34 @@ export default function YoutubeOffcanvas() {
 										<p className="mb-1 fw-medium" style={{ fontSize: "13px" }}>
 											{selectedPlaylistId === "UNTAGGED"
 												? "미분류 영상이 없습니다."
-												: "이 플레이리스트에 등록된 영상이 없습니다."}
+												: videoItems.length === 0
+												? "재생 목록에 등록된 영상이 없습니다."
+												: "이 플레이리스트에 담긴 영상이 없습니다."}
 										</p>
-										<small className="text-secondary" style={{ fontSize: "11px" }}>
-											영상 우측의 🏷️ 태그 버튼으로 이 플레이리스트에 추가해보세요!
+										<small className="text-secondary d-block" style={{ fontSize: "11px" }}>
+											{videoItems.length === 0
+												? "상단 입력창에 유튜브 영상 주소를 입력하여 추가해보세요!"
+												: selectedPlaylistId === "UNTAGGED"
+												? "모든 영상이 플레이리스트에 정리되어 있습니다."
+												: "전체 목록에서 영상 우측의 '+ 담기' 버튼으로 이 플레이리스트에 곡을 담아보세요!"}
 										</small>
+										{selectedPlaylistId !== "ALL" && videoItems.length > 0 && (
+											<div className="mt-3">
+												<button
+													type="button"
+													className="btn btn-sm btn-light border px-3 py-1.5 text-primary fw-medium shadow-sm"
+													style={{
+														fontSize: "12px",
+														borderRadius: "6px",
+														backgroundColor: "#f0f7ff",
+														borderColor: "#b6e0fe",
+													}}
+													onClick={() => setSelectedPlaylistId("ALL")}
+												>
+													전체 목록에서 곡 담으러 가기 ➔
+												</button>
+											</div>
+										)}
 									</div>
 								) : (
 									displayedVideoItems.map(
