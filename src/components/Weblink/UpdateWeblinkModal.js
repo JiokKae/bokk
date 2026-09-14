@@ -1,7 +1,7 @@
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { OWN_WEBLINKS, UPDATE_WEBLINK } from "../../constants/querys";
+import { MY_WEBLINK_GROUPS, OWN_WEBLINKS, UPDATE_WEBLINK } from "../../constants/querys";
 import WeblinkForm from "./WeblinkForm";
 
 export default function UpdateWeblinkModal({ weblink }) {
@@ -12,16 +12,22 @@ export default function UpdateWeblinkModal({ weblink }) {
 	const [backgroundColor, setBackgroundColor] = useState(
 		weblink.backgroundColor
 	);
+	const [groupId, setGroupId] = useState(weblink.groupId ?? "");
+
+	const { data: groupData } = useQuery(MY_WEBLINK_GROUPS);
+	const groups = groupData?.myWeblinkGroups || [];
+
 	const isChange = () => {
 		if (name !== weblink.name) return true;
 		if (url !== weblink.url) return true;
 		if (color !== weblink.color) return true;
 		if (backgroundColor !== weblink.backgroundColor) return true;
+		if (String(groupId ?? "") !== String(weblink.groupId ?? "")) return true;
 		return false;
 	};
 
 	const [updateWeblink] = useMutation(UPDATE_WEBLINK, {
-		refetchQueries: [{ query: OWN_WEBLINKS }],
+		refetchQueries: [{ query: OWN_WEBLINKS }, { query: MY_WEBLINK_GROUPS }],
 	});
 
 	const onSubmit = () => {
@@ -37,6 +43,7 @@ export default function UpdateWeblinkModal({ weblink }) {
 					url,
 					color,
 					backgroundColor,
+					groupId: groupId ? Number(groupId) : null,
 				},
 			},
 		});
@@ -46,6 +53,7 @@ export default function UpdateWeblinkModal({ weblink }) {
 		setUrl(weblink.url);
 		setColor(weblink.color);
 		setBackgroundColor(weblink.backgroundColor);
+		setGroupId(weblink.groupId ?? "");
 		setShow(true);
 	};
 
@@ -70,6 +78,9 @@ export default function UpdateWeblinkModal({ weblink }) {
 						setColor={setColor}
 						backgroundColor={backgroundColor}
 						setBackgroundColor={setBackgroundColor}
+						groupId={groupId}
+						setGroupId={setGroupId}
+						groups={groups}
 					/>
 				</Modal.Body>
 				<Modal.Footer>

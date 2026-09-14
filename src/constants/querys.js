@@ -82,6 +82,25 @@ export const OWN_WEBLINKS = gql`
 			color
 			backgroundColor
 			id
+			groupId
+		}
+	}
+`;
+
+export const MY_WEBLINK_GROUPS = gql`
+	query MyWeblinkGroups {
+		myWeblinkGroups {
+			id
+			name
+			seq
+			weblinks {
+				name
+				url
+				color
+				backgroundColor
+				id
+				groupId
+			}
 		}
 	}
 `;
@@ -95,6 +114,7 @@ export const ADD_WEBLINK = gql`
 				color
 				backgroundColor
 				id
+				groupId
 			}
 		}
 	}
@@ -109,6 +129,7 @@ export const UPDATE_WEBLINK = gql`
 				color
 				backgroundColor
 				id
+				groupId
 			}
 		}
 	}
@@ -123,6 +144,44 @@ export const DELETE_WEBLINK = gql`
 export const REORDER_WEBLINKS = gql`
 	mutation ReorderWeblinks($weblinkIds: [Int!]!) {
 		reorderWeblinks(weblinkIds: $weblinkIds)
+	}
+`;
+
+export const SET_WEBLINK_GROUP = gql`
+	mutation SetWeblinkGroup($weblinkId: Int!, $groupId: Int) {
+		setWeblinkGroup(weblinkId: $weblinkId, groupId: $groupId)
+	}
+`;
+
+export const CREATE_WEBLINK_GROUP = gql`
+	mutation CreateWeblinkGroup($name: String!) {
+		createWeblinkGroup(name: $name) {
+			id
+			name
+			seq
+		}
+	}
+`;
+
+export const UPDATE_WEBLINK_GROUP = gql`
+	mutation UpdateWeblinkGroup($id: Int!, $name: String!) {
+		updateWeblinkGroup(id: $id, name: $name) {
+			id
+			name
+			seq
+		}
+	}
+`;
+
+export const DELETE_WEBLINK_GROUP = gql`
+	mutation DeleteWeblinkGroup($groupId: Int!) {
+		deleteWeblinkGroup(groupId: $groupId)
+	}
+`;
+
+export const REORDER_WEBLINK_GROUPS = gql`
+	mutation ReorderWeblinkGroups($groupIds: [Int!]!) {
+		reorderWeblinkGroups(groupIds: $groupIds)
 	}
 `;
 
@@ -299,6 +358,7 @@ export const QUERIES_AFFECTED_BY_SIGN = [
 	{ query: FILES },
 	{ query: OWN_WEBLINKS },
 	{ query: BUILTIN_WEBLINKS },
+	{ query: MY_WEBLINK_GROUPS },
 	{ query: MY_VIDEO_ITEMS },
 	{ query: MY_PLAYLISTS },
 ];
