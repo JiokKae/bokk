@@ -27,3 +27,249 @@ img {
 	max-width: 100%;
 	max-height: 500px;
 }
+
+.groupContainer {
+	display: inline-flex;
+	flex-direction: column;
+	padding: 0.35rem 0.5rem 0.45rem 0.5rem;
+	margin: 0.25rem 0.35rem 0.25rem 0;
+	background-color: #f8faff;
+	border: 1px solid #d0ebff;
+	border-radius: 8px;
+	vertical-align: top;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.groupContainer:hover {
+	border-color: #74c0fc;
+	box-shadow: 0 1px 5px rgba(34, 139, 230, 0.1);
+}
+
+.groupContainerUntagged {
+	display: inline-flex;
+	flex-direction: column;
+	padding: 0.35rem 0.5rem 0.45rem 0.5rem;
+	margin: 0.25rem 0.35rem 0.25rem 0;
+	background-color: #f8f9fa;
+	border: 1px dashed #ced4da;
+	border-radius: 8px;
+	vertical-align: top;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.groupContainerUntagged:hover {
+	border-color: #adb5bd;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
+}
+
+.groupHeaderLine {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	margin-bottom: 0.15rem;
+}
+
+.groupBadge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.15rem 0.45rem;
+	font-size: 0.8rem;
+	font-weight: 700;
+	color: #495057;
+	background-color: #f1f3f5;
+	border: 1px solid #dee2e6;
+	border-radius: 5px;
+	user-select: none;
+	white-space: nowrap;
+	letter-spacing: -0.01em;
+}
+
+.groupBadgeUntagged {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.15rem 0.45rem;
+	font-size: 0.8rem;
+	font-weight: 700;
+	color: #495057;
+	background-color: #f1f3f5;
+	border: 1px solid #dee2e6;
+	border-radius: 5px;
+	user-select: none;
+	white-space: nowrap;
+	letter-spacing: -0.01em;
+}
+
+.groupContent {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.15rem;
+}
+
+.openAllBtn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.2rem;
+	padding: 0.15rem 0.45rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: #1971c2;
+	background-color: #ffffff;
+	border: 1px solid #a5d8ff;
+	border-radius: 5px;
+	cursor: pointer;
+	user-select: none;
+	white-space: nowrap;
+	text-decoration: none !important;
+	transition: all 0.15s ease-in-out;
+}
+
+.openAllBtn:hover {
+	background-color: #e7f5ff;
+	border-color: #339af0;
+	color: #1864ab;
+	text-decoration: none !important;
+	box-shadow: 0 1px 3px rgba(34, 139, 230, 0.15);
+}
+
+.openAllBtn:active {
+	transform: scale(0.96);
+}
+
+.openAllBtnShift {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.2rem;
+	padding: 0.15rem 0.45rem;
+	font-size: 0.75rem;
+	font-weight: 700;
+	color: #5f3dc4;
+	background-color: #f3f0ff;
+	border: 1px solid #b197fc;
+	border-radius: 5px;
+	cursor: pointer;
+	user-select: none;
+	white-space: nowrap;
+	text-decoration: none !important;
+	transition: all 0.15s ease-in-out;
+	box-shadow: 0 0 0 2px rgba(112, 72, 232, 0.2);
+}
+
+.openAllBtnShift:hover {
+	background-color: #eebefa;
+	border-color: #9775fa;
+	color: #49259a;
+	text-decoration: none !important;
+}
+
+/* 모바일 및 소형 터치 디바이스에서는 대량 탭 열기로 인한 브라우저 랙/오터치 방지를 위해 모두 열기 숨김 */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-width: 1024px) {
+	.openAllBtn,
+	.openAllBtnShift {
+		display: none !important;
+	}
+}
+
+.weblinkToolbar {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 1.25rem;
+	margin-bottom: 0.4rem;
+	padding: 0.25rem 0.5rem;
+}
+
+.reorderHelpText {
+	font-size: 0.8rem;
+	color: #2b8a3e;
+	font-weight: 600;
+	background-color: #ebfbee;
+	border: 1px solid #b2f2bb;
+	padding: 0.2rem 0.65rem;
+	border-radius: 6px;
+	margin-right: auto;
+	user-select: none;
+	animation: fadeIn 0.2s ease-in-out;
+}
+
+.toolbarBtn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 0.82rem !important;
+	font-weight: 600 !important;
+	padding: 0.25rem 0.7rem !important;
+	border-radius: 6px !important;
+	text-decoration: none !important;
+	user-select: none;
+	transition: all 0.15s ease-in-out;
+}
+
+.reorderActiveGroup {
+	border-style: dashed !important;
+}
+
+.groupDragOver {
+	border-color: #339af0 !important;
+	box-shadow: 0 0 0 2px rgba(51, 154, 240, 0.25) !important;
+}
+
+.linkDragWrapper {
+	display: inline-flex;
+	align-items: center;
+	transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.linkDragWrapperDragging {
+	opacity: 0.35 !important;
+	transform: scale(0.95);
+}
+
+.linkDragWrapperReorder {
+	cursor: grab;
+}
+
+.linkDragWrapperReorder:active {
+	cursor: grabbing;
+}
+
+.emptyGroupDropZone {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.25rem 0.6rem;
+	margin: 0.2rem;
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: #1c7ed6;
+	background-color: #e7f5ff;
+	border: 1px dashed #74c0fc;
+	border-radius: 6px;
+	user-select: none;
+	transition: background-color 0.15s ease;
+}
+
+.groupDragHandle {
+	cursor: grab;
+	opacity: 0.65;
+	margin-right: 0.25rem;
+	font-size: 0.85rem;
+	user-select: none;
+	transition: opacity 0.15s ease;
+}
+
+.groupDragHandle:hover {
+	opacity: 1;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}

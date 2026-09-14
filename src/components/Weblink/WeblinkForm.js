@@ -13,6 +13,9 @@ export default function WeblinkForm({
 	setColor,
 	backgroundColor,
 	setBackgroundColor,
+	groupId,
+	setGroupId,
+	groups = [],
 }) {
 	return (
 		<Form
@@ -34,6 +37,23 @@ export default function WeblinkForm({
 					value={name}
 					onInput={(e) => setName(e.target.value)}
 				/>
+			</Form.Group>
+			<Form.Group className="col-auto">
+				<Form.Label htmlFor="groupId">소속 그룹</Form.Label>
+				<Form.Select
+					id="groupId"
+					value={groupId ?? ""}
+					onChange={(e) => setGroupId(e.target.value)}
+				>
+					<option value="">미분류</option>
+					{groups
+						.filter((g) => g.id > 0)
+						.map((g) => (
+							<option key={g.id} value={g.id}>
+								{g.name}
+							</option>
+						))}
+				</Form.Select>
 			</Form.Group>
 			<Form.Group className="col-12">
 				<Form.Label htmlFor="url">URL</Form.Label>

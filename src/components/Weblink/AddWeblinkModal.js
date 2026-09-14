@@ -1,18 +1,33 @@
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { ADD_WEBLINK, OWN_WEBLINKS } from "../../constants/querys";
+import { ADD_WEBLINK, MY_WEBLINK_GROUPS, OWN_WEBLINKS } from "../../constants/querys";
 import WeblinkForm from "./WeblinkForm";
 
-export default function AddWeblinkModal({ position = "last" }) {
+export default function AddWeblinkModal({ position = "last", defaultGroupId = null }) {
 	const [show, setShow] = useState(false);
 	const [name, setName] = useState("");
 	const [url, setUrl] = useState("");
 	const [color, setColor] = useState("#FFFFFF");
 	const [backgroundColor, setBackgroundColor] = useState("#1EA1F7");
+	const [groupId, setGroupId] = useState(defaultGroupId ?? "");
+
+	const { data: groupData } = useQuery(MY_WEBLINK_GROUPS);
+	const groups = groupData?.myWeblinkGroups || [];
+
 	const [addWeblink] = useMutation(ADD_WEBLINK, {
-		refetchQueries: [{ query: OWN_WEBLINKS }],
+		refetchQueries: [{ query: OWN_WEBLINKS }, { query: MY_WEBLINK_GROUPS }],
 	});
+
+	const handleOpen = () => {
+		setName("");
+		setUrl("");
+		setColor("#FFFFFF");
+		setBackgroundColor("#1EA1F7");
+		setGroupId(defaultGroupId ?? "");
+		setShow(true);
+	};
+
 	const onSubmit = () => {
 		addWeblink({
 			variables: {
@@ -22,6 +37,7 @@ export default function AddWeblinkModal({ position = "last" }) {
 					color,
 					backgroundColor,
 					position,
+					groupId: groupId ? Number(groupId) : null,
 				},
 			},
 		});
@@ -30,10 +46,10 @@ export default function AddWeblinkModal({ position = "last" }) {
 	return (
 		<>
 			<button
-				className="btn-dot m-1 user-select-none"
+				className="btn btn-dot m-1 user-select-none"
 				style={{ userSelect: "none" }}
 				onMouseDown={(e) => e.preventDefault()}
-				onClick={() => setShow(true)}>
+				onClick={handleOpen}>
 				+
 			</button>
 			<Modal show={show} onHide={() => setShow(false)}>
@@ -52,6 +68,9 @@ export default function AddWeblinkModal({ position = "last" }) {
 						setColor={setColor}
 						backgroundColor={backgroundColor}
 						setBackgroundColor={setBackgroundColor}
+						groupId={groupId}
+						setGroupId={setGroupId}
+						groups={groups}
 					/>
 				</Modal.Body>
 				<Modal.Footer>
