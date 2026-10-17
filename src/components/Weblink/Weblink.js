@@ -1,3 +1,4 @@
+import { formatWeblinkDynamicText } from "../../utils/weblinkUtil";
 import styles from "./Weblink.module.css";
 
 export default function Weblink({
@@ -8,6 +9,10 @@ export default function Weblink({
 	style,
 	onClick,
 }) {
+	const resolvedName = formatWeblinkDynamicText(name);
+	const resolvedUrl =
+		!url || url === "#" ? url : formatWeblinkDynamicText(url);
+
 	if (onClick) {
 		return (
 			<button
@@ -15,19 +20,19 @@ export default function Weblink({
 				className={`btn ${styles.btnMd} m-1`}
 				style={{ color, backgroundColor, ...style }}
 				onClick={onClick}>
-				{name === "" ? "웹 링크" : name}
+				{resolvedName === "" ? "웹 링크" : resolvedName}
 			</button>
 		);
 	}
 
 	return (
 		<a
-			href={url}
+			href={resolvedUrl}
 			target="_blank"
 			rel="noopener noreferrer"
 			className={`btn ${styles.btnMd} m-1`}
 			style={{ color, backgroundColor, ...style }}>
-			{name === "" ? "웹 링크" : name}
+			{resolvedName === "" ? "웹 링크" : resolvedName}
 		</a>
 	);
 }

@@ -14,6 +14,7 @@ import {
 	REORDER_WEBLINKS,
 	SET_WEBLINK_GROUP,
 } from "../../constants/querys";
+import { hasDynamicDateToken } from "../../utils/weblinkUtil";
 
 function WeblinkManageItem({
 	className,
@@ -26,6 +27,7 @@ function WeblinkManageItem({
 	isDragging,
 }) {
 	const [isAllowDrag, setIsAllowDrag] = useState(false);
+	const isDynamic = hasDynamicDateToken(name) || hasDynamicDateToken(url);
 
 	useEffect(() => {
 		if (!isDragging) {
@@ -89,13 +91,22 @@ function WeblinkManageItem({
 					>
 						☰
 					</span>
-					<div className="flex-grow-1">
+					<div className="flex-grow-1 d-flex align-items-center flex-wrap gap-1">
 						<Weblink
 							name={name}
 							url={url}
 							color={color}
 							backgroundColor={backgroundColor}
 						/>
+						{isDynamic && (
+							<span
+								className="badge rounded-pill bg-light text-primary border border-primary-subtle"
+								style={{ fontSize: "12.5px", fontWeight: 500 }}
+								title={`동적 날짜 포맷 적용됨 (원본 이름: ${name} / 원본 URL: ${url})`}
+							>
+								동적 날짜
+							</span>
+						)}
 					</div>
 				</div>
 				<div className="col-auto">
