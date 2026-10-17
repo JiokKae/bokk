@@ -7,6 +7,14 @@ const initialCategories = [
 		mainTitle: "내 웹링크 관리 & 커스텀",
 		updates: [
 			{
+				date: "2026.10.17",
+				isNew: true,
+				tag: "추가",
+				title: "웹링크 이름 및 주소(URL) 동적 날짜 포맷 지원",
+				description:
+					"매달 이름이나 주소가 바뀌는 출석체크·이벤트 링크에 {YYYY}, {MM}, {DD} 등의 날짜 포맷을 넣어두면, 매번 직접 수정하지 않아도 현재 연도·월·일에 맞춰 이름과 이동 주소가 자동으로 변환됩니다.",
+			},
+			{
 				date: "2026.09.15",
 				isNew: true,
 				tag: "개선",

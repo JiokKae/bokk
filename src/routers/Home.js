@@ -14,6 +14,7 @@ import {
 	REORDER_WEBLINK_GROUPS,
 	SET_WEBLINK_GROUP,
 } from "../constants/querys";
+import { getResolvedWeblinkUrl } from "../utils/weblinkUtil";
 import styles from "./Home.module.css";
 
 export default function Home() {
@@ -306,8 +307,7 @@ export default function Home() {
 	};
 
 	const getValidUrl = (url) => {
-		if (!url) return "#";
-		return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+		return getResolvedWeblinkUrl(url);
 	};
 
 	// 모두 열기 핸들러 (Shift 누름 유무에 따라 새 탭 또는 표준 새 창 분기)
