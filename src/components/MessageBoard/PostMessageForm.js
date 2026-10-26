@@ -39,12 +39,25 @@ async function processAndCompressImage(file, maxDimension = 1920, quality = 0.85
 		throw new Error("유효한 파일이 아닙니다.");
 	}
 
-	if (file.type === "image/gif") {
-		return new Promise((resolve, reject) => {
+	if (file.size > 15 * 1024 * 1024) {
+		throw new Error("이미지 파일 크기는 최대 15MB까지 업로드 가능합니다.");
+	}
+
+	const isGif = file.type === "image/gif" || /\.gif$/i.test(file.name || "");
+	const isWebp = file.type === "image/webp" || /\.webp$/i.test(file.name || "");
+
+	if (isGif || isWebp) {
+		const mimeType = isGif ? "image/gif" : "image/webp";
+		const defaultExt = isGif ? ".gif" : ".webp";
+		let fileName = file.name || `upload${defaultExt}`;
+		if (isWebp && !/\.webp$/i.test(fileName)) fileName += ".webp";
+		if (isGif && !/\.gif$/i.test(fileName)) fileName += ".gif";
+
+		return new Promise((resolve) => {
 			const reader = new FileReader();
 			reader.onload = (e) => {
-				const blob = new Blob([e.target.result], { type: "image/gif" });
-				resolve(new File([blob], file.name || "upload.gif", { type: "image/gif" }));
+				const blob = new Blob([e.target.result], { type: mimeType });
+				resolve(new File([blob], fileName, { type: mimeType }));
 			};
 			reader.onerror = () => resolve(file); // 실패 시 원본 파일 업로드로 우회
 			reader.readAsArrayBuffer(file);
@@ -193,11 +206,10 @@ function IMESafeEditor({ onReady, placeholder = "내용", onUploading }) {
 		}
 	};
 
-	const handleImageChange = async (e) => {
-		const file = e.target.files?.[0];
+	const uploadAndInsert = async (file) => {
 		if (!file) return;
 
-		const tempId = "img-upload-" + Date.now();
+		const tempId = "img-upload-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7);
 		const localPreviewUrl = URL.createObjectURL(file);
 
 		const tempImgHtml = `<figure class="image my-2"><img id="${tempId}" src="${localPreviewUrl}" alt="업로드 중..." style="max-width: 100%; height: auto; border-radius: 8px; opacity: 0.5; transition: opacity 0.3s;" /></figure><p><br></p>`;
@@ -244,6 +256,35 @@ function IMESafeEditor({ onReady, placeholder = "내용", onUploading }) {
 			URL.revokeObjectURL(localPreviewUrl);
 			setFileKey(Date.now());
 			if (onUploading) onUploading(false);
+		}
+	};
+
+	const handleImageChange = (e) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			uploadAndInsert(file);
+		}
+	};
+
+	const handlePaste = (e) => {
+		const files = e.clipboardData?.files;
+		if (files && files.length > 0) {
+			const imageFile = Array.from(files).find((f) => f.type.startsWith("image/"));
+			if (imageFile) {
+				e.preventDefault();
+				uploadAndInsert(imageFile);
+			}
+		}
+	};
+
+	const handleDrop = (e) => {
+		const files = e.dataTransfer?.files;
+		if (files && files.length > 0) {
+			const imageFile = Array.from(files).find((f) => f.type.startsWith("image/"));
+			if (imageFile) {
+				e.preventDefault();
+				uploadAndInsert(imageFile);
+			}
 		}
 	};
 
@@ -337,6 +378,8 @@ function IMESafeEditor({ onReady, placeholder = "내용", onUploading }) {
 				contentEditable
 				suppressContentEditableWarning
 				placeholder={placeholder}
+				onPaste={handlePaste}
+				onDrop={handleDrop}
 			/>
 		</EditorContainer>
 	);
