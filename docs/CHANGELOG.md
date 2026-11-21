@@ -584,3 +584,19 @@
 - **WebP 애니메이션 유실 버그 해결**: 기존 사전 압축(`processAndCompressImage`) 로직에서 GIF만 캔버스 압축 예외로 처리되어 있어, 애니메이션 WebP(움짤/스티커) 업로드 시 캔버스에 의해 1프레임 정적 JPEG로 변환된 후 업로드되어 재생되지 않던 현상 해결 (`image/webp` 및 `.webp` 파일 원본 보존 바이패스 적용).
 - **에디터 이미지 클립보드 붙여넣기(Ctrl+V) 및 드래그 앤 드롭 지원**: 에디터 영역에 이미지를 복사-붙여넣기하거나 드래그하여 놓을 때, 거대한 base64 텍스트가 삽입되는 대신 파일 업로드 파이프라인을 거쳐 서버 URL로 깔끔하게 자동 삽입되도록 UX 개선.
 - **클라이언트 최대 파일 용량 사전 체크**: 15MB 초과 이미지 선택 시 네트워크 전송 전 즉각적인 안내 알림 표시.
+
+### 5.63 프론트엔드 의존성 보안 취약점 점검 및 강제 오버라이드 패치 (`package.json`)
+- **배경**: `react-scripts 5.0.1` 내부 의존성 도구체인에서 보고된 High 등급 취약점 및 연관 라이브러리 보안 패치 적용.
+- **조치 내용**:
+  - `package.json`의 `overrides` 필드를 활용하여 react-scripts의 메이저 브레이킹 변경 없이 하위 의존성을 안전 패치 버전으로 강제 고정:
+    - `body-parser`: `^1.20.9` (압축 요청 본문 후행 바이트 DoS `GHSA-27r3-jxmh-p828` 해결)
+    - `follow-redirects`: `^1.16.2` (교차 출처 인증 헤더 누락 유출 `GHSA-q3jh-wrc6-jgq8`, `GHSA-8r9p-f939-6h3c` 해결)
+    - `launch-editor`: `^2.14.2` (Windows 커맨드 인젝션 및 % 이스케이프 결함 `GHSA-698v-4r3x-3vcv` 외 2건 해결)
+    - `node-forge`: `^1.4.2` (RSA PKCS#1 v1.5 서명 검증 취약점 `GHSA-86w9-cpqp-85rv` 해결)
+    - `serialize-javascript`: `^7.1.4` (XSS 스크립트 이스케이프 결함 `GHSA-m5mm-p8h7-m29v` 해결)
+    - `fast-uri`: `^3.1.9` (URI 스푸핑 및 호스트 혼동 `GHSA-w74x-v6f9-j3xg` 외 3건 해결)
+    - `webpack-dev-server`: react-scripts v5.0.1과 호환되는 `4.15.2` 안정 버전 유지
+- **검증**:
+  - `npm run build`: 최적화 프로덕션 번들 정상 컴파일 완료 (`main.38e77bc3.js`, `main.b034a17e.css`)
+  - `npm start`: 개발 서버(`PORT=3000`, `HOST=0.0.0.0`) 재시작 후 정상 바인딩 및 HTTP 200 OK 응답 검증 완료.
+
