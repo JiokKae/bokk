@@ -9,7 +9,7 @@
 
 ## 1. 기술 스택 (Tech Stack)
 
-- **Core**: React 18 (`v18.2.0`), React Router DOM v6 (`BrowserRouter`, `Routes`, `Outlet`)
+- **Core**: React 18 (`v18.2.0`), React Router DOM v7 (`BrowserRouter`, `Routes`, `Outlet`), **Vite 6** (`vite.config.js`, `outDir: 'build'`)
 - **API & State**: Apollo Client v3 (`@apollo/client`), GraphQL (`src/constants/querys.js`, `src/client.js`)
 - **UI & Styling**: CSS Modules (`*.module.css`), React Bootstrap, Styled Components
 - **Media & Editor**: `react-youtube`, 자체 구축 한글 조합 호환 `IMESafeEditor` (`PostMessageForm.js`)

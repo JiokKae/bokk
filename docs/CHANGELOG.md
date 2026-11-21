@@ -601,3 +601,10 @@
   - `npm run build`: 최적화 프로덕션 번들 정상 컴파일 완료 (`main.38e77bc3.js`, `main.b034a17e.css`)
   - `npm start`: 개발 서버(`PORT=3000`, `HOST=0.0.0.0`) 재시작 후 정상 바인딩 및 HTTP 200 OK 응답 검증 완료.
 
+### 5.64 프론트엔드 빌드 도구 CRA(`react-scripts 5.0.1`) → Vite 6 마이그레이션
+- **패키지 경량화 및 취약점 완전 해소**: 유지보수 종료된 `react-scripts`와 임시 `overrides` 15개를 모두 제거하고 `vite` (`^6.3.5`) + `@vitejs/plugin-react` (`^4.5.0`)로 전환 (1,174개 패키지 제거, 총 331개 / `npm audit` **`0 vulnerabilities`** 달성).
+- **무중단 호환 설정 (`vite.config.js`, 루트 `index.html`)**:
+  - `public/index.html`을 프로젝트 루트 `index.html`로 이동(`%PUBLIC_URL%` 제거, `<script type="module" src="/src/index.js">` 추가).
+  - `vite.config.js`에 esbuild JSX 로더(`.js` 48개 파일 확장자 변경 없이 호환), `loadEnv` 기반 `process.env.REACT_APP_*` 자동 주입(기존 `.env.*.local` 무수정 호환), `server: { port: 3000, host: true }`, `build: { outDir: 'build' }` 구성으로 기존 `gh-pages -d build` 배포 및 로컬 개발 서버 연동 100% 유지.
+- **검증**: `vite build` **4.59초** 정상 컴파일 및 `build/` 내 정적 파일(`CNAME`, `404.html`, `favicon.ico`, `manifest.json`)·환경변수 치환 검증 완료.
+
