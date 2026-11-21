@@ -116,7 +116,7 @@ function YourggSearch({ playerNames }) {
 					href={`https://your.gg/kr/profile/${name}`}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="btn btn_md bgc-white ms-2 mb-2">
+					className="btn btn-md bgc-white ms-2 mb-2">
 					{name}
 				</a>
 			))}
@@ -195,7 +195,7 @@ function LlchggSearch({ playerNames }) {
 					href={`https://lolchess.gg/profile/kr/${name}`}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="btn btn_md bgc-white ms-2 mb-2">
+					className="btn btn-md bgc-white ms-2 mb-2">
 					{name}
 				</a>
 			))}
