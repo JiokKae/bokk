@@ -595,6 +595,7 @@
     - `node-forge`: `^1.4.2` (RSA PKCS#1 v1.5 서명 검증 취약점 `GHSA-86w9-cpqp-85rv` 해결)
     - `serialize-javascript`: `^7.1.4` (XSS 스크립트 이스케이프 결함 `GHSA-m5mm-p8h7-m29v` 해결)
     - `fast-uri`: `^3.1.9` (URI 스푸핑 및 호스트 혼동 `GHSA-w74x-v6f9-j3xg` 외 3건 해결)
+    - `qs`: `^6.16.1` (`arrayFormat: 'comma'` TypeError DoS `GHSA-6pq8-jhm2-2vcw` 해결) 및 `npm audit fix`로 `node-forge`/`glob`/`minimatch` 추가 패치
     - `webpack-dev-server`: react-scripts v5.0.1과 호환되는 `4.15.2` 안정 버전 유지
 - **검증**:
   - `npm run build`: 최적화 프로덕션 번들 정상 컴파일 완료 (`main.38e77bc3.js`, `main.b034a17e.css`)
