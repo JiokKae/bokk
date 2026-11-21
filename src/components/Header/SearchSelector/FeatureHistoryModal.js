@@ -8,7 +8,6 @@ const initialCategories = [
 		updates: [
 			{
 				date: "2026.10.17",
-				isNew: true,
 				tag: "추가",
 				title: "웹링크 이름 및 주소(URL) 동적 날짜 포맷 지원",
 				description:
@@ -16,7 +15,6 @@ const initialCategories = [
 			},
 			{
 				date: "2026.09.15",
-				isNew: true,
 				tag: "개선",
 				title: "모바일 화면 최적화 및 비로그인 접근 보호",
 				description:
@@ -24,7 +22,6 @@ const initialCategories = [
 			},
 			{
 				date: "2026.09.15",
-				isNew: true,
 				tag: "추가",
 				title: "홈 화면에서 바로 웹링크 순서 및 그룹 변경",
 				description:
@@ -32,7 +29,6 @@ const initialCategories = [
 			},
 			{
 				date: "2026.09.15",
-				isNew: true,
 				tag: "추가",
 				title: "웹링크 그룹(폴더) 생성 및 순서 정리",
 				description:
@@ -40,7 +36,6 @@ const initialCategories = [
 			},
 			{
 				date: "2026.09.15",
-				isNew: true,
 				tag: "추가",
 				title: "그룹 링크 한 번에 모두 열기",
 				description:
@@ -48,7 +43,6 @@ const initialCategories = [
 			},
 			{
 				date: "2026.09.15",
-				isNew: true,
 				tag: "추가",
 				title: "웹링크 관리 페이지에서 간편한 그룹별 정리",
 				description:
@@ -56,7 +50,6 @@ const initialCategories = [
 			},
 			{
 				date: "2026.08.14",
-				isNew: false,
 				tag: "수정",
 				title: "기본 웹링크 표시 상태 즉시 반영",
 				description:
@@ -64,7 +57,6 @@ const initialCategories = [
 			},
 			{
 				date: "2026.08.13",
-				isNew: false,
 				tag: "추가",
 				title: "새 웹링크 추가 위치 자동 지정",
 				description:
@@ -72,21 +64,18 @@ const initialCategories = [
 			},
 			{
 				date: "2026.08.12",
-				isNew: false,
 				tag: "개선",
 				title: "내 웹링크 순서 변경 (드래그 앤 드롭)",
 				description: "마우스로 끌어서 원하는 위치로 웹링크 순서를 손쉽게 바꿀 수 있습니다.",
 			},
 			{
 				date: "2022.11.15",
-				isNew: false,
 				tag: "추가",
 				title: "등록된 웹링크 수정 기능",
 				description: "이미 등록한 나만의 웹링크의 이름, 주소(URL), 배경 색상 편집 기능 지원",
 			},
 			{
 				date: "2018.05.04",
-				isNew: false,
 				tag: "추가",
 				title: "나만의 웹링크 커스텀 등록",
 				description: "개인화된 웹링크 등록 및 UI 색상 커스터마이징 시스템 최초 구축",
@@ -99,77 +88,66 @@ const initialCategories = [
 		updates: [
 			{
 				date: "2026.09.14",
-				isNew: true,
 				tag: "추가",
 				title: "플레이리스트 생성 및 한 곡 다중 담기",
 				description: "원하는 이름으로 재생 목록을 자유롭게 만들고, 영상마다 여러 개의 플레이리스트를 골라 담아 취향대로 분류해 들을 수 있습니다.",
 			},
 			{
 				date: "2026.09.14",
-				isNew: true,
 				tag: "추가",
 				title: "8자리 코드로 플레이리스트 공유 및 가져오기",
 				description: "8자리 고유 공유코드로 내가 만든 플레이리스트를 친구와 공유하거나, 다른 사람의 플레이리스트를 내 보관함에 바로 복사해 올 수 있습니다.",
 			},
 			{
 				date: "2026.09.14",
-				isNew: true,
 				tag: "추가",
 				title: "끊김 없는 플레이리스트 둘러보기 & 라이브 이퀄라이저",
 				description: "음악을 듣는 도중 다른 플레이리스트를 자유롭게 둘러보아도 노래가 멈추지 않으며, 현재 재생 중인 목록에는 실시간 이퀄라이저가 표시됩니다.",
 			},
 			{
 				date: "2026.09.14",
-				isNew: true,
 				tag: "개선",
 				title: "재생 목록 창 크기 조절 편의성 향상",
 				description: "브라우저 창을 좁게 쓰거나 화면을 분할해 사용할 때도 창 크기 조절 손잡이가 사라지지 않고 항상 편리하게 넓힐 수 있습니다.",
 			},
 			{
 				date: "2026.08.18",
-				isNew: false,
 				tag: "추가",
 				title: "유튜브 대화면 확장 및 내장형 도트 핸들 리사이저",
 				description: "오프캔버스 좌측 도트 핸들을 통해 너비를 최대 2배(1000px)까지 자유롭게 드래그/원클릭 확장 지원",
 			},
 			{
 				date: "2026.08.17",
-				isNew: true,
 				tag: "수정",
 				title: "유튜브 자동 재생(AutoPlay) 상태 동기화 및 실행 오류 수정",
 				description: "브라우저 정책 호환을 위한 조작 시 자동 재생 안내 뱃지 추가 및 설정 동기화 최적화",
 			},
 			{
 				date: "2026.08.17",
-				isNew: true,
 				tag: "추가",
 				title: "유튜브 한곡 반복 재생 (Single Loop)",
 				description: "유튜브 컨트롤러에 한곡 반복 버튼을 추가하여 현재 곡 연속 재생 지원",
 			},
 			{
 				date: "2026.08.17",
-				isNew: true,
 				tag: "개선",
 				title: "재생 불가/삭제 영상 자동 건너뛰기",
 				description: "삭제되거나 국가 제한 등으로 재생이 불가능한 영상 감지 시 자동으로 다음 곡 재생",
 			},
 			{
 				date: "2026.08.14",
-				isNew: true,
 				tag: "개선",
 				title: "모바일 헤더 유튜브 버튼 UI 최적화",
 				description: "좁은 모바일 화면에서 아이콘 잘림 및 줄바꿈을 방지하고 유동적 티커 너비 적용",
 			},
 			{
 				date: "2026.08.12",
-				isNew: true,
 				tag: "추가",
 				title: "유튜브 실시간 재생 제목 스크롤 티커",
 				description: "백그라운드 재생 상태를 직관적으로 확인할 수 있는 상단 스크롤 티커 UI 적용",
 			},
 			{
 				date: "2018.12.28",
-				isNew: false,
 				tag: "추가",
 				title: "유튜브 백그라운드 연속 재생 플레이어",
 				description: "커스텀 재생 목록 등록 및 백그라운드 영상 연속 재생 플레이어 최초 도입",
@@ -182,14 +160,12 @@ const initialCategories = [
 		updates: [
 			{
 				date: "2026.08.17",
-				isNew: true,
 				tag: "개선",
 				title: "OP.GG 전적 검색 방식 최신화",
 				description: "OP.GG 최신 검색 라우팅 구조(q, region=kr) 적용 및 빠른 소환사 이동 링크 최신화",
 			},
 			{
 				date: "2018.11.21",
-				isNew: false,
 				tag: "추가",
 				title: "포털 통합 검색 (네이버 / 구글)",
 				description: "주요 포털(네이버, 구글) 간 탭 전환형 통합 검색 인터페이스 구축",
@@ -202,28 +178,24 @@ const initialCategories = [
 		updates: [
 			{
 				date: "2026.08.14",
-				isNew: true,
 				tag: "수정",
 				title: "게시판 에디터 미디어 첨부 및 업로드 로직 개편",
 				description: "미리보기 지연 시간 최소화 및 모바일 다중 고해상도 이미지 업로드 시 발생하는 메모리 초과(OOM) 오류 원천 차단",
 			},
 			{
 				date: "2026.08.12",
-				isNew: false,
 				tag: "개선",
 				title: "모바일 전용 한글 호환 에디터 엔진 구축",
 				description: "네이티브 조합 엔진 탑재를 통한 모바일 환경(천지인 등) 한글 자모 분리 현상 해결",
 			},
 			{
 				date: "2022.12.15",
-				isNew: false,
 				tag: "개선",
 				title: "게시판 미디어(이미지/영상) 첨부 지원",
 				description: "게시글 작성 시 이미지(WebP) 첨부 및 유튜브 영상 임베드 기능 도입",
 			},
 			{
 				date: "2018.05.06",
-				isNew: false,
 				tag: "추가",
 				title: "자유 게시판 및 소통",
 				description: "사용자 간 자유로운 의견 교환을 위한 실시간 게시판 및 댓글 시스템 최초 오픈",
