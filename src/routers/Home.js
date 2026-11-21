@@ -306,10 +306,6 @@ export default function Home() {
 		setDraggedGroupIndex(null);
 	};
 
-	const getValidUrl = (url) => {
-		return getResolvedWeblinkUrl(url);
-	};
-
 	// 모두 열기 핸들러 (Shift 누름 유무에 따라 새 탭 또는 표준 새 창 분기)
 	const handleOpenAll = (e, links) => {
 		if (!links || links.length === 0) {
@@ -325,7 +321,7 @@ export default function Home() {
 				for (let i = 1; i < links.length; i++) {
 					const link = links[i];
 					if (!link.url) continue;
-					const targetUrl = getValidUrl(link.url);
+					const targetUrl = getResolvedWeblinkUrl(link.url);
 					const win = window.open(targetUrl, "_blank");
 					if (!win || win.closed || typeof win.closed === "undefined") {
 						blocked = true;
@@ -344,7 +340,7 @@ export default function Home() {
 			let blocked = false;
 			links.forEach((link) => {
 				if (!link.url) return;
-				const targetUrl = getValidUrl(link.url);
+				const targetUrl = getResolvedWeblinkUrl(link.url);
 				const win = window.open(targetUrl, "_blank");
 				if (!win || win.closed || typeof win.closed === "undefined") {
 					blocked = true;
@@ -399,7 +395,7 @@ export default function Home() {
 								bokk
 							</span>
 							<a
-								href={getValidUrl(builtinWeblinks[0]?.url)}
+								href={getResolvedWeblinkUrl(builtinWeblinks[0]?.url)}
 								target="_blank"
 								rel="noopener noreferrer"
 								className={
@@ -467,7 +463,7 @@ export default function Home() {
 												bokk
 											</span>
 											<a
-												href={getValidUrl(builtinWeblinks[0]?.url)}
+												href={getResolvedWeblinkUrl(builtinWeblinks[0]?.url)}
 												target="_blank"
 												rel="noopener noreferrer"
 												className={
@@ -539,7 +535,7 @@ export default function Home() {
 											</span>
 											{untaggedLinks.length > 0 && (
 												<a
-													href={getValidUrl(untaggedLinks[0]?.url)}
+													href={getResolvedWeblinkUrl(untaggedLinks[0]?.url)}
 													target="_blank"
 													rel="noopener noreferrer"
 													className={
@@ -649,7 +645,7 @@ export default function Home() {
 										</span>
 										{groupLinks.length > 0 && (
 											<a
-												href={getValidUrl(groupLinks[0]?.url)}
+												href={getResolvedWeblinkUrl(groupLinks[0]?.url)}
 												target="_blank"
 												rel="noopener noreferrer"
 												className={
@@ -751,7 +747,7 @@ export default function Home() {
 											</span>
 											{untaggedLinks.length > 0 && (
 												<a
-													href={getValidUrl(untaggedLinks[0]?.url)}
+													href={getResolvedWeblinkUrl(untaggedLinks[0]?.url)}
 													target="_blank"
 													rel="noopener noreferrer"
 													className={
