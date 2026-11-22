@@ -14,7 +14,7 @@ export default function SearchSelector() {
 
 	return (
 		<div>
-			<div className="my-2 flex flex-nowrap items-center gap-2 overflow-hidden px-1">
+			<div className="my-1 flex flex-nowrap items-center gap-2 overflow-hidden px-1 py-1">
 				<button
 					type="button"
 					id="tab_naver"
