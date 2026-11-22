@@ -127,16 +127,15 @@ export function reorderWeblinksAcrossGroups(
 	const customGroups = groups.filter((g) => g.id > 0);
 	const updatedItem = { ...draggedItem, groupId: normTargetGroupId };
 
-	let targetGroupItems;
+	const targetGroupItems = weblinks.filter(
+		(w) =>
+			(normTargetGroupId === null
+				? isUntaggedWeblink(w, customGroups)
+				: w.groupId === normTargetGroupId) && w.id !== draggedItem.id
+	);
 	if (targetIndex === null) {
-		targetGroupItems = [updatedItem];
+		targetGroupItems.push(updatedItem);
 	} else {
-		targetGroupItems = weblinks.filter(
-			(w) =>
-				(normTargetGroupId === null
-					? isUntaggedWeblink(w, customGroups)
-					: w.groupId === normTargetGroupId) && w.id !== draggedItem.id
-		);
 		targetGroupItems.splice(targetIndex, 0, updatedItem);
 	}
 

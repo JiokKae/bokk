@@ -59,6 +59,11 @@ describe("weblinkUtil", () => {
 		const movedToEmpty = reorderWeblinksAcrossGroups(links, groups, 10, 2, null);
 		expect(movedToEmpty.find((w) => w.id === 10).groupId).toBe(2);
 
+		// targetIndex=null을 비어있지 않은 그룹에 호출해도 기존 링크가 사라지지 않아야 함
+		const movedToNonEmpty = reorderWeblinksAcrossGroups(links, groups, 20, 1, null);
+		expect(movedToNonEmpty.map((w) => w.id)).toEqual([10, 11, 20]);
+		expect(movedToNonEmpty.find((w) => w.id === 20).groupId).toBe(1);
+
 		expect(reorderWeblinksAcrossGroups(links, groups, 20, "untagged", null)).toBeNull();
 	});
 

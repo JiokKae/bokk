@@ -43,7 +43,7 @@ export default function useWeblinkDnD({
 	};
 
 	const handleLinkDragEnter = (e, targetGroupId, targetIndex) => {
-		e.preventDefault();
+		e?.preventDefault?.();
 		if (!draggedInfoRef.current) return;
 
 		const newWeblinks = reorderWeblinksAcrossGroups(
@@ -60,7 +60,7 @@ export default function useWeblinkDnD({
 	};
 
 	const handleEmptyGroupDragEnter = (e, targetGroupId) => {
-		e.preventDefault();
+		e?.preventDefault?.();
 		if (!draggedInfoRef.current) return;
 
 		const newWeblinks = reorderWeblinksAcrossGroups(
@@ -126,15 +126,57 @@ export default function useWeblinkDnD({
 		})();
 	}, [setWeblinkGroup, reorderWeblinks]);
 
-	// 전역 드래그 종료 안전망
+	// 전역 드래그 종료 안전망 + HTML5 드래그 시 상/하단 가장자리 자동 스크롤
 	useEffect(() => {
+		let rafId = null;
+		let pointerY = null;
+
+		const stepScroll = () => {
+			if (!draggedInfoRef.current || pointerY === null) {
+				rafId = null;
+				return;
+			}
+			const threshold = 90;
+			const maxSpeed = 18;
+			const vh = window.innerHeight;
+			let delta = 0;
+
+			if (pointerY < threshold) {
+				delta = -Math.ceil(((threshold - pointerY) / threshold) * maxSpeed);
+			} else if (pointerY > vh - threshold) {
+				delta = Math.ceil(((pointerY - (vh - threshold)) / threshold) * maxSpeed);
+			}
+
+			if (delta !== 0) {
+				window.scrollBy(0, delta);
+			}
+			rafId = requestAnimationFrame(stepScroll);
+		};
+
+		const handleGlobalDragOver = (e) => {
+			if (!draggedInfoRef.current) return;
+			pointerY = e.clientY;
+			if (!rafId) {
+				rafId = requestAnimationFrame(stepScroll);
+			}
+		};
+
 		const handleGlobalDragEnd = () => {
+			pointerY = null;
+			if (rafId) {
+				cancelAnimationFrame(rafId);
+				rafId = null;
+			}
 			if (draggedInfoRef.current) {
 				handleLinkDragEnd();
 			}
 		};
+
+		window.addEventListener("dragover", handleGlobalDragOver);
 		window.addEventListener("dragend", handleGlobalDragEnd);
 		return () => {
+			if (rafId) cancelAnimationFrame(rafId);
+			window.removeEventListener("dragover", handleGlobalDragOver);
 			window.removeEventListener("dragend", handleGlobalDragEnd);
 		};
 	}, [handleLinkDragEnd]);

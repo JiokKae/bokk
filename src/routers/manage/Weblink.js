@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
 	ChevronDown,
@@ -27,6 +27,7 @@ import {
 import useWeblinkDnD from "../../hooks/useWeblinkDnD";
 import {
 	WEBLINK_GROUP_ID,
+	formatWeblinkDynamicText,
 	hasDynamicDateToken,
 	isUntaggedWeblink,
 } from "../../utils/weblinkUtil";
@@ -44,23 +45,21 @@ function loadCollapsedGroups() {
 	}
 }
 
+function parseGroupKey(raw) {
+	if (raw === "untagged") return "untagged";
+	const num = Number(raw);
+	return Number.isNaN(num) ? raw : num;
+}
+
 function WeblinkManageItem({
+	groupKey,
 	index,
-	weblink: { id, name, url, color, backgroundColor, groupId },
-	onDragStart,
-	onDragEnter,
-	onDragOver,
-	onDragEnd,
+	weblink,
+	onPointerDragStart,
 	isDragging,
 }) {
-	const [isAllowDrag, setIsAllowDrag] = useState(false);
+	const { id, name, url, color, backgroundColor, groupId } = weblink;
 	const isDynamic = hasDynamicDateToken(name) || hasDynamicDateToken(url);
-
-	useEffect(() => {
-		if (!isDragging) {
-			setIsAllowDrag(false);
-		}
-	}, [isDragging]);
 
 	const [deleteWeblink] = useMutation(DELETE_WEBLINK, {
 		onCompleted: ({ deleteWeblink }) => {
@@ -81,41 +80,33 @@ function WeblinkManageItem({
 
 	return (
 		<li
+			data-dnd-item="true"
+			data-dnd-group={String(groupKey)}
+			data-dnd-index={String(index)}
 			className={cn(
 				"select-none list-none bg-white px-3.5 py-2.5 transition-opacity duration-150",
 				index !== 0 && "border-0 border-t border-solid border-zinc-100",
-				isDragging && "bg-bokk-subtle/50 opacity-40"
+				isDragging && "bg-bokk-subtle/60 opacity-40"
 			)}
-			draggable={isAllowDrag}
-			onDragStart={(e) => {
-				if (!isAllowDrag) {
-					e.preventDefault();
-					return;
-				}
-				onDragStart(e);
-			}}
-			onDragEnter={(e) => onDragEnter(e, index)}
-			onDragOver={onDragOver}
-			onDragEnd={(e) => {
-				setIsAllowDrag(false);
-				onDragEnd(e);
-			}}
 		>
 			<div className="flex flex-wrap items-center justify-between gap-2.5">
 				<div className="flex min-w-0 flex-1 items-center gap-2.5">
-					<span
+					<button
+						type="button"
 						className={cn(
-							"inline-flex shrink-0 items-center text-zinc-400 hover:text-zinc-600",
-							isAllowDrag ? "cursor-grabbing" : "cursor-grab"
+							"inline-flex shrink-0 touch-none items-center rounded border-0 bg-transparent p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600",
+							isDragging ? "cursor-grabbing" : "cursor-grab"
 						)}
-						onMouseDown={() => setIsAllowDrag(true)}
-						onMouseUp={() => setIsAllowDrag(false)}
-						onTouchStart={() => setIsAllowDrag(true)}
-						onTouchEnd={() => setIsAllowDrag(false)}
-						title="드래그하여 순서 및 그룹 변경"
+						onPointerDown={(e) => {
+							if (e.button !== 0 && e.pointerType === "mouse") return;
+							e.preventDefault();
+							onPointerDragStart(e, weblink);
+						}}
+						title="드래그하여 순서 및 그룹 변경 (드래그 중 휠 스크롤 가능)"
+						aria-label="드래그하여 순서 및 그룹 변경"
 					>
 						<GripVertical className="size-5" />
-					</span>
+					</button>
 					<div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
 						<Weblink
 							name={name}
@@ -163,7 +154,7 @@ function BuiltinWeblinkManageItem({
 		>
 			<div className="flex flex-wrap items-center justify-between gap-2.5">
 				<div className="flex min-w-0 flex-1 items-center gap-2.5">
-					<span className="invisible inline-flex shrink-0 items-center">
+					<span className="invisible inline-flex shrink-0 items-center p-1">
 						<GripVertical className="size-5" />
 					</span>
 					<div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
@@ -263,6 +254,7 @@ function WeblinkManageSection({
 	title,
 	titleClassName = "",
 	groupKey,
+	groupIdForCollapse,
 	defaultGroupId,
 	links,
 	emptyText,
@@ -271,32 +263,19 @@ function WeblinkManageSection({
 	isHovered,
 	isCollapsed,
 	onToggleCollapse,
-	onExpand,
-	onDragStart,
-	onItemDragEnter,
-	onEmptyGroupDragEnter,
-	onDragOver,
-	onDrop,
-	onDragEnd,
+	onPointerDragStart,
 }) {
 	return (
 		<div className="mb-6">
 			<div
+				data-dnd-group-header={String(groupKey)}
+				data-dnd-collapse-id={String(groupIdForCollapse)}
 				className={cn(
 					"mb-2 flex items-center justify-between gap-2 border-0 border-b border-solid pb-1.5 transition-colors",
 					isCollapsed && isHovered && draggedInfo
 						? "border-bokk"
 						: "border-zinc-200"
 				)}
-				onDragOver={onDragOver}
-				onDragEnter={(e) => {
-					if (isCollapsed && draggedInfo) {
-						onExpand?.();
-						if (links.length === 0) {
-							onEmptyGroupDragEnter(e, groupKey);
-						}
-					}
-				}}
 			>
 				<button
 					type="button"
@@ -323,19 +302,13 @@ function WeblinkManageSection({
 
 			{!isCollapsed && (
 				<ul
+					data-dnd-empty-zone={links.length === 0 ? String(groupKey) : undefined}
 					className={cn(
 						"m-0 overflow-hidden rounded-xl border-[1px] border-solid bg-white p-0 transition-colors duration-200",
 						isHovered && draggedInfo
 							? "border-bokk ring-2 ring-bokk/20"
 							: "border-zinc-200"
 					)}
-					onDragOver={onDragOver}
-					onDrop={onDrop}
-					onDragEnter={(e) => {
-						if (links.length === 0) {
-							onEmptyGroupDragEnter(e, groupKey);
-						}
-					}}
 				>
 					{links.length === 0 ? (
 						<li
@@ -343,9 +316,6 @@ function WeblinkManageSection({
 								"list-none py-6 text-center transition-colors",
 								isHovered ? "bg-bokk-subtle/50" : "bg-white"
 							)}
-							onDragOver={onDragOver}
-							onDrop={onDrop}
-							onDragEnter={(e) => onEmptyGroupDragEnter(e, groupKey)}
 						>
 							<span
 								className={cn(
@@ -362,12 +332,10 @@ function WeblinkManageSection({
 						links.map((weblink, index) => (
 							<WeblinkManageItem
 								key={weblink.id}
+								groupKey={groupKey}
 								index={index}
 								weblink={weblink}
-								onDragStart={() => onDragStart(weblink)}
-								onDragEnter={(e, idx) => onItemDragEnter(e, groupKey, idx)}
-								onDragOver={onDragOver}
-								onDragEnd={onDragEnd}
+								onPointerDragStart={onPointerDragStart}
 								isDragging={draggedInfo?.id === weblink.id}
 							/>
 						))
@@ -407,6 +375,10 @@ export default function WeblinkManage() {
 	const [weblinks, setWeblinks] = useState([]);
 	const [showGroupModal, setShowGroupModal] = useState(false);
 	const [collapsedGroups, setCollapsedGroups] = useState(loadCollapsedGroups);
+	const [pointerGhost, setPointerGhost] = useState(null);
+
+	const pointerPosRef = useRef({ x: 0, y: 0 });
+	const lastTargetKeyRef = useRef("");
 
 	const groups = groupData?.myWeblinkGroups || [];
 	const userGroups = groups.filter((g) => g.id > 0);
@@ -442,7 +414,6 @@ export default function WeblinkManage() {
 		handleLinkDragStart,
 		handleLinkDragEnter: handleItemDragEnter,
 		handleEmptyGroupDragEnter,
-		handleDragOver,
 		handleLinkDragEnd: handleDragEnd,
 	} = useWeblinkDnD({
 		weblinks,
@@ -451,12 +422,139 @@ export default function WeblinkManage() {
 		enabled: true,
 	});
 
-	const handleDragStart = (weblink) => handleLinkDragStart(null, weblink);
+	const expandGroup = useCallback((key) => {
+		const strKey = String(key);
+		setCollapsedGroups((prev) => {
+			if (!prev[strKey]) return prev;
+			return { ...prev, [strKey]: false };
+		});
+	}, []);
 
-	const handleDrop = (e) => {
-		e.preventDefault();
-		handleDragEnd();
-	};
+	// Pointer Events 기반 드래그 처리: 휠 스크롤 100% 동작 + 상·하단 자동 스크롤
+	const handlePointerDragStart = useCallback(
+		(e, weblink) => {
+			pointerPosRef.current = { x: e.clientX, y: e.clientY };
+			lastTargetKeyRef.current = "";
+			handleLinkDragStart(null, weblink);
+			setPointerGhost({
+				name: formatWeblinkDynamicText(weblink.name) || "웹 링크",
+				color: weblink.color,
+				backgroundColor: weblink.backgroundColor,
+				x: e.clientX,
+				y: e.clientY,
+			});
+		},
+		[handleLinkDragStart]
+	);
+
+	const isPointerDragging = Boolean(pointerGhost);
+
+	useEffect(() => {
+		if (!isPointerDragging) return;
+
+		let rafId = null;
+
+		const hitTestAt = (clientX, clientY) => {
+			const elements = document.elementsFromPoint(clientX, clientY);
+			for (const el of elements) {
+				if (el.dataset?.dndItem === "true") {
+					const gKey = parseGroupKey(el.dataset.dndGroup);
+					const idx = Number(el.dataset.dndIndex);
+					const sig = `item:${gKey}:${idx}`;
+					if (lastTargetKeyRef.current !== sig) {
+						lastTargetKeyRef.current = sig;
+						handleItemDragEnter(null, gKey, idx);
+					}
+					return;
+				}
+				if (el.dataset?.dndGroupHeader) {
+					const collapseId = el.dataset.dndCollapseId;
+					if (collapseId) expandGroup(collapseId);
+					return;
+				}
+				if (el.dataset?.dndEmptyZone) {
+					const gKey = parseGroupKey(el.dataset.dndEmptyZone);
+					const sig = `empty:${gKey}`;
+					if (lastTargetKeyRef.current !== sig) {
+						lastTargetKeyRef.current = sig;
+						handleEmptyGroupDragEnter(null, gKey);
+					}
+					return;
+				}
+			}
+		};
+
+		const stepAutoScroll = () => {
+			const { x, y } = pointerPosRef.current;
+			const threshold = 90;
+			const maxSpeed = 18;
+			const vh = window.innerHeight;
+			let delta = 0;
+
+			if (y < threshold) {
+				delta = -Math.ceil(((threshold - y) / threshold) * maxSpeed);
+			} else if (y > vh - threshold) {
+				delta = Math.ceil(((y - (vh - threshold)) / threshold) * maxSpeed);
+			}
+
+			if (delta !== 0) {
+				window.scrollBy(0, delta);
+				hitTestAt(x, y);
+			}
+			rafId = requestAnimationFrame(stepAutoScroll);
+		};
+
+		const handlePointerMove = (e) => {
+			pointerPosRef.current = { x: e.clientX, y: e.clientY };
+			setPointerGhost((prev) =>
+				prev ? { ...prev, x: e.clientX, y: e.clientY } : null
+			);
+			hitTestAt(e.clientX, e.clientY);
+		};
+
+		const handleScroll = () => {
+			const { x, y } = pointerPosRef.current;
+			hitTestAt(x, y);
+		};
+
+		const finishDrag = () => {
+			setPointerGhost(null);
+			lastTargetKeyRef.current = "";
+			handleDragEnd();
+		};
+
+		const handleKeyDown = (e) => {
+			if (e.key === "Escape") {
+				finishDrag();
+			}
+		};
+
+		const prevCursor = document.body.style.cursor;
+		document.body.style.cursor = "grabbing";
+		rafId = requestAnimationFrame(stepAutoScroll);
+
+		window.addEventListener("pointermove", handlePointerMove);
+		window.addEventListener("pointerup", finishDrag);
+		window.addEventListener("pointercancel", finishDrag);
+		window.addEventListener("scroll", handleScroll, { passive: true });
+		window.addEventListener("keydown", handleKeyDown);
+
+		return () => {
+			document.body.style.cursor = prevCursor;
+			if (rafId) cancelAnimationFrame(rafId);
+			window.removeEventListener("pointermove", handlePointerMove);
+			window.removeEventListener("pointerup", finishDrag);
+			window.removeEventListener("pointercancel", finishDrag);
+			window.removeEventListener("scroll", handleScroll);
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [
+		isPointerDragging,
+		handleItemDragEnter,
+		handleEmptyGroupDragEnter,
+		handleDragEnd,
+		expandGroup,
+	]);
 
 	const handleToggleBuiltin = (weblinkId) => {
 		toggleBuiltinWeblink({ variables: { weblinkId } });
@@ -494,14 +592,6 @@ export default function WeblinkManage() {
 			...prev,
 			[strKey]: !prev[strKey],
 		}));
-	};
-
-	const expandGroup = (key) => {
-		const strKey = String(key);
-		setCollapsedGroups((prev) => {
-			if (!prev[strKey]) return prev;
-			return { ...prev, [strKey]: false };
-		});
 	};
 
 	const handleToggleAll = () => {
@@ -578,6 +668,7 @@ export default function WeblinkManage() {
 							title="미분류"
 							titleClassName="text-zinc-500"
 							groupKey="untagged"
+							groupIdForCollapse={group.id}
 							defaultGroupId={null}
 							links={untaggedLinks}
 							emptyText="미분류 웹링크가 없습니다."
@@ -586,13 +677,7 @@ export default function WeblinkManage() {
 							isHovered={hoverTargetGroup === "untagged"}
 							isCollapsed={isCollapsed}
 							onToggleCollapse={() => toggleGroupCollapse(group.id)}
-							onExpand={() => expandGroup(group.id)}
-							onDragStart={handleDragStart}
-							onItemDragEnter={handleItemDragEnter}
-							onEmptyGroupDragEnter={handleEmptyGroupDragEnter}
-							onDragOver={handleDragOver}
-							onDrop={handleDrop}
-							onDragEnd={handleDragEnd}
+							onPointerDragStart={handlePointerDragStart}
 						/>
 					);
 				}
@@ -602,6 +687,7 @@ export default function WeblinkManage() {
 						key={group.id}
 						title={group.name}
 						groupKey={group.id}
+						groupIdForCollapse={group.id}
 						defaultGroupId={group.id}
 						links={weblinks.filter((w) => w.groupId === group.id)}
 						emptyText="이 그룹에 등록된 웹링크가 없습니다. 우측 상단 '+' 버튼으로 추가하거나 링크를 드래그해오세요."
@@ -610,16 +696,25 @@ export default function WeblinkManage() {
 						isHovered={hoverTargetGroup === group.id}
 						isCollapsed={isCollapsed}
 						onToggleCollapse={() => toggleGroupCollapse(group.id)}
-						onExpand={() => expandGroup(group.id)}
-						onDragStart={handleDragStart}
-						onItemDragEnter={handleItemDragEnter}
-						onEmptyGroupDragEnter={handleEmptyGroupDragEnter}
-						onDragOver={handleDragOver}
-						onDrop={handleDrop}
-						onDragEnd={handleDragEnd}
+						onPointerDragStart={handlePointerDragStart}
 					/>
 				);
 			})}
+
+			{pointerGhost && (
+				<div
+					className="pointer-events-none fixed z-[9999] rounded-lg px-3.5 py-2 text-sm font-semibold shadow-xl ring-2 ring-bokk/50"
+					style={{
+						left: pointerGhost.x + 14,
+						top: pointerGhost.y - 18,
+						color: pointerGhost.color,
+						backgroundColor: pointerGhost.backgroundColor,
+						opacity: 0.92,
+					}}
+				>
+					{pointerGhost.name}
+				</div>
+			)}
 
 			<WeblinkGroupManageModal
 				show={showGroupModal}
