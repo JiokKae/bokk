@@ -1,6 +1,18 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { Button, Form, InputGroup, ListGroup, Modal } from "react-bootstrap";
+import { Folder, FolderOpen, GripVertical } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
 	BUILTIN_WEBLINKS,
 	CREATE_WEBLINK_GROUP,
@@ -147,21 +159,35 @@ export default function WeblinkGroupManageModal({ show, onHide }) {
 	};
 
 	return (
-		<Modal show={show} onHide={onHide} centered backdrop="static">
-			<Modal.Header closeButton>
-				<Modal.Title as="h5" className="fw-bold">
-					📁 웹링크 그룹 관리
-				</Modal.Title>
-			</Modal.Header>
-			<Modal.Body className="p-3">
-				{/* 새 그룹 만들기 */}
-				<div className="mb-4 p-3 bg-light rounded-3 border">
-					<div className="fw-semibold small text-secondary mb-2">
-						새 웹링크 그룹 생성
+		<Dialog open={Boolean(show)} onOpenChange={(nextOpen) => { if (!nextOpen) onHide?.(); }}>
+			<DialogContent
+				className="max-w-lg gap-0 overflow-hidden p-0"
+				onInteractOutside={(e) => e.preventDefault()}
+			>
+				<DialogHeader className="rounded-t-xl border-0 border-b border-solid border-zinc-200 bg-white px-5 py-3.5">
+					<div className="flex items-center gap-2.5">
+						<span className="inline-flex size-8 items-center justify-center rounded-lg bg-bokk-subtle text-bokk-dark">
+							<Folder className="size-4" />
+						</span>
+						<div>
+							<DialogTitle className="text-lg font-bold text-zinc-900">
+								웹링크 그룹 관리
+							</DialogTitle>
+							<DialogDescription className="sr-only">
+								웹링크 그룹을 생성, 수정, 삭제하거나 드래그하여 순서를 변경합니다.
+							</DialogDescription>
+						</div>
 					</div>
-					<Form onSubmit={handleCreate}>
-						<InputGroup size="sm">
-							<Form.Control
+				</DialogHeader>
+
+				<div className="max-h-[70vh] overflow-y-auto bg-white px-5 py-4">
+					{/* 새 그룹 만들기 */}
+					<div className="mb-4 rounded-xl border-[1px] border-solid border-zinc-200 bg-zinc-50 p-3.5">
+						<div className="mb-2 text-[13.5px] font-semibold text-zinc-700">
+							새 웹링크 그룹 생성
+						</div>
+						<form onSubmit={handleCreate} className="flex items-center gap-2">
+							<Input
 								type="text"
 								placeholder="그룹 이름 입력 (예: 업무, 개발, 쇼핑)"
 								value={newGroupName}
@@ -170,199 +196,176 @@ export default function WeblinkGroupManageModal({ show, onHide }) {
 								disabled={creating}
 							/>
 							<Button
-								variant="primary"
 								type="submit"
+								size="sm"
+								className="h-9 shrink-0 px-3.5 text-[13px]"
 								disabled={creating || !newGroupName.trim()}
 							>
 								{creating ? "생성 중..." : "+ 추가"}
 							</Button>
-						</InputGroup>
-					</Form>
-				</div>
+						</form>
+					</div>
 
-				{/* 그룹 목록 */}
-				<div className="d-flex align-items-center justify-content-between mb-2 px-1">
-					<span className="fw-semibold small text-secondary">
-						내 그룹 목록 ({groups.length})
-					</span>
-					{groups.length > 1 && (
-						<small className="text-muted" style={{ fontSize: "11px" }}>
-							☰ 핸들을 드래그하여 순서 변경
-						</small>
+					{/* 그룹 목록 헤더 */}
+					<div className="mb-2 flex items-center justify-between px-0.5">
+						<span className="text-[13.5px] font-semibold text-zinc-700">
+							내 그룹 목록 ({groups.length})
+						</span>
+						{groups.length > 1 && (
+							<span className="text-xs text-zinc-500">
+								핸들을 드래그하여 순서 변경
+							</span>
+						)}
+					</div>
+
+					{groups.length === 0 ? (
+						<div className="flex flex-col items-center justify-center gap-1.5 rounded-xl border-[1px] border-solid border-zinc-200 bg-zinc-50/60 py-8 text-center text-zinc-500">
+							<FolderOpen className="size-6 text-zinc-400" />
+							<span className="text-sm">생성된 웹링크 그룹이 없습니다.</span>
+						</div>
+					) : (
+						<div className="overflow-hidden rounded-xl border-[1px] border-solid border-zinc-200 bg-white">
+							{groups.map((group, index) => {
+								const isEditing = editingId === group.id;
+								const isSpecial = group.id <= 0;
+								const isBuiltin = group.id === 0;
+								const isUntagged = group.id === -1;
+								const count = getGroupCount(group.id);
+								const isDragging = draggedIndex === index;
+
+								return (
+									<div
+										key={group.id}
+										className={cn(
+											"select-none px-3 py-2.5 transition-all duration-150",
+											index !== 0 && "border-0 border-t border-solid border-zinc-100",
+											isDragging && "bg-bokk-subtle/50 opacity-60"
+										)}
+										draggable={isAllowDrag && !isEditing}
+										onDragStart={(e) => {
+											if (!isAllowDrag) {
+												e.preventDefault();
+												return;
+											}
+											handleDragStart(e, index);
+										}}
+										onDragEnter={(e) => handleDragEnter(e, index)}
+										onDragOver={handleDragOver}
+										onDragEnd={handleDragEnd}
+									>
+										{isEditing ? (
+											<div className="flex items-center gap-1.5">
+												<Input
+													type="text"
+													className="h-8 text-sm"
+													value={editingName}
+													maxLength={30}
+													autoFocus
+													onChange={(e) => setEditingName(e.target.value)}
+													onKeyDown={(e) => {
+														if (e.key === "Enter") {
+															e.preventDefault();
+															handleSaveEdit(group.id);
+														} else if (e.key === "Escape") {
+															handleCancelEdit();
+														}
+													}}
+													disabled={updating}
+												/>
+												<Button
+													size="sm"
+													className="h-8 shrink-0 px-3"
+													onClick={() => handleSaveEdit(group.id)}
+													disabled={updating}
+												>
+													저장
+												</Button>
+												<Button
+													size="sm"
+													variant="outline"
+													className="h-8 shrink-0 px-2.5"
+													onClick={handleCancelEdit}
+													disabled={updating}
+												>
+													취소
+												</Button>
+											</div>
+										) : (
+											<div className="flex items-center justify-between gap-2">
+												<div className="flex min-w-0 items-center gap-2">
+													<span
+														className="inline-flex shrink-0 cursor-grab items-center text-zinc-400 hover:text-zinc-600"
+														onMouseDown={() => setIsAllowDrag(true)}
+														onMouseUp={() => setIsAllowDrag(false)}
+														onTouchStart={() => setIsAllowDrag(true)}
+														onTouchEnd={() => setIsAllowDrag(false)}
+														title="드래그하여 순서 변경"
+													>
+														<GripVertical className="size-4" />
+													</span>
+													<span
+														className="truncate text-sm font-medium text-zinc-900"
+														title={group.name}
+													>
+														{group.name}
+													</span>
+													{isBuiltin && (
+														<Badge variant="subtle" className="shrink-0">
+															기본
+														</Badge>
+													)}
+													{isUntagged && (
+														<Badge variant="secondary" className="shrink-0">
+															미분류
+														</Badge>
+													)}
+													<Badge variant="outline" className="shrink-0 text-zinc-500">
+														{count}
+													</Badge>
+												</div>
+
+												<div className="flex shrink-0 items-center gap-1.5">
+													{!isSpecial ? (
+														<>
+															<Button
+																size="sm"
+																variant="outline"
+																className="h-7 px-2.5 text-xs"
+																onClick={() => handleStartEdit(group)}
+															>
+																수정
+															</Button>
+															<Button
+																size="sm"
+																variant="outline"
+																className="h-7 border-red-200 px-2.5 text-xs text-red-600 hover:bg-red-50 hover:text-red-700"
+																onClick={() => handleDelete(group.id, group.name)}
+																disabled={deleting}
+															>
+																삭제
+															</Button>
+														</>
+													) : (
+														<span className="px-1.5 text-xs text-zinc-400">
+															{isBuiltin ? "기본 그룹" : "시스템 그룹"}
+														</span>
+													)}
+												</div>
+											</div>
+										)}
+									</div>
+								);
+							})}
+						</div>
 					)}
 				</div>
 
-				{groups.length === 0 ? (
-					<div className="text-center text-muted py-4 border rounded-3 bg-white">
-						<div className="fs-4 mb-1">📂</div>
-						<small>생성된 웹링크 그룹이 없습니다.</small>
-					</div>
-				) : (
-					<ListGroup
-						variant="flush"
-						className="border rounded-3 overflow-hidden bg-white"
-					>
-						{groups.map((group, index) => {
-							const isEditing = editingId === group.id;
-							const isSpecial = group.id <= 0;
-							const isBuiltin = group.id === 0;
-							const isUntagged = group.id === -1;
-							const count = getGroupCount(group.id);
-							const isDragging = draggedIndex === index;
-
-							return (
-								<ListGroup.Item
-									key={group.id}
-									className={`p-2.5 ${isDragging ? "bg-light opacity-50 shadow-sm" : ""}`}
-									draggable={isAllowDrag && !isEditing}
-									onDragStart={(e) => {
-										if (!isAllowDrag) {
-											e.preventDefault();
-											return;
-										}
-										handleDragStart(e, index);
-									}}
-									onDragEnter={(e) => handleDragEnter(e, index)}
-									onDragOver={handleDragOver}
-									onDragEnd={handleDragEnd}
-									style={{
-										userSelect: "none",
-										transition: "all 0.15s ease",
-									}}
-								>
-									{isEditing ? (
-										<div className="d-flex align-items-center gap-1.5">
-											<Form.Control
-												size="sm"
-												type="text"
-												value={editingName}
-												maxLength={30}
-												autoFocus
-												onChange={(e) => setEditingName(e.target.value)}
-												onKeyDown={(e) => {
-													if (e.key === "Enter") {
-														e.preventDefault();
-														handleSaveEdit(group.id);
-													} else if (e.key === "Escape") {
-														handleCancelEdit();
-													}
-												}}
-												disabled={updating}
-											/>
-											<Button
-												size="sm"
-												variant="success"
-												className="py-1 px-2.5 text-nowrap"
-												onClick={() => handleSaveEdit(group.id)}
-												disabled={updating}
-											>
-												저장
-											</Button>
-											<Button
-												size="sm"
-												variant="outline-secondary"
-												className="py-1 px-2 text-nowrap"
-												onClick={handleCancelEdit}
-												disabled={updating}
-											>
-												취소
-											</Button>
-										</div>
-									) : (
-										<div className="d-flex align-items-center justify-content-between">
-											<div
-												className="d-flex align-items-center text-truncate me-2"
-												style={{ minWidth: 0 }}
-											>
-												<span
-													className="me-2 text-secondary user-select-none"
-													style={{
-														cursor: "grab",
-														fontSize: "16px",
-														lineHeight: 1,
-													}}
-													onMouseDown={() => setIsAllowDrag(true)}
-													onMouseUp={() => setIsAllowDrag(false)}
-													onTouchStart={() => setIsAllowDrag(true)}
-													onTouchEnd={() => setIsAllowDrag(false)}
-													title="드래그하여 순서 변경"
-												>
-													☰
-												</span>
-												<span
-													className="text-truncate fw-medium"
-													title={group.name}
-												>
-													{group.name}
-												</span>
-												{isBuiltin && (
-													<span
-														className="badge rounded-pill bg-light text-primary border border-primary-subtle ms-2 flex-shrink-0"
-														style={{ fontSize: "10px", fontWeight: 600 }}
-													>
-														기본
-													</span>
-												)}
-												{isUntagged && (
-													<span
-														className="badge rounded-pill bg-light text-secondary border ms-2 flex-shrink-0"
-														style={{ fontSize: "10px", fontWeight: 600 }}
-													>
-														미분류
-													</span>
-												)}
-												<span
-													className="badge rounded-pill bg-light text-secondary border ms-2 flex-shrink-0"
-													style={{ fontSize: "11px", fontWeight: 500 }}
-												>
-													{count}
-												</span>
-											</div>
-											<div className="d-flex align-items-center gap-1 flex-shrink-0">
-												{!isSpecial ? (
-													<>
-														<Button
-															size="sm"
-															variant="outline-secondary"
-															className="py-0 px-2"
-															style={{ fontSize: "12px", height: "26px" }}
-															onClick={() => handleStartEdit(group)}
-														>
-															수정
-														</Button>
-														<Button
-															size="sm"
-															variant="outline-danger"
-															className="py-0 px-2"
-															style={{ fontSize: "12px", height: "26px" }}
-															onClick={() => handleDelete(group.id, group.name)}
-															disabled={deleting}
-														>
-															삭제
-														</Button>
-													</>
-												) : (
-													<small
-														className="text-muted px-2 user-select-none"
-														style={{ fontSize: "11px" }}
-													>
-														{isBuiltin ? "기본 그룹" : "시스템 그룹"}
-													</small>
-												)}
-											</div>
-										</div>
-									)}
-								</ListGroup.Item>
-							);
-						})}
-					</ListGroup>
-				)}
-			</Modal.Body>
-			<Modal.Footer className="py-2">
-				<Button variant="secondary" size="sm" onClick={onHide}>
-					닫기
-				</Button>
-			</Modal.Footer>
-		</Modal>
+				<DialogFooter className="flex-row justify-end rounded-b-xl border-0 border-t border-solid border-zinc-200 bg-zinc-100/80 px-5 py-3">
+					<Button variant="outline" size="sm" onClick={onHide}>
+						닫기
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

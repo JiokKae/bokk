@@ -1,5 +1,7 @@
+import path from 'path';
 import { defineConfig, loadEnv, transformWithEsbuild } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), ['VITE_', 'REACT_APP_']);
@@ -21,7 +23,13 @@ export default defineConfig(({ mode }) => {
 				},
 			},
 			react(),
+			tailwindcss(),
 		],
+		resolve: {
+			alias: {
+				'@': path.resolve(__dirname, './src'),
+			},
+		},
 		envPrefix: ['VITE_', 'REACT_APP_'],
 		define: processEnvDefine,
 		optimizeDeps: {
@@ -42,7 +50,13 @@ export default defineConfig(({ mode }) => {
 					manualChunks: {
 						'vendor-react': ['react', 'react-dom', 'react-router-dom'],
 						'vendor-apollo': ['@apollo/client', 'graphql'],
-						'vendor-ui': ['react-bootstrap', 'styled-components', 'react-youtube'],
+						'vendor-ui': [
+							'@radix-ui/react-dialog',
+							'@radix-ui/react-slot',
+							'lucide-react',
+							'styled-components',
+							'react-youtube',
+						],
 					},
 				},
 			},

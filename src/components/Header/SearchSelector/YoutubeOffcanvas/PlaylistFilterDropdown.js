@@ -1,7 +1,9 @@
-import { Dropdown } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Check, ChevronDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { PLAYLIST_FILTER } from "../../../../utils/playlistUtil";
 import EqualizerIcon from "./EqualizerIcon";
-import styles from "./YoutubeOffcanvas.module.css";
 
 function PlaylistDropdownOption({
 	label,
@@ -12,32 +14,24 @@ function PlaylistDropdownOption({
 	onClick,
 }) {
 	return (
-		<Dropdown.Item
-			as="button"
+		<button
 			type="button"
-			className={`d-flex align-items-center justify-content-between ${styles.dropdownItem} ${
-				isPlayingThis ? styles.playingItem : ""
-			}`}
-			style={{
-				fontWeight: isSelected ? "700" : undefined,
-			}}
+			className={cn(
+				"flex w-full cursor-pointer items-center justify-between gap-2 border-0 bg-transparent px-3 py-2 text-left text-sm transition-colors",
+				isPlayingThis
+					? "bg-bokk-subtle/70 text-bokk-dark hover:bg-bokk-subtle"
+					: "text-zinc-800 hover:bg-zinc-100",
+				isSelected && "font-bold"
+			)}
 			onClick={onClick}
 		>
-			<div
-				className="d-flex align-items-center text-truncate me-2"
-				style={{ minWidth: 0 }}
-			>
+			<div className="flex min-w-0 items-center gap-2">
 				{isSelected && (
-					<span
-						className="text-primary me-2 fw-bold"
-						style={{ fontSize: "12px" }}
-					>
-						✓
-					</span>
+					<Check className="size-3.5 shrink-0 stroke-[2.5] text-bokk" />
 				)}
-				<span className="text-truncate">{label}</span>
+				<span className="truncate">{label}</span>
 			</div>
-			<div className="d-flex align-items-center gap-2 flex-shrink-0">
+			<div className="flex shrink-0 items-center gap-2">
 				{isPlayingThis && (
 					<EqualizerIcon
 						isPlaying={isPlaying}
@@ -45,18 +39,14 @@ function PlaylistDropdownOption({
 						title={isPlaying ? "재생 중" : "일시정지됨"}
 					/>
 				)}
-				<span
-					className={`badge rounded-pill flex-shrink-0 ${
-						isPlayingThis
-							? "bg-primary-subtle text-primary border-primary-subtle"
-							: "bg-light text-secondary border"
-					}`}
-					style={{ fontSize: "11px" }}
+				<Badge
+					variant={isPlayingThis ? "subtle" : "secondary"}
+					className="shrink-0"
 				>
 					{count}
-				</span>
+				</Badge>
 			</div>
-		</Dropdown.Item>
+		</button>
 	);
 }
 
@@ -74,81 +64,130 @@ export default function PlaylistFilterDropdown({
 	playingPlaylistId = null,
 	isPlaying = false,
 }) {
+	const [open, setOpen] = useState(false);
+	const containerRef = useRef(null);
+
+	useEffect(() => {
+		if (!open) return;
+
+		const handleClickOutside = (e) => {
+			if (containerRef.current && !containerRef.current.contains(e.target)) {
+				setOpen(false);
+			}
+		};
+		const handleKeyDown = (e) => {
+			if (e.key === "Escape") {
+				setOpen(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		document.addEventListener("keydown", handleKeyDown);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [open]);
+
 	const isSelectedPlaying =
 		hasStarted &&
 		playingPlaylistId !== null &&
 		String(selectedPlaylistId) === String(playingPlaylistId);
 
+	const handleSelect = (id) => {
+		onSelectPlaylist(id);
+		setOpen(false);
+	};
+
 	return (
-		<Dropdown className={className} style={{ minWidth: 0 }}>
-			<Dropdown.Toggle
-				variant="light"
+		<div
+			ref={containerRef}
+			className={cn("relative min-w-0", className)}
+		>
+			<button
+				type="button"
 				id={toggleId}
-				className={`w-100 d-flex align-items-center justify-content-between text-start fw-medium shadow-none ${styles.playlistDropdownToggle}`}
+				aria-expanded={open}
+				aria-haspopup="listbox"
+				onClick={() => setOpen((prev) => !prev)}
+				className={cn(
+					"flex h-[38px] w-full cursor-pointer items-center justify-between gap-2 rounded-lg border-[1px] border-solid bg-white px-3 text-left text-sm font-medium text-zinc-900 shadow-xs transition-colors",
+					open
+						? "border-bokk ring-2 ring-bokk/20"
+						: "border-zinc-300 hover:border-zinc-400"
+				)}
 			>
-				<span className="text-truncate me-2">{selectedPlaylistInfo.name}</span>
-				<div className="d-flex align-items-center gap-1.5 ms-auto me-1 flex-shrink-0">
+				<span className="truncate">{selectedPlaylistInfo.name}</span>
+				<div className="ml-auto flex shrink-0 items-center gap-1.5">
 					{isSelectedPlaying && (
 						<EqualizerIcon
 							isPlaying={isPlaying}
 							height="11px"
-							className="me-1"
 							title={isPlaying ? "재생 중" : "일시정지됨"}
 						/>
 					)}
-					<span
-						className={`badge rounded-pill flex-shrink-0 ${
-							isSelectedPlaying
-								? "bg-primary-subtle text-primary border-primary-subtle"
-								: "bg-light text-secondary border"
-						}`}
-						style={{ fontSize: "11px", fontWeight: 500 }}
+					<Badge
+						variant={isSelectedPlaying ? "subtle" : "secondary"}
+						className="shrink-0"
 					>
 						{selectedPlaylistInfo.count}
-					</span>
+					</Badge>
+					<ChevronDown
+						className={cn(
+							"size-4 text-zinc-500 transition-transform duration-150",
+							open && "rotate-180 text-bokk"
+						)}
+					/>
 				</div>
-			</Dropdown.Toggle>
+			</button>
 
-			<Dropdown.Menu className={`w-100 ${styles.playlistDropdownMenu}`}>
-				<PlaylistDropdownOption
-					label="전체"
-					count={totalCount}
-					isSelected={selectedPlaylistId === PLAYLIST_FILTER.ALL}
-					isPlayingThis={
-						hasStarted && playingPlaylistId === PLAYLIST_FILTER.ALL
-					}
-					isPlaying={isPlaying}
-					onClick={() => onSelectPlaylist(PLAYLIST_FILTER.ALL)}
-				/>
-				<PlaylistDropdownOption
-					label="미분류"
-					count={untaggedCount}
-					isSelected={selectedPlaylistId === PLAYLIST_FILTER.UNTAGGED}
-					isPlayingThis={
-						hasStarted && playingPlaylistId === PLAYLIST_FILTER.UNTAGGED
-					}
-					isPlaying={isPlaying}
-					onClick={() => onSelectPlaylist(PLAYLIST_FILTER.UNTAGGED)}
-				/>
-
-				{playlists.length > 0 && <Dropdown.Divider className="my-1" />}
-
-				{playlists.map((pl) => (
+			{open && (
+				<div
+					role="listbox"
+					className="absolute top-full right-0 left-0 z-[1060] mt-1.5 max-h-72 overflow-y-auto rounded-xl border-[1px] border-solid border-zinc-200 bg-white py-1 shadow-lg"
+				>
 					<PlaylistDropdownOption
-						key={pl.id}
-						label={pl.name}
-						count={getPlaylistCount(pl.id)}
-						isSelected={String(selectedPlaylistId) === String(pl.id)}
+						label="전체"
+						count={totalCount}
+						isSelected={selectedPlaylistId === PLAYLIST_FILTER.ALL}
 						isPlayingThis={
-							hasStarted &&
-							playingPlaylistId !== null &&
-							String(playingPlaylistId) === String(pl.id)
+							hasStarted && playingPlaylistId === PLAYLIST_FILTER.ALL
 						}
 						isPlaying={isPlaying}
-						onClick={() => onSelectPlaylist(pl.id)}
+						onClick={() => handleSelect(PLAYLIST_FILTER.ALL)}
 					/>
-				))}
-			</Dropdown.Menu>
-		</Dropdown>
+					<PlaylistDropdownOption
+						label="미분류"
+						count={untaggedCount}
+						isSelected={selectedPlaylistId === PLAYLIST_FILTER.UNTAGGED}
+						isPlayingThis={
+							hasStarted && playingPlaylistId === PLAYLIST_FILTER.UNTAGGED
+						}
+						isPlaying={isPlaying}
+						onClick={() => handleSelect(PLAYLIST_FILTER.UNTAGGED)}
+					/>
+
+					{playlists.length > 0 && (
+						<div className="my-1 border-0 border-t border-solid border-zinc-100" />
+					)}
+
+					{playlists.map((pl) => (
+						<PlaylistDropdownOption
+							key={pl.id}
+							label={pl.name}
+							count={getPlaylistCount(pl.id)}
+							isSelected={String(selectedPlaylistId) === String(pl.id)}
+							isPlayingThis={
+								hasStarted &&
+								playingPlaylistId !== null &&
+								String(playingPlaylistId) === String(pl.id)
+							}
+							isPlaying={isPlaying}
+							onClick={() => handleSelect(pl.id)}
+						/>
+					))}
+				</div>
+			)}
+		</div>
 	);
 }

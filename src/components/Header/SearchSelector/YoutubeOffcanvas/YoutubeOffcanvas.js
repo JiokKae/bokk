@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useEffect, useMemo, useState } from "react";
-import { Button, CloseButton } from "react-bootstrap";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ME, MY_PLAYLISTS, MY_VIDEO_ITEMS } from "../../../../constants/querys";
 import useOffcanvasResizer from "../../../../hooks/useOffcanvasResizer";
 import usePlaylistFilter, { PLAYLIST_FILTER } from "../../../../hooks/usePlaylistFilter";
@@ -176,7 +177,14 @@ export default function YoutubeOffcanvas() {
 					<h5 className="offcanvas-title mb-0" id="offcanvasYoutubeQueue">
 						유튜브 재생 목록
 					</h5>
-					<CloseButton data-bs-dismiss="offcanvas" />
+					<button
+						type="button"
+						data-bs-dismiss="offcanvas"
+						aria-label="닫기"
+						className="ml-auto inline-flex size-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+					>
+						<X className="size-4" />
+					</button>
 				</div>
 
 				<div
@@ -223,16 +231,9 @@ export default function YoutubeOffcanvas() {
 										isPlaying={isPlaying}
 									/>
 									<Button
-										variant="outline-secondary"
+										variant="outline"
 										size="sm"
-										className="d-flex align-items-center justify-content-center flex-shrink-0"
-										style={{
-											fontSize: "12.5px",
-											height: "38px",
-											padding: "0 10px",
-											whiteSpace: "nowrap",
-											borderRadius: "6px",
-										}}
+										className="h-[38px] shrink-0 rounded-lg px-2.5 text-[12.5px] whitespace-nowrap"
 										title="플레이리스트 추가 / 수정 / 삭제"
 										onClick={() => setShowPlaylistManageModal(true)}
 									>

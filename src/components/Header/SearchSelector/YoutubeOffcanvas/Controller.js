@@ -1,6 +1,5 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
-import { Form } from "react-bootstrap";
 import { ME, SET_USER_CONFIG } from "../../../../constants/querys";
 import styles from "./Controller.module.css";
 
@@ -92,10 +91,10 @@ export default function Controller({
 			))}
 			{showOption ? (
 				<div className={`px-4 py-3 ${styles.popover}`} style={{ top: "100%", right: 0, marginTop: "4px" }}>
-					<div>
-						<Form.Check
+					<label className="flex cursor-pointer select-none items-center gap-2 whitespace-nowrap text-sm text-zinc-800">
+						<input
 							type="checkbox"
-							label="자동 재생"
+							className="size-4 cursor-pointer accent-bokk"
 							checked={Boolean(autoPlay)}
 							onChange={() => {
 								setUserConfig({
@@ -107,7 +106,8 @@ export default function Controller({
 								});
 							}}
 						/>
-					</div>
+						<span>자동 재생</span>
+					</label>
 				</div>
 			) : null}
 		</div>

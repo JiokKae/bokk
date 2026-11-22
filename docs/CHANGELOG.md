@@ -619,3 +619,16 @@
 - **자동화 테스트 구축**:
   - `vitest` + `@testing-library/react` + `jsdom` 환경 구성 및 핵심 유틸·컴포넌트·커스텀 훅 단위 테스트 **9개 파일 / 26개 테스트** 구축 및 전량 통과.
 
+
+### 5.66 Tailwind CSS v4 + shadcn/ui 디자인 시스템 도입 및 `react-bootstrap` 완전 제거 (2026-11-22)
+- **기반 세팅 및 볶음밥 브랜드 테마 구축**:
+  - `tailwindcss`, `@tailwindcss/vite`, `tw-animate-css`, `lucide-react`, `@radix-ui/react-dialog`, `@radix-ui/react-slot`, `clsx`, `tailwind-merge`, `class-variance-authority` 도입.
+  - `vite.config.js`에 `@tailwindcss/vite` 플러그인 및 `@` → `./src` 경로 별칭 추가, 순수 JS 환경 대응 `jsconfig.json`·`components.json`(`"tsx": false`) 구성.
+  - `src/styles/tailwind.css`에 볶음밥 시그니처 블루(`#0699f9`, `#057ecf`, `#69c1fb`, `#e7f5ff`, `#b6e0fe`)와 Zinc/Neutral 베이스 컬러 토큰(`:root`, `.dark` 확장 대비) 정의. Bootstrap 5 CDN 공존 기간 동안 Preflight 제외 + unlayered utilities + `.collapse` 공존 보정 적용.
+  - 공용 UI 컴포넌트(`src/components/ui/button.js`, `badge.js`, `dialog.js`, `input.js`) 및 `cn` 유틸리티(`src/lib/utils.js`) 구축.
+- **전체 모달(8종) 및 `react-bootstrap` 컴포넌트 100% 전환**:
+  - 모달 8종(`FeatureHistoryModal`, `AddWeblinkModal`, `UpdateWeblinkModal`, `ThumbnailModal`, `WeblinkGroupManageModal`, `DeleteMessageModal`, `PlaylistManageModal`, `VideoPlaylistTagModal`) 및 `WeblinkForm`을 shadcn/ui `Dialog`·`Input`·`Button`·`Badge` + Tailwind v4로 전면 리뉴얼 (모바일·데스크톱 한글 가독성 스케일, 컬러 피커 둥근 스와치, 모달 푸터 대비 강화, HTML `pattern` `/v` 정규식 경고 해소).
+  - `PlaylistFilterDropdown`, `YoutubeOffcanvas`, `Controller`, `Playlist`, `MyWeblink`, `Home`의 남은 `react-bootstrap` 사용처 전량 교체 및 미사용 CSS 모듈(`PlaylistManageModal.module.css`, `VideoPlaylistTagModal.module.css`) 삭제.
+- **의존성 및 번들 최적화**:
+  - `react-bootstrap` 및 하위 26개 패키지 완전 제거 (`src/` 참조 0건, `npm audit` 0 vulnerabilities).
+  - `vite build` 메인 청크(`171.86 → 125.22 kB`)·`vendor-ui` 청크(`126.46 → 105.42 kB`) 경량화 및 Vitest 9개 파일 / 26개 테스트 전량 통과.

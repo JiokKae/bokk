@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import ThumbnailModal from "../components/Weblink/ThumbnailModal";
 import WeblinkGroupCard from "../components/Weblink/WeblinkGroupCard";
@@ -199,9 +199,13 @@ export default function Home() {
 					)}
 					<div className="d-flex align-items-center gap-2">
 						<Button
-							variant={isReordering ? "success" : "outline-primary"}
+							variant={isReordering ? "default" : "outline"}
 							size="sm"
-							className={styles.toolbarBtn}
+							className={`${styles.toolbarBtn} ${
+								isReordering
+									? "bg-emerald-600 text-white hover:bg-emerald-700"
+									: "border-bokk-border text-bokk-dark hover:bg-bokk-subtle"
+							}`}
 							onClick={() => setIsReordering((prev) => !prev)}
 							title={
 								isReordering

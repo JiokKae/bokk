@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useMemo, useState } from "react";
-import { Button, CloseButton } from "react-bootstrap";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import PlaylistFilterDropdown from "../../components/Header/SearchSelector/YoutubeOffcanvas/PlaylistFilterDropdown";
 import PlaylistManageModal from "../../components/Header/SearchSelector/YoutubeOffcanvas/PlaylistManageModal";
 import VideoPlaylistTagModal from "../../components/Header/SearchSelector/YoutubeOffcanvas/VideoPlaylistTagModal";
@@ -112,7 +113,15 @@ function VideoItem({
 					)}
 				</div>
 				<div className="col-auto">
-					<CloseButton onClick={onClickDelete} title="영상 삭제" />
+					<button
+						type="button"
+						onClick={onClickDelete}
+						title="영상 삭제"
+						aria-label="영상 삭제"
+						className="inline-flex size-7 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-500"
+					>
+						<X className="size-4" />
+					</button>
 				</div>
 			</div>
 		</div>
@@ -148,8 +157,9 @@ export default function Playlist() {
 			<div className="d-flex align-items-center justify-content-between mb-3">
 				<h4 className="mb-0 fw-bold">재생 목록 관리</h4>
 				<Button
-					variant="outline-primary"
+					variant="outline"
 					size="sm"
+					className="border-bokk-border text-bokk-dark hover:bg-bokk-subtle"
 					onClick={() => setShowPlaylistManageModal(true)}
 				>
 					⚙️ 플레이리스트 관리

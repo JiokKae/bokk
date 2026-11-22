@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import AddWeblinkModal from "../../components/Weblink/AddWeblinkModal";
 import UpdateWeblinkModal from "../../components/Weblink/UpdateWeblinkModal";
@@ -273,8 +273,9 @@ export default function MyWeblink() {
 				<div className="d-flex align-items-center justify-content-between mb-3">
 					<h4 className="mb-0 fw-bold">내 웹링크 관리</h4>
 					<Button
-						variant="outline-primary"
+						variant="outline"
 						size="sm"
+						className="border-bokk-border text-bokk-dark hover:bg-bokk-subtle"
 						onClick={() => setShowGroupModal(true)}
 					>
 						⚙️ 그룹 관리
@@ -337,8 +338,9 @@ export default function MyWeblink() {
 					</small>
 				</div>
 				<Button
-					variant="outline-primary"
+					variant="outline"
 					size="sm"
+					className="border-bokk-border text-bokk-dark hover:bg-bokk-subtle"
 					onClick={() => setShowGroupModal(true)}
 				>
 					⚙️ 그룹 관리

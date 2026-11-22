@@ -1,6 +1,18 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
-import { Button, Form, InputGroup, ListGroup, Modal } from "react-bootstrap";
+import { Check, ListMusic, Share2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
 	CREATE_PLAYLIST,
 	DELETE_PLAYLIST,
@@ -10,7 +22,6 @@ import {
 	UPDATE_PLAYLIST,
 } from "../../../../constants/querys";
 import useOffcanvasFocusTrapBypass from "../../../../hooks/useOffcanvasFocusTrapBypass";
-import styles from "./PlaylistManageModal.module.css";
 
 export default function PlaylistManageModal({
 	show,
@@ -80,13 +91,11 @@ export default function PlaylistManageModal({
 		e.preventDefault();
 		const trimmed = importCode.trim().toUpperCase();
 
-		// 1. 빈 값 검사
 		if (!trimmed) {
 			alert("8자리 공유코드를 입력해주세요.");
 			return;
 		}
 
-		// 2. 8자리 영문/숫자 정규식 형식 검사
 		if (!/^[A-Z0-9]{8}$/.test(trimmed)) {
 			alert("공유코드는 8자리 영문과 숫자로 구성되어야 합니다. (예: 7Y4R9TWK)");
 			return;
@@ -99,12 +108,15 @@ export default function PlaylistManageModal({
 		if (!playlist.shareCode) return;
 		const code = playlist.shareCode;
 		if (navigator?.clipboard?.writeText) {
-			navigator.clipboard.writeText(code).then(() => {
-				setCopiedCodeId(playlist.id);
-				setTimeout(() => setCopiedCodeId(null), 2000);
-			}).catch(() => {
-				fallbackCopy(code, playlist.id);
-			});
+			navigator.clipboard
+				.writeText(code)
+				.then(() => {
+					setCopiedCodeId(playlist.id);
+					setTimeout(() => setCopiedCodeId(null), 2000);
+				})
+				.catch(() => {
+					fallbackCopy(code, playlist.id);
+				});
 		} else {
 			fallbackCopy(code, playlist.id);
 		}
@@ -150,209 +162,244 @@ export default function PlaylistManageModal({
 	};
 
 	return (
-		<Modal
-			show={show}
-			onHide={onHide}
-			centered
-			dialogClassName={styles.modalDialog}
-			enforceFocus={false}
-			restoreFocus={false}
+		<Dialog
+			open={Boolean(show)}
+			onOpenChange={(nextOpen) => {
+				if (!nextOpen) onHide?.();
+			}}
 		>
-			<Modal.Header closeButton>
-				<Modal.Title className="fs-5 fw-bold">
-					플레이리스트 관리
-				</Modal.Title>
-			</Modal.Header>
-			<Modal.Body>
-				{/* 신규 플레이리스트 등록 폼 */}
-				<Form onSubmit={handleCreate} className="mb-3">
-					<Form.Label className={styles.formLabel}>
-						새 플레이리스트 만들기
-					</Form.Label>
-					<InputGroup size="sm">
-						<Form.Control
-							placeholder="플레이리스트 이름 (예: 신나는 음악, 노동요)"
-							value={newPlaylistName}
-							maxLength={30}
-							onChange={(e) => setNewPlaylistName(e.target.value)}
-							onClick={(e) => e.target.focus()}
-							disabled={creating}
-						/>
-						<Button
-							type="submit"
-							className={styles.primaryAddBtn}
-							disabled={creating || !newPlaylistName.trim()}
-						>
-							{creating ? "생성 중..." : "+ 추가"}
-						</Button>
-					</InputGroup>
-				</Form>
+			<DialogContent className="max-w-lg gap-0 overflow-hidden p-0">
+				<DialogHeader className="rounded-t-xl border-0 border-b border-solid border-zinc-200 bg-white px-5 py-3.5">
+					<div className="flex items-center gap-2.5">
+						<span className="inline-flex size-8 items-center justify-center rounded-lg bg-bokk-subtle text-bokk-dark">
+							<ListMusic className="size-4" />
+						</span>
+						<div>
+							<DialogTitle className="text-lg font-bold text-zinc-900">
+								플레이리스트 관리
+							</DialogTitle>
+							<DialogDescription className="sr-only">
+								새 플레이리스트 생성, 8자리 공유코드 가져오기 및 내 플레이리스트를 관리합니다.
+							</DialogDescription>
+						</div>
+					</div>
+				</DialogHeader>
 
-				{/* 공유코드로 플레이리스트 가져오기 폼 */}
-				<Form onSubmit={handleImport} className="mb-3">
-					<Form.Label className={styles.formLabel}>
-						공유코드로 플레이리스트 가져오기
-					</Form.Label>
-					<InputGroup size="sm">
-						<Form.Control
-							placeholder="8자리 공유코드 입력 (예: 7Y4R9TWK)"
-							value={importCode}
-							maxLength={8}
-							autoComplete="off"
-							spellCheck={false}
-							onChange={(e) => {
-								const val = e.target.value
-									.toUpperCase()
-									.replace(/[^A-Z0-9]/g, "")
-									.slice(0, 8);
-								setImportCode(val);
-							}}
-							onClick={(e) => e.target.focus()}
-							disabled={importing}
-						/>
-						<Button
-							type="submit"
-							className={styles.importBtn}
-							disabled={importing || !isValidImportCode}
-						>
-							{importing ? "가져오는 중..." : "가져오기"}
-						</Button>
-					</InputGroup>
-				</Form>
+				<div className="max-h-[70vh] overflow-y-auto bg-white px-5 py-4">
+					{/* 신규 플레이리스트 등록 폼 */}
+					<form onSubmit={handleCreate} className="mb-3.5">
+						<label className="mb-1.5 block text-[13.5px] font-semibold text-zinc-700">
+							새 플레이리스트 만들기
+						</label>
+						<div className="flex items-center gap-2">
+							<Input
+								placeholder="플레이리스트 이름 (예: 신나는 음악, 노동요)"
+								value={newPlaylistName}
+								maxLength={30}
+								onChange={(e) => setNewPlaylistName(e.target.value)}
+								onClick={(e) => e.target.focus()}
+								disabled={creating}
+							/>
+							<Button
+								type="submit"
+								size="sm"
+								className="h-9 shrink-0 px-3.5 text-[13px]"
+								disabled={creating || !newPlaylistName.trim()}
+							>
+								{creating ? "생성 중..." : "+ 추가"}
+							</Button>
+						</div>
+					</form>
 
-				<hr className="my-3 text-muted opacity-25" />
+					{/* 공유코드로 플레이리스트 가져오기 폼 */}
+					<form onSubmit={handleImport} className="mb-4">
+						<label className="mb-1.5 block text-[13.5px] font-semibold text-zinc-700">
+							공유코드로 플레이리스트 가져오기
+						</label>
+						<div className="flex items-center gap-2">
+							<Input
+								placeholder="8자리 공유코드 입력 (예: 7Y4R9TWK)"
+								value={importCode}
+								maxLength={8}
+								autoComplete="off"
+								spellCheck={false}
+								onChange={(e) => {
+									const val = e.target.value
+										.toUpperCase()
+										.replace(/[^A-Z0-9]/g, "")
+										.slice(0, 8);
+									setImportCode(val);
+								}}
+								onClick={(e) => e.target.focus()}
+								disabled={importing}
+							/>
+							<Button
+								type="submit"
+								size="sm"
+								variant="outline"
+								className="h-9 shrink-0 border-bokk-border bg-bokk-subtle/70 px-3.5 text-[13px] text-bokk-dark hover:bg-bokk-subtle"
+								disabled={importing || !isValidImportCode}
+							>
+								{importing ? "가져오는 중..." : "가져오기"}
+							</Button>
+						</div>
+					</form>
 
-				{/* 플레이리스트 목록 헤더 */}
-				<div className={styles.sectionHeader}>
-					<span className={styles.sectionTitle}>
-						내 플레이리스트
-					</span>
-					<span className={styles.songBadge}>
-						{playlists.length}개
-					</span>
+					<div className="mb-3.5 border-0 border-t border-solid border-zinc-200" />
+
+					{/* 플레이리스트 목록 헤더 */}
+					<div className="mb-2 flex items-center justify-between px-0.5">
+						<span className="text-[13.5px] font-semibold text-zinc-700">
+							내 플레이리스트
+						</span>
+						<Badge variant="subtle">{playlists.length}개</Badge>
+					</div>
+
+					{playlists.length === 0 ? (
+						<div className="rounded-xl border-[1px] border-solid border-zinc-200 bg-zinc-50/70 py-8 text-center text-sm leading-relaxed text-zinc-500">
+							등록된 플레이리스트가 없습니다.
+							<br />
+							새로운 플레이리스트를 만들거나 공유코드로 가져와보세요!
+						</div>
+					) : (
+						<div className="max-h-72 overflow-y-auto rounded-xl border-[1px] border-solid border-zinc-200 bg-white">
+							{playlists.map((pl, index) => {
+								const songCount =
+									videoItems && videoItems.length > 0
+										? videoItems.filter(
+												(item) =>
+													item.playlists &&
+													item.playlists.some((p) => p.id === pl.id)
+										  ).length
+										: pl.videoCount || 0;
+
+								return (
+									<div
+										key={pl.id}
+										className={cn(
+											"flex items-center justify-between gap-2 px-3.5 py-2.5",
+											index !== 0 &&
+												"border-0 border-t border-solid border-zinc-100"
+										)}
+									>
+										{editingId === pl.id ? (
+											<div className="flex w-full items-center gap-1.5">
+												<Input
+													className="h-8 text-sm"
+													value={editingName}
+													maxLength={30}
+													onChange={(e) => setEditingName(e.target.value)}
+													onClick={(e) => e.target.focus()}
+													autoFocus
+													onKeyDown={(e) => {
+														if (e.key === "Enter") {
+															e.preventDefault();
+															handleSaveEdit(pl.id);
+														} else if (e.key === "Escape") {
+															setEditingId(null);
+														}
+													}}
+												/>
+												<Button
+													size="sm"
+													className="h-8 shrink-0 px-3"
+													onClick={() => handleSaveEdit(pl.id)}
+													disabled={updating || !editingName.trim()}
+												>
+													저장
+												</Button>
+												<Button
+													variant="outline"
+													size="sm"
+													className="h-8 shrink-0 px-2.5"
+													onClick={() => setEditingId(null)}
+												>
+													취소
+												</Button>
+											</div>
+										) : (
+											<>
+												<div className="min-w-0 flex-1">
+													<div
+														className="truncate text-sm font-semibold text-zinc-900"
+														title={pl.name}
+													>
+														{pl.name}
+													</div>
+													<div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-zinc-500">
+														<span>{songCount}곡</span>
+														{pl.shareCode && (
+															<>
+																<span className="text-zinc-300">·</span>
+																<span>공유코드:</span>
+																<code className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-zinc-700">
+																	{pl.shareCode}
+																</code>
+															</>
+														)}
+													</div>
+												</div>
+
+												<div className="flex shrink-0 items-center gap-1.5">
+													{pl.shareCode && (
+														<Button
+															size="sm"
+															variant="outline"
+															className={cn(
+																"h-7 px-2 text-xs",
+																copiedCodeId === pl.id
+																	? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-700"
+																	: "border-bokk-border bg-bokk-subtle/50 text-bokk-dark hover:bg-bokk-subtle"
+															)}
+															title="공유코드 클립보드 복사"
+															onClick={() => handleCopyShareCode(pl)}
+														>
+															{copiedCodeId === pl.id ? (
+																<>
+																	<Check className="size-3" />
+																	<span>복사됨</span>
+																</>
+															) : (
+																<>
+																	<Share2 className="size-3" />
+																	<span>공유</span>
+																</>
+															)}
+														</Button>
+													)}
+													<Button
+														size="sm"
+														variant="outline"
+														className="h-7 px-2.5 text-xs"
+														onClick={() => handleStartEdit(pl)}
+													>
+														수정
+													</Button>
+													<Button
+														size="sm"
+														variant="outline"
+														className="h-7 border-red-200 px-2.5 text-xs text-red-600 hover:bg-red-50 hover:text-red-700"
+														onClick={() => handleDelete(pl)}
+														disabled={deleting}
+													>
+														삭제
+													</Button>
+												</div>
+											</>
+										)}
+									</div>
+								);
+							})}
+						</div>
+					)}
 				</div>
 
-				{playlists.length === 0 ? (
-					<div className="text-center text-muted py-4 small">
-						등록된 플레이리스트가 없습니다.<br />
-						새로운 플레이리스트를 만들거나 공유코드로 가져와보세요!
-					</div>
-				) : (
-					<ListGroup
-						variant="flush"
-						className={styles.listContainer}
-					>
-						{playlists.map((pl) => (
-							<ListGroup.Item
-								key={pl.id}
-								className={`d-flex justify-content-between align-items-center ${styles.playlistRow}`}
-							>
-								{editingId === pl.id ? (
-									<InputGroup size="sm" className="me-2">
-										<Form.Control
-											value={editingName}
-											maxLength={30}
-											onChange={(e) =>
-												setEditingName(e.target.value)
-											}
-											onClick={(e) => e.target.focus()}
-											autoFocus
-											onKeyDown={(e) => {
-												if (e.key === "Enter") {
-													e.preventDefault();
-													handleSaveEdit(pl.id);
-												} else if (e.key === "Escape") {
-													setEditingId(null);
-												}
-											}}
-										/>
-										<Button
-											variant="primary"
-											size="sm"
-											onClick={() => handleSaveEdit(pl.id)}
-											disabled={updating || !editingName.trim()}
-										>
-											저장
-										</Button>
-										<Button
-											variant="outline-secondary"
-											size="sm"
-											onClick={() => setEditingId(null)}
-										>
-											취소
-										</Button>
-									</InputGroup>
-								) : (
-									<>
-										<div className="me-3 flex-grow-1" style={{ minWidth: 0 }}>
-											<div
-												className={`text-truncate ${styles.playlistName}`}
-												title={pl.name}
-											>
-												{pl.name}
-											</div>
-											<div className={styles.metaRow}>
-												<span className={styles.songCount}>
-													{videoItems && videoItems.length > 0
-														? videoItems.filter(
-																(item) =>
-																	item.playlists &&
-																	item.playlists.some((p) => p.id === pl.id)
-														  ).length
-														: pl.videoCount || 0}곡
-												</span>
-												{pl.shareCode && (
-													<>
-														<span className={styles.metaDot}>·</span>
-														<span className={styles.shareCodeText}>공유코드:</span>
-														<span className={styles.shareCodeChip}>{pl.shareCode}</span>
-													</>
-												)}
-											</div>
-										</div>
-										<div className={styles.actionGroup}>
-											{pl.shareCode && (
-												<button
-													type="button"
-													className={copiedCodeId === pl.id ? styles.copiedBtn : styles.shareBtn}
-													title="공유코드 클립보드 복사"
-													onClick={() => handleCopyShareCode(pl)}
-												>
-													{copiedCodeId === pl.id ? "복사됨" : "공유"}
-												</button>
-											)}
-											<button
-												type="button"
-												className={styles.editBtn}
-												onClick={() => handleStartEdit(pl)}
-											>
-												수정
-											</button>
-											<button
-												type="button"
-												className={styles.deleteBtn}
-												onClick={() => handleDelete(pl)}
-												disabled={deleting}
-											>
-												삭제
-											</button>
-										</div>
-									</>
-								)}
-							</ListGroup.Item>
-						))}
-					</ListGroup>
-				)}
-			</Modal.Body>
-			<Modal.Footer className="py-2.5 px-3">
-				<button
-					type="button"
-					className={styles.closeBtn}
-					onClick={onHide}
-				>
-					닫기
-				</button>
-			</Modal.Footer>
-		</Modal>
+				<DialogFooter className="flex-row justify-end rounded-b-xl border-0 border-t border-solid border-zinc-200 bg-zinc-100/80 px-5 py-3">
+					<Button variant="outline" size="sm" onClick={onHide}>
+						닫기
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

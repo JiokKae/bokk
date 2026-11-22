@@ -1,6 +1,18 @@
 import { useMutation } from "@apollo/client";
 import { useEffect, useRef, useState } from "react";
-import { Button, Form, InputGroup, ListGroup, Modal } from "react-bootstrap";
+import { Check, ListPlus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
 	CREATE_PLAYLIST,
 	MY_PLAYLISTS,
@@ -8,7 +20,6 @@ import {
 	SET_VIDEO_PLAYLISTS,
 } from "../../../../constants/querys";
 import useOffcanvasFocusTrapBypass from "../../../../hooks/useOffcanvasFocusTrapBypass";
-import styles from "./VideoPlaylistTagModal.module.css";
 
 export default function VideoPlaylistTagModal({
 	show,
@@ -59,7 +70,6 @@ export default function VideoPlaylistTagModal({
 				const newId = data.createPlaylist.id;
 				setSelectedIds((prev) => [...prev, newId]);
 				setNewPlaylistName("");
-				// PC 환경에서 연속 입력을 위해 인풋 포커스 유지
 				setTimeout(() => {
 					inputRef.current?.focus();
 				}, 50);
@@ -103,115 +113,126 @@ export default function VideoPlaylistTagModal({
 	};
 
 	return (
-		<Modal
-			show={show}
-			onHide={onHide}
-			centered
-			dialogClassName={styles.modalDialog}
-			enforceFocus={false}
-			restoreFocus={false}
-			onKeyDown={handleModalKeyDown}
+		<Dialog
+			open={Boolean(show)}
+			onOpenChange={(nextOpen) => {
+				if (!nextOpen) onHide?.();
+			}}
 		>
-			<Modal.Header closeButton>
-				<Modal.Title className="fs-6 fw-bold">
-					📑 플레이리스트에 담기
-				</Modal.Title>
-			</Modal.Header>
-			<Modal.Body>
-				{videoItem && (
-					<div className="mb-3">
-						<div
-							className="fw-semibold text-truncate small mb-1"
-							title={videoItem.video?.title}
-						>
-							{videoItem.video?.title}
-						</div>
-						<div className="text-muted" style={{ fontSize: "12px" }}>
-							이 곡을 담을 플레이리스트를 선택하세요 (복수 선택 가능)
+			<DialogContent
+				className="max-w-md gap-0 overflow-hidden p-0"
+				onKeyDown={handleModalKeyDown}
+			>
+				<DialogHeader className="rounded-t-xl border-0 border-b border-solid border-zinc-200 bg-white px-5 py-3.5">
+					<div className="flex items-center gap-2.5">
+						<span className="inline-flex size-8 items-center justify-center rounded-lg bg-bokk-subtle text-bokk-dark">
+							<ListPlus className="size-4" />
+						</span>
+						<div>
+							<DialogTitle className="text-lg font-bold text-zinc-900">
+								플레이리스트에 담기
+							</DialogTitle>
+							<DialogDescription className="sr-only">
+								선택한 곡을 담을 플레이리스트를 복수 선택하거나 새로 추가합니다.
+							</DialogDescription>
 						</div>
 					</div>
-				)}
+				</DialogHeader>
 
-				{/* 플레이리스트 체크박스 목록 */}
-				{playlists.length === 0 ? (
-					<div className="text-center text-muted py-3 small">
-						등록된 플레이리스트가 없습니다.<br />
-						아래에서 새 플레이리스트를 만들어보세요!
-					</div>
-				) : (
-					<ListGroup
-						variant="flush"
-						className={`border rounded mb-3 ${styles.listContainer}`}
-					>
-						{playlists.map((pl) => {
-							const isChecked = selectedIds.includes(pl.id);
-							const count =
-								videoItems && videoItems.length > 0
-									? videoItems.filter(
-											(item) =>
-												item.playlists &&
-												item.playlists.some((p) => p.id === pl.id)
-									  ).length
-									: pl.videoCount || 0;
-							return (
-								<ListGroup.Item
-									key={pl.id}
-									action
-									as="div"
-									role="checkbox"
-									aria-checked={isChecked}
-									tabIndex={0}
-									className={`d-flex align-items-center justify-content-between px-3 py-2 user-select-none ${styles.playlistRow} ${
-										isChecked ? styles.checkedRow : ""
-									}`}
-									onClick={() => handleToggle(pl.id)}
-									onKeyDown={(e) => {
-										if (e.key === " " || e.key === "Enter") {
-											e.preventDefault();
-											handleToggle(pl.id);
-										}
-									}}
-								>
+				<div className="max-h-[70vh] overflow-y-auto bg-white px-5 py-4">
+					{videoItem && (
+						<div className="mb-3.5">
+							<div
+								className="mb-1 truncate text-sm font-semibold text-zinc-900"
+								title={videoItem.video?.title}
+							>
+								{videoItem.video?.title}
+							</div>
+							<div className="text-xs text-zinc-500">
+								이 곡을 담을 플레이리스트를 선택하세요 (복수 선택 가능)
+							</div>
+						</div>
+					)}
+
+					{/* 플레이리스트 체크박스 목록 */}
+					{playlists.length === 0 ? (
+						<div className="mb-3.5 rounded-xl border-[1px] border-solid border-zinc-200 bg-zinc-50/70 py-6 text-center text-sm leading-relaxed text-zinc-500">
+							등록된 플레이리스트가 없습니다.
+							<br />
+							아래에서 새 플레이리스트를 만들어보세요!
+						</div>
+					) : (
+						<div className="mb-3.5 max-h-60 overflow-y-auto rounded-xl border-[1px] border-solid border-zinc-200 bg-white">
+							{playlists.map((pl, index) => {
+								const isChecked = selectedIds.includes(pl.id);
+								const count =
+									videoItems && videoItems.length > 0
+										? videoItems.filter(
+												(item) =>
+													item.playlists &&
+													item.playlists.some((p) => p.id === pl.id)
+										  ).length
+										: pl.videoCount || 0;
+
+								return (
 									<div
-										className="d-flex align-items-center text-truncate me-2"
-										style={{ pointerEvents: "none" }}
-									>
-										<input
-											type="checkbox"
-											className="form-check-input mt-0 me-2 pointer"
-											checked={isChecked}
-											readOnly
-											tabIndex={-1}
-										/>
-										<span
-											className={`text-truncate ${
-												isChecked ? "fw-semibold text-primary" : ""
-											}`}
-											style={{ fontSize: "14px" }}
-										>
-											{pl.name}
-										</span>
-									</div>
-									<span
-										className={`badge border flex-shrink-0 ${
+										key={pl.id}
+										role="checkbox"
+										aria-checked={isChecked}
+										tabIndex={0}
+										className={cn(
+											"flex cursor-pointer select-none items-center justify-between gap-2 px-3.5 py-2.5 transition-colors",
+											index !== 0 &&
+												"border-0 border-t border-solid border-zinc-100",
 											isChecked
-												? "bg-primary-subtle text-primary border-primary-subtle"
-												: "bg-light text-secondary"
-										}`}
-										style={{ fontSize: "10.5px", pointerEvents: "none" }}
+												? "bg-bokk-subtle/60"
+												: "hover:bg-zinc-50"
+										)}
+										onClick={() => handleToggle(pl.id)}
+										onKeyDown={(e) => {
+											if (e.key === " " || e.key === "Enter") {
+												e.preventDefault();
+												handleToggle(pl.id);
+											}
+										}}
 									>
-										{count}곡
-									</span>
-								</ListGroup.Item>
-							);
-						})}
-					</ListGroup>
-				)}
+										<div className="pointer-events-none flex min-w-0 items-center gap-2.5">
+											<span
+												className={cn(
+													"inline-flex size-4 shrink-0 items-center justify-center rounded border-[1px] border-solid transition-colors",
+													isChecked
+														? "border-bokk bg-bokk text-white"
+														: "border-zinc-300 bg-white"
+												)}
+											>
+												{isChecked && <Check className="size-3 stroke-[3]" />}
+											</span>
+											<span
+												className={cn(
+													"truncate text-sm",
+													isChecked
+														? "font-semibold text-bokk-dark"
+														: "text-zinc-800"
+												)}
+											>
+												{pl.name}
+											</span>
+										</div>
+										<Badge
+											variant={isChecked ? "subtle" : "secondary"}
+											className="pointer-events-none shrink-0"
+										>
+											{count}곡
+										</Badge>
+									</div>
+								);
+							})}
+						</div>
+					)}
 
-				{/* 빠른 새 플레이리스트 추가 */}
-				<Form onSubmit={handleQuickCreate}>
-					<InputGroup size="sm">
-						<Form.Control
+					{/* 빠른 새 플레이리스트 추가 */}
+					<form onSubmit={handleQuickCreate} className="flex items-center gap-2">
+						<Input
 							ref={inputRef}
 							placeholder="새 플레이리스트 즉시 추가..."
 							value={newPlaylistName}
@@ -228,34 +249,30 @@ export default function VideoPlaylistTagModal({
 							disabled={creating}
 						/>
 						<Button
-							variant="primary"
-							className={styles.createBtn}
 							type="submit"
+							size="sm"
+							className="h-9 shrink-0 px-3 text-[13px]"
 							disabled={creating || !newPlaylistName.trim()}
 						>
 							{creating ? "..." : "+ 추가"}
 						</Button>
-					</InputGroup>
-				</Form>
-			</Modal.Body>
-			<Modal.Footer className="d-flex justify-content-between align-items-center py-2 px-3">
-				<button
-					type="button"
-					className={styles.cancelBtn}
-					onClick={onHide}
-				>
-					취소
-				</button>
-				<button
-					type="button"
-					className={styles.saveBtn}
-					onClick={handleSave}
-					disabled={saving}
-					title="저장 (단축키: Ctrl + Enter)"
-				>
-					{saving ? "저장 중..." : "담기 완료"}
-				</button>
-			</Modal.Footer>
-		</Modal>
+					</form>
+				</div>
+
+				<DialogFooter className="flex-row items-center justify-between rounded-b-xl border-0 border-t border-solid border-zinc-200 bg-zinc-100/80 px-5 py-3">
+					<Button variant="outline" size="sm" onClick={onHide}>
+						취소
+					</Button>
+					<Button
+						size="sm"
+						onClick={handleSave}
+						disabled={saving}
+						title="저장 (단축키: Ctrl + Enter)"
+					>
+						{saving ? "저장 중..." : "담기 완료"}
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

@@ -11,7 +11,7 @@
 
 - **Core**: React 18 (`v18.2.0`), React Router DOM v7 (`BrowserRouter`, `Routes`, `Outlet`, `React.lazy` 코드 스플리팅), **Vite 6** (`vite.config.js`, `outDir: 'build'`, 벤더 청크 분리)
 - **API & State**: Apollo Client v3 (`@apollo/client`), GraphQL (`src/constants/querys.js`, `src/client.js`)
-- **UI & Styling**: CSS Modules (`*.module.css`), React Bootstrap, Styled Components
+- **UI & Styling**: **Tailwind CSS v4** (`@tailwindcss/vite`, `src/styles/tailwind.css`), **shadcn/ui** (`src/components/ui/`, Radix UI + `lucide-react`), CSS Modules (`*.module.css`), Styled Components (Bootstrap 5.3 CDN 점진적 전환 중, `react-bootstrap` 완전 제거)
 - **Media & Editor**: `react-youtube`, 자체 구축 한글 조합 호환 `IMESafeEditor` (`src/components/MessageBoard/IMESafeEditor.js`)
 - **Testing**: Vitest 5 + Testing Library + jsdom (`npm test`, `src/__tests__/`)
 
@@ -19,7 +19,9 @@
 
 ## 2. 디렉토리 구조
 
-- `src/components/`: 헤더, 검색, 웹링크, 유튜브 오프캔버스, 게시판 에디터, 모달 등 재사용 UI 컴포넌트
+- `src/components/`: 헤더, 검색, 웹링크, 유튜브 오프캔버스, 게시판 에디터, 모달 등 재사용 UI 컴포넌트 (`src/components/ui/`: shadcn/ui 공용 컴포넌트)
+- `src/lib/`: UI 유틸리티 (`utils.js` — `cn`)
+- `src/styles/`: 전역 스타일 및 Tailwind v4 테마 토큰 (`tailwind.css`)
 - `src/routers/`: 각 페이지 라우트 컴포넌트 (`Home.js`, `Messageboard.js`, `manage/MyWeblink.js`, `manage/Playlist.js` 등)
 - `src/hooks/`: 재사용 커스텀 훅 (`useWeblinkDnD.js`, `usePlaylistFilter.js`, `useOffcanvasResizer.js`, `useYoutubePlayerController.js` 등)
 - `src/outlets/`: 중첩 라우팅 레이아웃 (`HeaderLayout.js`, `SignLayout.js`)

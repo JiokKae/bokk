@@ -1,6 +1,15 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { MY_WEBLINK_GROUPS, OWN_WEBLINKS, UPDATE_WEBLINK } from "../../constants/querys";
 import WeblinkForm from "./WeblinkForm";
 
@@ -13,7 +22,7 @@ const createValuesFromWeblink = (weblink) => ({
 });
 
 export default function UpdateWeblinkModal({ weblink }) {
-	const [show, setShow] = useState(false);
+	const [open, setOpen] = useState(false);
 	const [formValues, setFormValues] = useState(() =>
 		createValuesFromWeblink(weblink)
 	);
@@ -40,7 +49,7 @@ export default function UpdateWeblinkModal({ weblink }) {
 	});
 
 	const onSubmit = () => {
-		setShow(false);
+		setOpen(false);
 		if (isChange() === false) {
 			return;
 		}
@@ -61,36 +70,53 @@ export default function UpdateWeblinkModal({ weblink }) {
 
 	const handleOpen = () => {
 		setFormValues(createValuesFromWeblink(weblink));
-		setShow(true);
+		setOpen(true);
 	};
 
 	return (
 		<>
-			<button className="btn btn-secondary" onClick={handleOpen}>
+			<Button variant="secondary" size="sm" onClick={handleOpen}>
 				수정
-			</button>
-			<Modal show={show} onHide={() => setShow(false)}>
-				<Modal.Header closeButton>
-					<Modal.Title as="h5">웹링크 수정</Modal.Title>
-				</Modal.Header>
-				<Modal.Body>
-					<WeblinkForm
-						id="updateWeblinkForm"
-						onSubmit={onSubmit}
-						values={formValues}
-						onChange={handleFieldChange}
-						groups={groups}
-					/>
-				</Modal.Body>
-				<Modal.Footer>
-					<Button
-						form="updateWeblinkForm"
-						type="submit"
-						variant="primary">
-						수정
-					</Button>
-				</Modal.Footer>
-			</Modal>
+			</Button>
+
+			<Dialog open={open} onOpenChange={setOpen}>
+				<DialogContent className="max-w-lg gap-0 overflow-hidden p-0">
+					<DialogHeader className="rounded-t-xl border-0 border-b border-solid border-zinc-200 bg-white px-5 py-3.5">
+						<div className="flex items-center gap-2.5">
+							<span className="inline-flex size-8 items-center justify-center rounded-lg bg-bokk-subtle text-bokk-dark">
+								<Pencil className="size-4" />
+							</span>
+							<div>
+								<DialogTitle className="text-lg font-bold text-zinc-900">
+									웹링크 수정
+								</DialogTitle>
+								<DialogDescription className="sr-only">
+									선택한 웹링크의 이름, 소속 그룹, URL 및 색상을 수정합니다.
+								</DialogDescription>
+							</div>
+						</div>
+					</DialogHeader>
+
+					<div className="max-h-[75vh] overflow-y-auto bg-white px-5 py-4">
+						<WeblinkForm
+							id="updateWeblinkForm"
+							onSubmit={onSubmit}
+							values={formValues}
+							onChange={handleFieldChange}
+							groups={groups}
+						/>
+					</div>
+
+					<DialogFooter className="flex-row justify-end gap-2 rounded-b-xl border-0 border-t border-solid border-zinc-200 bg-zinc-100/80 px-5 py-3">
+						<Button variant="outline" onClick={() => setOpen(false)}>
+							취소
+						</Button>
+						<Button form="updateWeblinkForm" type="submit">
+							수정
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</>
 	);
 }

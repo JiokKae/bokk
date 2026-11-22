@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
-import { Col, Form, Row } from "react-bootstrap";
+import { ChevronDown } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
 	WEBLINK_DATE_TOKEN_GROUPS,
 	formatWeblinkDynamicText,
@@ -67,48 +69,69 @@ export default function WeblinkForm({
 		: "";
 
 	return (
-		<Form
+		<form
 			id={id}
-			className={`row g-3 ${className || ""}`}
+			className={cn("flex flex-col gap-3.5", className)}
 			onSubmit={(e) => {
 				e.preventDefault();
 				onSubmit(e);
 				e.target.reset();
-			}}>
-			<Form.Group className="col-auto">
-				<Form.Label htmlFor="name">이름</Form.Label>
-				<Form.Control
-					ref={nameInputRef}
-					type="text"
-					id="name"
-					maxLength={25}
-					pattern="[A-Za-z0-9ㄱ-힣\{\}\(\)\[\]\-\_\.\,\!\?\+\&\/ ]{1,25}"
-					required
-					value={name}
-					onFocus={() => setActiveField("name")}
-					onChange={(e) => onChange("name", e.target.value)}
-				/>
-			</Form.Group>
-			<Form.Group className="col-auto">
-				<Form.Label htmlFor="groupId">소속 그룹</Form.Label>
-				<Form.Select
-					id="groupId"
-					value={groupId ?? ""}
-					onChange={(e) => onChange("groupId", e.target.value)}
+			}}
+		>
+			<div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+				<div className="flex flex-col gap-1.5">
+					<label
+						htmlFor="name"
+						className="text-sm font-semibold text-zinc-700"
+					>
+						이름
+					</label>
+					<Input
+						ref={nameInputRef}
+						type="text"
+						id="name"
+						maxLength={25}
+						pattern="[A-Za-z0-9ㄱ-힣\{\}\(\)\[\]\-_.,!?+&/ ]{1,25}"
+						required
+						value={name}
+						onFocus={() => setActiveField("name")}
+						onChange={(e) => onChange("name", e.target.value)}
+					/>
+				</div>
+
+				<div className="flex flex-col gap-1.5">
+					<label
+						htmlFor="groupId"
+						className="text-sm font-semibold text-zinc-700"
+					>
+						소속 그룹
+					</label>
+					<select
+						id="groupId"
+						value={groupId ?? ""}
+						onChange={(e) => onChange("groupId", e.target.value)}
+						className="flex h-9 w-full rounded-md border-[1px] border-solid border-zinc-300 bg-white px-2.5 text-sm text-zinc-900 shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-bokk focus-visible:ring-2 focus-visible:ring-bokk/30"
+					>
+						<option value="">미분류</option>
+						{groups
+							.filter((g) => g.id > 0)
+							.map((g) => (
+								<option key={g.id} value={g.id}>
+									{g.name}
+								</option>
+							))}
+					</select>
+				</div>
+			</div>
+
+			<div className="flex flex-col gap-1.5">
+				<label
+					htmlFor="url"
+					className="text-sm font-semibold text-zinc-700"
 				>
-					<option value="">미분류</option>
-					{groups
-						.filter((g) => g.id > 0)
-						.map((g) => (
-							<option key={g.id} value={g.id}>
-								{g.name}
-							</option>
-						))}
-				</Form.Select>
-			</Form.Group>
-			<Form.Group className="col-12">
-				<Form.Label htmlFor="url">URL</Form.Label>
-				<Form.Control
+					URL
+				</label>
+				<Input
 					ref={urlInputRef}
 					type="text"
 					inputMode="url"
@@ -120,105 +143,75 @@ export default function WeblinkForm({
 					onFocus={() => setActiveField("url")}
 					onChange={(e) => onChange("url", e.target.value)}
 				/>
+
 				<div
-					className={`card border overflow-hidden mt-2 ${
-						isFormatOpen ? "shadow-sm" : ""
-					}`}
-					style={{
-						borderRadius: "8px",
-						borderColor: isFormatOpen ? "#b6e0fe" : "#dee2e6",
-						transition: "all 0.25s ease",
-					}}
+					className={cn(
+						"mt-1 overflow-hidden rounded-lg border-[1px] border-solid bg-white transition-all duration-200",
+						isFormatOpen
+							? "border-bokk-border shadow-xs"
+							: "border-zinc-200"
+					)}
 				>
 					<div
-						className="card-header d-flex justify-content-between align-items-center user-select-none"
-						style={{
-							cursor: "pointer",
-							padding: "9px 14px",
-							backgroundColor: isFormatOpen ? "#f0f7ff" : "#f1f3f5",
-							borderBottom: isFormatOpen ? "1px solid #d0ebff" : "none",
-							transition: "background-color 0.25s ease",
-						}}
+						className={cn(
+							"flex cursor-pointer select-none items-center justify-between px-3.5 py-2.5 transition-colors duration-200",
+							isFormatOpen
+								? "border-0 border-b border-solid border-bokk-border/70 bg-bokk-subtle/70"
+								: "bg-zinc-100/80 hover:bg-zinc-100"
+						)}
 						onMouseDown={(e) => e.preventDefault()}
 						onClick={() => setIsFormatOpen((prev) => !prev)}
 					>
 						<span
-							className={`fw-bold ${
-								isFormatOpen ? "text-dark" : "text-secondary"
-							}`}
-							style={{ fontSize: "14px" }}
+							className={cn(
+								"text-sm font-bold",
+								isFormatOpen ? "text-zinc-900" : "text-zinc-600"
+							)}
 						>
 							동적 날짜 포맷
 						</span>
-						<span
-							style={{
-								fontSize: "11px",
-								display: "inline-block",
-								transform: isFormatOpen ? "rotate(180deg)" : "rotate(0deg)",
-								transition: "transform 0.25s ease",
-								color: isFormatOpen ? "#0d6efd" : "#6c757d",
-							}}
-						>
-							▼
-						</span>
+						<ChevronDown
+							className={cn(
+								"size-4 transition-transform duration-200",
+								isFormatOpen
+									? "rotate-180 text-bokk"
+									: "text-zinc-500"
+							)}
+						/>
 					</div>
 
 					<div
+						className="overflow-hidden bg-white transition-all duration-250 ease-out"
 						style={{
-							maxHeight: isFormatOpen ? "200px" : "0px",
+							maxHeight: isFormatOpen ? "220px" : "0px",
 							opacity: isFormatOpen ? 1 : 0,
-							transition:
-								"max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease",
-							overflow: "hidden",
-							backgroundColor: "#ffffff",
 						}}
 					>
-						<div
-							className="px-3 d-flex flex-column"
-							style={{ padding: "10px 14px", gap: "6px" }}
-						>
+						<div className="flex flex-col gap-1.5 px-3.5 py-2.5">
 							{WEBLINK_DATE_TOKEN_GROUPS.map(({ category, tokens }) => (
 								<div
 									key={category}
-									className="d-flex align-items-center gap-2"
-									style={{ margin: "1px 0" }}
+									className="flex items-center gap-2"
 								>
-									<span
-										className="text-secondary fw-semibold flex-shrink-0"
-										style={{ fontSize: "14px", width: "38px" }}
-									>
+									<span className="w-10 shrink-0 text-[13.5px] font-semibold text-zinc-500">
 										{category}
 									</span>
-									<div
-										className="d-flex flex-wrap"
-										style={{ gap: "6px" }}
-									>
+									<div className="flex flex-wrap gap-1.5">
 										{tokens.map(({ token, getExample }) => {
 											const exampleVal = getExample(now);
 											return (
 												<button
 													key={token}
 													type="button"
-													className="btn btn-sm btn-light bg-white border text-dark d-inline-flex align-items-center gap-1 shadow-sm"
-													style={{
-														fontSize: "13.5px",
-														height: "31px",
-														padding: "0 10px",
-													}}
+													className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-md border-[1px] border-solid border-zinc-200 bg-white px-2.5 text-[13px] text-zinc-900 shadow-xs transition-colors hover:border-bokk-border hover:bg-bokk-subtle/60"
 													onMouseDown={(e) => e.preventDefault()}
 													onClick={() => handleInsertToken(token)}
 													title={`클릭 시 ${token} 삽입 (현재 값: ${exampleVal})`}
 												>
-													<code
-														className="text-primary fw-bold"
-														style={{ fontSize: "13.5px" }}
-													>
+													<code className="font-bold text-bokk-dark">
 														{token}
 													</code>
-													<span
-														className="text-muted"
-														style={{ fontSize: "13px" }}
-													>
+													<span className="text-xs text-zinc-500">
 														({exampleVal})
 													</span>
 												</button>
@@ -230,53 +223,70 @@ export default function WeblinkForm({
 						</div>
 					</div>
 				</div>
-			</Form.Group>
-			<Col xs={12}>
-				<Row>
-					<Form.Group className="col-auto">
-						<Form.Label htmlFor="color">글자 색상</Form.Label>
-						<Form.Control
-							type="color"
-							id="color"
-							onInput={(e) => onChange("color", e.target.value)}
-							value={color}></Form.Control>
-					</Form.Group>
-					<Form.Group className="col-auto">
-						<Form.Label htmlFor="backgroundColor">
-							배경 색상
-						</Form.Label>
-						<Form.Control
-							type="color"
-							id="backgroundColor"
-							onInput={(e) => onChange("backgroundColor", e.target.value)}
-							value={backgroundColor}></Form.Control>
-					</Form.Group>
-					<Col>
-						<Form.Label>미리보기</Form.Label>
+			</div>
+
+			<div className="flex flex-wrap items-start gap-4 pt-1">
+				<div className="flex flex-col gap-1.5">
+					<label
+						htmlFor="color"
+						className="text-sm font-semibold text-zinc-700"
+					>
+						글자 색상
+					</label>
+					<input
+						type="color"
+						id="color"
+						className="h-9 w-12 cursor-pointer rounded-md border-[1px] border-solid border-zinc-300 bg-white p-1 shadow-xs transition-colors hover:border-bokk focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bokk/30 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-[4px] [&::-webkit-color-swatch]:border-[1px] [&::-webkit-color-swatch]:border-solid [&::-webkit-color-swatch]:border-black/10 [&::-moz-color-swatch]:rounded-[4px] [&::-moz-color-swatch]:border-[1px] [&::-moz-color-swatch]:border-solid [&::-moz-color-swatch]:border-black/10"
+						onInput={(e) => onChange("color", e.target.value)}
+						onChange={(e) => onChange("color", e.target.value)}
+						value={color}
+					/>
+				</div>
+
+				<div className="flex flex-col gap-1.5">
+					<label
+						htmlFor="backgroundColor"
+						className="text-sm font-semibold text-zinc-700"
+					>
+						배경 색상
+					</label>
+					<input
+						type="color"
+						id="backgroundColor"
+						className="h-9 w-12 cursor-pointer rounded-md border-[1px] border-solid border-zinc-300 bg-white p-1 shadow-xs transition-colors hover:border-bokk focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bokk/30 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-[4px] [&::-webkit-color-swatch]:border-[1px] [&::-webkit-color-swatch]:border-solid [&::-webkit-color-swatch]:border-black/10 [&::-moz-color-swatch]:rounded-[4px] [&::-moz-color-swatch]:border-[1px] [&::-moz-color-swatch]:border-solid [&::-moz-color-swatch]:border-black/10"
+						onInput={(e) => onChange("backgroundColor", e.target.value)}
+						onChange={(e) => onChange("backgroundColor", e.target.value)}
+						value={backgroundColor}
+					/>
+				</div>
+
+				<div className="flex min-w-0 flex-1 flex-col gap-1.5">
+					<span className="text-sm font-semibold text-zinc-700">
+						미리보기
+					</span>
+					<div>
 						<Weblink
 							name={name}
 							color={color}
 							backgroundColor={backgroundColor}
 						/>
-					</Col>
-				</Row>
-				{isUrlDynamic && (
-					<div
-						className="mt-2 px-2.5 py-1.5 rounded-2 border bg-light"
-						style={{
-							fontSize: "13.5px",
-							padding: "6px 10px",
-							wordBreak: "break-all",
-						}}
-						title={resolvedUrlPreview}
-					>
-						<span className="text-secondary fw-semibold me-1">
-							적용 URL:
-						</span>
-						<span className="text-primary">{resolvedUrlPreview}</span>
 					</div>
-				)}
-			</Col>
-		</Form>
+				</div>
+			</div>
+
+			{isUrlDynamic && (
+				<div
+					className="rounded-lg border-[1px] border-solid border-bokk-border bg-bokk-subtle/50 px-3 py-2 text-[13.5px] break-all"
+					title={resolvedUrlPreview}
+				>
+					<span className="mr-1.5 font-semibold text-zinc-600">
+						적용 URL:
+					</span>
+					<span className="font-medium text-bokk-dark">
+						{resolvedUrlPreview}
+					</span>
+				</div>
+			)}
+		</form>
 	);
 }
