@@ -2,9 +2,8 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import AddWeblinkModal from "../components/Weblink/AddWeblinkModal";
 import ThumbnailModal from "../components/Weblink/ThumbnailModal";
-import Weblink from "../components/Weblink/Weblink";
+import WeblinkGroupCard from "../components/Weblink/WeblinkGroupCard";
 import {
 	BUILTIN_WEBLINKS,
 	ME,
@@ -19,6 +18,9 @@ import {
 	isUntaggedWeblink,
 } from "../utils/weblinkUtil";
 import styles from "./Home.module.css";
+
+const POPUP_BLOCKED_MESSAGE =
+	"브라우저에서 팝업이 차단되었습니다.\n주소창 우측 상단의 팝업 차단 아이콘을 클릭하여 '항상 허용'을 선택해주시면 모든 링크가 정상적으로 열립니다.";
 
 export default function Home() {
 	const { data: builtinData } = useQuery(BUILTIN_WEBLINKS);
@@ -143,50 +145,51 @@ export default function Home() {
 		}
 
 		const isShift = e.shiftKey || isShiftPressed;
+		const startIndex = isShift ? 1 : 0;
 
-		if (isShift) {
-			if (links.length > 1) {
-				let blocked = false;
-				for (let i = 1; i < links.length; i++) {
-					const link = links[i];
-					if (!link.url) continue;
-					const targetUrl = getResolvedWeblinkUrl(link.url);
-					const win = window.open(targetUrl, "_blank");
-					if (!win || win.closed || typeof win.closed === "undefined") {
-						blocked = true;
-					}
-				}
-				if (blocked) {
-					alert(
-						"브라우저에서 팝업이 차단되었습니다.\n주소창 우측 상단의 팝업 차단 아이콘을 클릭하여 '항상 허용'을 선택해주시면 모든 링크가 정상적으로 열립니다."
-					);
-				}
-			}
-		} else {
+		if (!isShift) {
 			e.preventDefault();
 			e.stopPropagation();
+		}
 
-			let blocked = false;
-			links.forEach((link) => {
-				if (!link.url) return;
-				const targetUrl = getResolvedWeblinkUrl(link.url);
-				const win = window.open(targetUrl, "_blank");
-				if (!win || win.closed || typeof win.closed === "undefined") {
-					blocked = true;
-				}
-			});
-
-			if (blocked) {
-				alert(
-					"브라우저에서 팝업이 차단되었습니다.\n주소창 우측 상단의 팝업 차단 아이콘을 클릭하여 '항상 허용'을 선택해주시면 모든 링크가 정상적으로 열립니다."
-				);
+		let blocked = false;
+		for (let i = startIndex; i < links.length; i++) {
+			const link = links[i];
+			if (!link.url) continue;
+			const win = window.open(getResolvedWeblinkUrl(link.url), "_blank");
+			if (!win || win.closed || typeof win.closed === "undefined") {
+				blocked = true;
 			}
+		}
+
+		if (blocked) {
+			alert(POPUP_BLOCKED_MESSAGE);
 		}
 	};
 
+	const sharedCardProps = {
+		styles,
+		isReordering,
+		isShiftPressed,
+		draggedInfo,
+		onOpenAll: handleOpenAll,
+		onDragOver: handleDragOver,
+		onLinkDragStart: handleLinkDragStart,
+		onLinkDragEnter: handleLinkDragEnter,
+		onEmptyGroupDragEnter: handleEmptyGroupDragEnter,
+		onLinkDragEnd: handleLinkDragEnd,
+	};
+
+	const untaggedLinks = weblinks.filter((w) =>
+		isUntaggedWeblink(w, displayGroups)
+	);
+	const isUntaggedHovered =
+		hoverTargetGroup === WEBLINK_GROUP_ID.UNTAGGED ||
+		hoverTargetGroup === "untagged";
+
 	return (
 		<>
-			{/* 웹링크 구역 상단 툴바 (로그인 시에만 노출: 한줄 비우고 오른쪽에 순서/그룹변경 및 관리페이지 이동 버튼) */}
+			{/* 웹링크 구역 상단 툴바 (로그인 시에만 노출) */}
 			{isLogin && (
 				<div className={styles.weblinkToolbar}>
 					{isReordering && (
@@ -200,7 +203,11 @@ export default function Home() {
 							size="sm"
 							className={styles.toolbarBtn}
 							onClick={() => setIsReordering((prev) => !prev)}
-							title={isReordering ? "변경 완료" : "현재 화면에서 드래그로 순서 및 그룹 변경"}
+							title={
+								isReordering
+									? "변경 완료"
+									: "현재 화면에서 드래그로 순서 및 그룹 변경"
+							}
 						>
 							{isReordering ? "✓ 변경 완료" : "⇄ 순서·그룹 변경"}
 						</Button>
@@ -218,38 +225,13 @@ export default function Home() {
 			{/* 비로그인 방문자 빌트인 웹링크 */}
 			{!isLogin && builtinWeblinks.length > 0 && (
 				<div className={styles.weblinkRow}>
-					<span className={styles.groupContainer}>
-						<div className={styles.groupHeaderLine}>
-							<span className={styles.groupBadge} title="볶음밥 기본 웹링크">
-								bokk
-							</span>
-							<a
-								href={getResolvedWeblinkUrl(builtinWeblinks[0]?.url)}
-								target="_blank"
-								rel="noopener noreferrer"
-								className={
-									isShiftPressed ? styles.openAllBtnShift : styles.openAllBtn
-								}
-								onClick={(e) => handleOpenAll(e, builtinWeblinks)}
-								title="클릭: 새 탭으로 모두 열기 | Shift+클릭: 새 창으로 모두 열기"
-							>
-								{isShiftPressed ? "⧉ 새 창으로 모두 열기" : "↗ 모두 열기"}
-							</a>
-						</div>
-						<div className={styles.groupContent}>
-							{builtinWeblinks.map(
-								({ id, name, url, color, backgroundColor }) => (
-									<Weblink
-										key={id}
-										name={name}
-										url={url}
-										color={color}
-										backgroundColor={backgroundColor}
-									/>
-								),
-							)}
-						</div>
-					</span>
+					<WeblinkGroupCard
+						{...sharedCardProps}
+						title="bokk"
+						badgeTitle="볶음밥 기본 웹링크"
+						links={builtinWeblinks}
+						targetGroupId={WEBLINK_GROUP_ID.BUILTIN}
+					/>
 				</div>
 			)}
 
@@ -262,391 +244,89 @@ export default function Home() {
 				) : (
 					<>
 						{displayGroups.map((group, groupIndex) => {
-							if (group.id === 0) {
+							const groupDragHandlers = {
+								canReorderGroup: true,
+								onGroupDragStart: (e) => handleGroupDragStart(e, groupIndex),
+								onGroupDragEnter: (e) => handleGroupDragEnter(e, groupIndex),
+								onGroupDragEnd: handleGroupDragEnd,
+							};
+
+							if (group.id === WEBLINK_GROUP_ID.BUILTIN) {
 								if (builtinWeblinks.length === 0) return null;
 								return (
-									<span
+									<WeblinkGroupCard
 										key="builtin-bokk"
-										className={`${styles.groupContainer} ${
-											isReordering ? styles.reorderActiveGroup : ""
-										}`}
-									>
-										<div
-											className={styles.groupHeaderLine}
-											draggable={isReordering}
-											onDragStart={(e) => handleGroupDragStart(e, groupIndex)}
-											onDragEnter={(e) => handleGroupDragEnter(e, groupIndex)}
-											onDragOver={handleDragOver}
-											onDragEnd={handleGroupDragEnd}
-											style={{ cursor: isReordering ? "grab" : undefined }}
-										>
-											{isReordering && (
-												<span
-													className={styles.groupDragHandle}
-													title="드래그하여 그룹 순서 변경"
-												>
-													☰
-												</span>
-											)}
-											<span className={styles.groupBadge} title="볶음밥 기본 웹링크">
-												bokk
-											</span>
-											<a
-												href={getResolvedWeblinkUrl(builtinWeblinks[0]?.url)}
-												target="_blank"
-												rel="noopener noreferrer"
-												className={
-													isShiftPressed ? styles.openAllBtnShift : styles.openAllBtn
-												}
-												onClick={(e) => handleOpenAll(e, builtinWeblinks)}
-												title="클릭: 새 탭으로 모두 열기 | Shift+클릭: 새 창으로 모두 열기"
-											>
-												{isShiftPressed ? "⧉ 새 창으로 모두 열기" : "↗ 모두 열기"}
-											</a>
-										</div>
-										<div className={styles.groupContent}>
-											{builtinWeblinks.map(
-												({ id, name, url, color, backgroundColor }) => (
-													<Weblink
-														key={id}
-														name={name}
-														url={url}
-														color={color}
-														backgroundColor={backgroundColor}
-													/>
-												),
-											)}
-										</div>
-									</span>
+										{...sharedCardProps}
+										{...groupDragHandlers}
+										title="bokk"
+										badgeTitle="볶음밥 기본 웹링크"
+										links={builtinWeblinks}
+										targetGroupId={WEBLINK_GROUP_ID.BUILTIN}
+									/>
 								);
 							}
 
 							if (group.id === WEBLINK_GROUP_ID.UNTAGGED) {
-								const untaggedLinks = weblinks.filter((w) =>
-									isUntaggedWeblink(w, groups)
-								);
 								if (untaggedLinks.length === 0 && !isReordering) return null;
-								const isHovered = hoverTargetGroup === -1 || hoverTargetGroup === "untagged";
-
 								return (
-									<span
+									<WeblinkGroupCard
 										key="untagged"
-										className={`${styles.groupContainerUntagged} ${
-											isReordering ? styles.reorderActiveGroup : ""
-										} ${isHovered && draggedInfo ? styles.groupDragOver : ""}`}
-										onDragOver={handleDragOver}
-										onDrop={(e) => {
-											e.preventDefault();
-											handleLinkDragEnd();
-										}}
-									>
-										<div
-											className={styles.groupHeaderLine}
-											draggable={isReordering}
-											onDragStart={(e) => handleGroupDragStart(e, groupIndex)}
-											onDragEnter={(e) => handleGroupDragEnter(e, groupIndex)}
-											onDragOver={handleDragOver}
-											onDragEnd={handleGroupDragEnd}
-											style={{ cursor: isReordering ? "grab" : undefined }}
-										>
-											{isReordering && (
-												<span
-													className={styles.groupDragHandle}
-													title="드래그하여 그룹 순서 변경"
-												>
-													☰
-												</span>
-											)}
-											<span className={styles.groupBadgeUntagged} title="미분류 웹링크">
-												미분류
-											</span>
-											{untaggedLinks.length > 0 && (
-												<a
-													href={getResolvedWeblinkUrl(untaggedLinks[0]?.url)}
-													target="_blank"
-													rel="noopener noreferrer"
-													className={
-														isShiftPressed ? styles.openAllBtnShift : styles.openAllBtn
-													}
-													onClick={(e) => handleOpenAll(e, untaggedLinks)}
-													title="클릭: 새 탭으로 모두 열기 | Shift+클릭: 새 창으로 모두 열기"
-												>
-													{isShiftPressed ? "⧉ 새 창으로 모두 열기" : "↗ 모두 열기"}
-												</a>
-											)}
-										</div>
-										<div
-											className={styles.groupContent}
-											onDragEnter={(e) => {
-												if (untaggedLinks.length === 0) {
-													handleEmptyGroupDragEnter(e, -1);
-												}
-											}}
-										>
-											{untaggedLinks.length === 0 && isReordering ? (
-												<span
-													className={styles.emptyGroupDropZone}
-													onDragEnter={(e) => handleEmptyGroupDragEnter(e, -1)}
-												>
-													⬇ 여기에 드롭하여 미분류로 이동
-												</span>
-											) : (
-												untaggedLinks.map((weblink, itemIndex) => {
-													const isDraggingThis = draggedInfo?.id === weblink.id;
-													return (
-														<span
-															key={weblink.id}
-															className={`${styles.linkDragWrapper} ${
-																isDraggingThis ? styles.linkDragWrapperDragging : ""
-															} ${isReordering ? styles.linkDragWrapperReorder : ""}`}
-															draggable={isReordering}
-															onDragStart={(e) => handleLinkDragStart(e, weblink)}
-															onDragEnter={(e) => handleLinkDragEnter(e, -1, itemIndex)}
-															onDragOver={handleDragOver}
-															onDragEnd={handleLinkDragEnd}
-															title={isReordering ? "드래그하여 순서 및 그룹 변경" : undefined}
-														>
-															<Weblink
-																name={weblink.name}
-																url={isReordering ? "#" : weblink.url}
-																color={weblink.color}
-																backgroundColor={weblink.backgroundColor}
-																onClick={
-																	isReordering
-																		? (e) => {
-																				e.preventDefault();
-																				e.stopPropagation();
-																		  }
-																		: undefined
-																}
-																style={
-																	isReordering
-																		? { pointerEvents: "none", cursor: "grab" }
-																		: undefined
-																}
-															/>
-														</span>
-													);
-												})
-											)}
-											<AddWeblinkModal defaultGroupId={null} />
-										</div>
-									</span>
+										{...sharedCardProps}
+										{...groupDragHandlers}
+										title="미분류"
+										badgeTitle="미분류 웹링크"
+										links={untaggedLinks}
+										targetGroupId={WEBLINK_GROUP_ID.UNTAGGED}
+										isUntagged
+										canReorderLinks
+										showAddModal
+										defaultGroupId={null}
+										emptyDropText="⬇ 여기에 드롭하여 미분류로 이동"
+										isHovered={isUntaggedHovered}
+									/>
 								);
 							}
 
 							const groupLinks = weblinks.filter((w) => w.groupId === group.id);
-							const isHovered = hoverTargetGroup === group.id;
-
 							return (
-								<span
+								<WeblinkGroupCard
 									key={group.id}
-									className={`${styles.groupContainer} ${
-										isReordering ? styles.reorderActiveGroup : ""
-									} ${isHovered && draggedInfo ? styles.groupDragOver : ""}`}
-									onDragOver={handleDragOver}
-									onDrop={(e) => {
-										e.preventDefault();
-										handleLinkDragEnd();
-									}}
-								>
-									<div
-										className={styles.groupHeaderLine}
-										draggable={isReordering}
-										onDragStart={(e) => handleGroupDragStart(e, groupIndex)}
-										onDragEnter={(e) => handleGroupDragEnter(e, groupIndex)}
-										onDragOver={handleDragOver}
-										onDragEnd={handleGroupDragEnd}
-										style={{ cursor: isReordering ? "grab" : undefined }}
-									>
-										{isReordering && (
-											<span
-												className={styles.groupDragHandle}
-												title="드래그하여 그룹 순서 변경"
-											>
-												☰
-											</span>
-										)}
-										<span className={styles.groupBadge} title={`그룹: ${group.name}`}>
-											{group.name}
-										</span>
-										{groupLinks.length > 0 && (
-											<a
-												href={getResolvedWeblinkUrl(groupLinks[0]?.url)}
-												target="_blank"
-												rel="noopener noreferrer"
-												className={
-													isShiftPressed ? styles.openAllBtnShift : styles.openAllBtn
-												}
-												onClick={(e) => handleOpenAll(e, groupLinks)}
-												title="클릭: 새 탭으로 모두 열기 | Shift+클릭: 새 창으로 모두 열기"
-											>
-												{isShiftPressed ? "⧉ 새 창으로 모두 열기" : "↗ 모두 열기"}
-											</a>
-										)}
-									</div>
-									<div
-										className={styles.groupContent}
-										onDragEnter={(e) => {
-											if (groupLinks.length === 0) {
-												handleEmptyGroupDragEnter(e, group.id);
-											}
-										}}
-									>
-										{groupLinks.length === 0 && isReordering ? (
-											<span
-												className={styles.emptyGroupDropZone}
-												onDragEnter={(e) => handleEmptyGroupDragEnter(e, group.id)}
-											>
-												⬇ 여기에 드롭하여 이 그룹으로 이동
-											</span>
-										) : (
-											groupLinks.map((weblink, itemIndex) => {
-												const isDraggingThis = draggedInfo?.id === weblink.id;
-												return (
-													<span
-														key={weblink.id}
-														className={`${styles.linkDragWrapper} ${
-															isDraggingThis ? styles.linkDragWrapperDragging : ""
-														} ${isReordering ? styles.linkDragWrapperReorder : ""}`}
-														draggable={isReordering}
-														onDragStart={(e) => handleLinkDragStart(e, weblink)}
-														onDragEnter={(e) => handleLinkDragEnter(e, group.id, itemIndex)}
-														onDragOver={handleDragOver}
-														onDragEnd={handleLinkDragEnd}
-														title={isReordering ? "드래그하여 순서 및 그룹 변경" : undefined}
-													>
-														<Weblink
-															name={weblink.name}
-															url={isReordering ? "#" : weblink.url}
-															color={weblink.color}
-															backgroundColor={weblink.backgroundColor}
-															onClick={
-																isReordering
-																	? (e) => {
-																			e.preventDefault();
-																			e.stopPropagation();
-																	  }
-																	: undefined
-															}
-															style={
-																isReordering
-																	? { pointerEvents: "none", cursor: "grab" }
-																	: undefined
-															}
-														/>
-													</span>
-												);
-											})
-										)}
-										<AddWeblinkModal defaultGroupId={group.id} />
-									</div>
-								</span>
+									{...sharedCardProps}
+									{...groupDragHandlers}
+									title={group.name}
+									badgeTitle={`그룹: ${group.name}`}
+									links={groupLinks}
+									targetGroupId={group.id}
+									canReorderLinks
+									showAddModal
+									defaultGroupId={group.id}
+									isHovered={hoverTargetGroup === group.id}
+								/>
 							);
 						})}
 
 						{/* 미분류 그룹 폴백 (그룹 목록에 id: -1이 없는 경우 대비) */}
 						{!displayGroups.some((g) => g.id === WEBLINK_GROUP_ID.UNTAGGED) &&
-							(() => {
-								const untaggedLinks = weblinks.filter((w) =>
-									isUntaggedWeblink(w, displayGroups)
-								);
-								if (untaggedLinks.length === 0 && !isReordering) return null;
-								const isHovered = hoverTargetGroup === -1 || hoverTargetGroup === "untagged";
-
-								return (
-									<span
-										key="untagged-fallback"
-										className={`${styles.groupContainerUntagged} ${
-											isReordering ? styles.reorderActiveGroup : ""
-										} ${isHovered && draggedInfo ? styles.groupDragOver : ""}`}
-										onDragOver={handleDragOver}
-										onDrop={(e) => {
-											e.preventDefault();
-											handleLinkDragEnd();
-										}}
-									>
-										<div className={styles.groupHeaderLine}>
-											<span className={styles.groupBadgeUntagged} title="미분류 웹링크">
-												미분류
-											</span>
-											{untaggedLinks.length > 0 && (
-												<a
-													href={getResolvedWeblinkUrl(untaggedLinks[0]?.url)}
-													target="_blank"
-													rel="noopener noreferrer"
-													className={
-														isShiftPressed ? styles.openAllBtnShift : styles.openAllBtn
-													}
-													onClick={(e) => handleOpenAll(e, untaggedLinks)}
-													title="클릭: 새 탭으로 모두 열기 | Shift+클릭: 새 창으로 모두 열기"
-												>
-													{isShiftPressed ? "⧉ 새 창으로 모두 열기" : "↗ 모두 열기"}
-												</a>
-											)}
-										</div>
-										<div
-											className={styles.groupContent}
-											onDragEnter={(e) => {
-												if (untaggedLinks.length === 0) {
-													handleEmptyGroupDragEnter(e, -1);
-												}
-											}}
-										>
-											{untaggedLinks.length === 0 && isReordering ? (
-												<span
-													className={styles.emptyGroupDropZone}
-													onDragEnter={(e) => handleEmptyGroupDragEnter(e, -1)}
-												>
-													⬇ 여기에 드롭하여 미분류로 이동
-												</span>
-											) : (
-												untaggedLinks.map((weblink, itemIndex) => {
-													const isDraggingThis = draggedInfo?.id === weblink.id;
-													return (
-														<span
-															key={weblink.id}
-															className={`${styles.linkDragWrapper} ${
-																isDraggingThis ? styles.linkDragWrapperDragging : ""
-															} ${isReordering ? styles.linkDragWrapperReorder : ""}`}
-															draggable={isReordering}
-															onDragStart={(e) => handleLinkDragStart(e, weblink)}
-															onDragEnter={(e) => handleLinkDragEnter(e, -1, itemIndex)}
-															onDragOver={handleDragOver}
-															onDragEnd={handleLinkDragEnd}
-															title={isReordering ? "드래그하여 순서 및 그룹 변경" : undefined}
-														>
-															<Weblink
-																name={weblink.name}
-																url={isReordering ? "#" : weblink.url}
-																color={weblink.color}
-																backgroundColor={weblink.backgroundColor}
-																onClick={
-																	isReordering
-																		? (e) => {
-																				e.preventDefault();
-																				e.stopPropagation();
-																		  }
-																		: undefined
-																}
-																style={
-																	isReordering
-																		? { pointerEvents: "none", cursor: "grab" }
-																		: undefined
-																}
-															/>
-														</span>
-													);
-												})
-											)}
-											<AddWeblinkModal defaultGroupId={null} />
-										</div>
-									</span>
-								);
-							})()}
+							(untaggedLinks.length > 0 || isReordering) && (
+								<WeblinkGroupCard
+									key="untagged-fallback"
+									{...sharedCardProps}
+									title="미분류"
+									badgeTitle="미분류 웹링크"
+									links={untaggedLinks}
+									targetGroupId={WEBLINK_GROUP_ID.UNTAGGED}
+									isUntagged
+									canReorderLinks
+									showAddModal
+									defaultGroupId={null}
+									emptyDropText="⬇ 여기에 드롭하여 미분류로 이동"
+									isHovered={isUntaggedHovered}
+								/>
+							)}
 					</>
 				)}
 			</div>
+
 			<div className={styles.weblinkRow}>
 				<a
 					href="https://www.naver.com/"
