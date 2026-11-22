@@ -37,6 +37,15 @@ export default defineConfig(({ mode }) => {
 		},
 		build: {
 			outDir: 'build',
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+						'vendor-apollo': ['@apollo/client', 'graphql'],
+						'vendor-ui': ['react-bootstrap', 'styled-components', 'react-youtube'],
+					},
+				},
+			},
 		},
 		test: {
 			environment: 'jsdom',
