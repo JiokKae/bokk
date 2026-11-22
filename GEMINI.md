@@ -9,20 +9,23 @@
 
 ## 1. 기술 스택 (Tech Stack)
 
-- **Core**: React 18 (`v18.2.0`), React Router DOM v7 (`BrowserRouter`, `Routes`, `Outlet`), **Vite 6** (`vite.config.js`, `outDir: 'build'`)
+- **Core**: React 18 (`v18.2.0`), React Router DOM v7 (`BrowserRouter`, `Routes`, `Outlet`, `React.lazy` 코드 스플리팅), **Vite 6** (`vite.config.js`, `outDir: 'build'`, 벤더 청크 분리)
 - **API & State**: Apollo Client v3 (`@apollo/client`), GraphQL (`src/constants/querys.js`, `src/client.js`)
 - **UI & Styling**: CSS Modules (`*.module.css`), React Bootstrap, Styled Components
-- **Media & Editor**: `react-youtube`, 자체 구축 한글 조합 호환 `IMESafeEditor` (`PostMessageForm.js`)
+- **Media & Editor**: `react-youtube`, 자체 구축 한글 조합 호환 `IMESafeEditor` (`src/components/MessageBoard/IMESafeEditor.js`)
+- **Testing**: Vitest 5 + Testing Library + jsdom (`npm test`, `src/__tests__/`)
 
 ---
 
 ## 2. 디렉토리 구조
 
-- `src/components/`: 헤더, 검색, 웹링크, 유튜브 오프캔버스, 모달 등 재사용 UI 컴포넌트
+- `src/components/`: 헤더, 검색, 웹링크, 유튜브 오프캔버스, 게시판 에디터, 모달 등 재사용 UI 컴포넌트
 - `src/routers/`: 각 페이지 라우트 컴포넌트 (`Home.js`, `Messageboard.js`, `manage/MyWeblink.js`, `manage/Playlist.js` 등)
+- `src/hooks/`: 재사용 커스텀 훅 (`useWeblinkDnD.js`, `usePlaylistFilter.js`, `useOffcanvasResizer.js`, `useYoutubePlayerController.js` 등)
 - `src/outlets/`: 중첩 라우팅 레이아웃 (`HeaderLayout.js`, `SignLayout.js`)
-- `src/constants/`: GraphQL 쿼리/뮤테이션(`querys.js`), 프래그먼트, 상수 정의
-- `src/utils/`: 동적 날짜 치환(`weblinkUtil.js`) 등 공통 유틸리티
+- `src/constants/`: GraphQL 쿼리/뮤테이션(`querys.js`), 게임 검색 프로바이더(`gameSearchProviders.js`), 업데이트 이력(`featureHistory.js`)
+- `src/utils/`: 동적 날짜 치환·정렬(`weblinkUtil.js`), 플레이리스트/유튜브 유틸(`playlistUtil.js`, `youtubeUtil.js`), 이미지 압축/업로드(`imageCompressor.js`)
+- `src/__tests__/`: Vitest 단위·컴포넌트 테스트 모음
 - `docs/`: 세부 업데이트 히스토리([`./docs/CHANGELOG.md`](./docs/CHANGELOG.md))
 
 ---

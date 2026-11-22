@@ -608,3 +608,14 @@
   - `vite.config.js`에 esbuild JSX 로더(`.js` 48개 파일 확장자 변경 없이 호환), `loadEnv` 기반 `process.env.REACT_APP_*` 자동 주입(기존 `.env.*.local` 무수정 호환), `server: { port: 3000, host: true }`, `build: { outDir: 'build' }` 구성으로 기존 `gh-pages -d build` 배포 및 로컬 개발 서버 연동 100% 유지.
 - **검증**: `vite build` **4.59초** 정상 컴파일 및 `build/` 내 정적 파일(`CNAME`, `404.html`, `favicon.ico`, `manifest.json`)·환경변수 치환 검증 완료.
 
+### 5.65 대규모 구조 리팩토링, 코드 스플리팅, 의존성 정리 및 Vitest 테스트 체계 구축 (2026-11-22)
+- **중복 제거 및 컴포넌트·훅 분해**:
+  - 웹링크: `weblinkUtil.js` / `useWeblinkDnD.js` / `WeblinkGroupCard.js` 추출(`Home.js` 878→368줄), `MyWeblink.js` 중복 그룹/미분류 섹션을 `WeblinkManageSection`으로 통합, `WeblinkForm` props 14→6개 축소.
+  - 유튜브 플레이어: `playlistUtil.js` / `usePlaylistFilter.js` / `PlaylistFilterDropdown.js` / `EqualizerIcon.js` / `useOffcanvasResizer.js` / `useYoutubePlayerController.js` / `YoutubeHeaderTrigger.js` / `YoutubeQueueList.js` 분리(`YoutubeOffcanvas.js` 932→331줄).
+  - 게시판·전적검색·업데이트 노트: `PostMessageForm.js`(558→138줄)에서 `imageCompressor.js`·`IMESafeEditor.js` 분리, `GameRecordSearch.js` 6개 프로바이더를 `gameSearchProviders.js` 데이터 기반으로 통합, `FeatureHistoryModal.js` 정적 이력 데이터를 `featureHistory.js`로 분리.
+- **성능 및 번들 최적화**:
+  - `App.js`에 `React.lazy` + `Suspense` 라우트 코드 스플리팅 적용 및 `vite.config.js` `manualChunks`(`vendor-react`, `vendor-apollo`, `vendor-ui`) 설정 → 단일 번들 `656.52 kB`(500 kB 경고)에서 메인 청크 **`84.31 kB`**(경고 0건)로 축소.
+  - 미사용 `web-vitals` 및 `react-scroll`(네이티브 `window.scrollTo` 대체로 `Messageboard` 청크 `47.91 → 17.30 kB`) 제거, 테스트/배포 도구를 `devDependencies`로 정리 (`npm audit` 0건).
+- **자동화 테스트 구축**:
+  - `vitest` + `@testing-library/react` + `jsdom` 환경 구성 및 핵심 유틸·컴포넌트·커스텀 훅 단위 테스트 **9개 파일 / 26개 테스트** 구축 및 전량 통과.
+
