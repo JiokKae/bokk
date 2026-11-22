@@ -1,7 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { GripVertical } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import AddWeblinkModal from "../../components/Weblink/AddWeblinkModal";
 import UpdateWeblinkModal from "../../components/Weblink/UpdateWeblinkModal";
 import Weblink from "../../components/Weblink/Weblink";
@@ -19,7 +22,6 @@ import {
 } from "../../utils/weblinkUtil";
 
 function WeblinkManageItem({
-	className,
 	index,
 	weblink: { id, name, url, color, backgroundColor, groupId },
 	onDragStart,
@@ -56,7 +58,11 @@ function WeblinkManageItem({
 
 	return (
 		<li
-			className={`${className} ${isDragging ? "shadow-sm bg-light" : ""}`}
+			className={cn(
+				"select-none list-none bg-white px-3.5 py-2.5 transition-opacity duration-150",
+				index !== 0 && "border-0 border-t border-solid border-zinc-100",
+				isDragging && "bg-bokk-subtle/50 opacity-40"
+			)}
 			draggable={isAllowDrag}
 			onDragStart={(e) => {
 				if (!isAllowDrag) {
@@ -71,29 +77,23 @@ function WeblinkManageItem({
 				setIsAllowDrag(false);
 				onDragEnd(e);
 			}}
-			style={{
-				opacity: isDragging ? 0.35 : 1,
-				transition: "opacity 0.15s ease",
-				userSelect: "none",
-			}}
 		>
-			<div className="row align-items-center">
-				<div className="col-12 col-sm-6 d-flex align-items-center">
+			<div className="flex flex-wrap items-center justify-between gap-2.5">
+				<div className="flex min-w-0 flex-1 items-center gap-2.5">
 					<span
-						className="me-3 text-secondary user-select-none fs-4"
-						style={{
-							cursor: isAllowDrag ? "grabbing" : "grab",
-							lineHeight: 1,
-						}}
+						className={cn(
+							"inline-flex shrink-0 items-center text-zinc-400 hover:text-zinc-600",
+							isAllowDrag ? "cursor-grabbing" : "cursor-grab"
+						)}
 						onMouseDown={() => setIsAllowDrag(true)}
 						onMouseUp={() => setIsAllowDrag(false)}
 						onTouchStart={() => setIsAllowDrag(true)}
 						onTouchEnd={() => setIsAllowDrag(false)}
 						title="드래그하여 순서 및 그룹 변경"
 					>
-						☰
+						<GripVertical className="size-5" />
 					</span>
-					<div className="flex-grow-1 d-flex align-items-center flex-wrap gap-1">
+					<div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
 						<Weblink
 							name={name}
 							url={url}
@@ -101,25 +101,27 @@ function WeblinkManageItem({
 							backgroundColor={backgroundColor}
 						/>
 						{isDynamic && (
-							<span
-								className="badge rounded-pill bg-light text-primary border border-primary-subtle"
-								style={{ fontSize: "12.5px", fontWeight: 500 }}
+							<Badge
+								variant="subtle"
 								title={`동적 날짜 포맷 적용됨 (원본 이름: ${name} / 원본 URL: ${url})`}
 							>
 								동적 날짜
-							</span>
+							</Badge>
 						)}
 					</div>
 				</div>
-				<div className="col-auto">
+
+				<div className="flex shrink-0 items-center gap-1.5">
 					<UpdateWeblinkModal
 						weblink={{ id, name, url, color, backgroundColor, groupId }}
 					/>
-				</div>
-				<div className="col-auto">
-					<button className="btn btn-danger" onClick={onRemove}>
+					<Button
+						variant="destructive"
+						size="sm"
+						onClick={onRemove}
+					>
 						삭제
-					</button>
+					</Button>
 				</div>
 			</div>
 		</li>
@@ -144,16 +146,13 @@ function WeblinkManageSection({
 	onDragEnd,
 }) {
 	return (
-		<div className="mb-4">
-			<div className="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom">
-				<div className="d-flex align-items-center gap-2">
-					<span className={`fw-bold fs-5 ${titleClassName}`}>{title}</span>
-					<span
-						className="badge rounded-pill bg-light text-secondary border"
-						style={{ fontSize: "11px", fontWeight: 500 }}
-					>
-						{links.length}
+		<div className="mb-6">
+			<div className="mb-2 flex items-center justify-between border-0 border-b border-solid border-zinc-200 pb-1.5">
+				<div className="flex items-center gap-2">
+					<span className={cn("text-lg font-bold text-zinc-900", titleClassName)}>
+						{title}
 					</span>
+					<Badge variant="secondary">{links.length}</Badge>
 				</div>
 				<div>
 					<AddWeblinkModal position="first" defaultGroupId={defaultGroupId} />
@@ -161,9 +160,12 @@ function WeblinkManageSection({
 			</div>
 
 			<ul
-				className={`list-group list-group-flush border rounded-3 overflow-hidden ${
-					isHovered && draggedInfo ? "border-primary" : ""
-				}`}
+				className={cn(
+					"m-0 overflow-hidden rounded-xl border-[1px] border-solid bg-white p-0 transition-colors duration-200",
+					isHovered && draggedInfo
+						? "border-bokk ring-2 ring-bokk/20"
+						: "border-zinc-200"
+				)}
 				onDragOver={onDragOver}
 				onDrop={onDrop}
 				onDragEnter={(e) => {
@@ -171,34 +173,31 @@ function WeblinkManageSection({
 						onEmptyGroupDragEnter(e, groupKey);
 					}
 				}}
-				style={{
-					transition: "border-color 0.2s ease",
-				}}
 			>
 				{links.length === 0 ? (
 					<li
-						className={`list-group-item text-center py-3 bg-white ${
-							isHovered ? "bg-light" : ""
-						}`}
+						className={cn(
+							"list-none py-6 text-center transition-colors",
+							isHovered ? "bg-bokk-subtle/50" : "bg-white"
+						)}
 						onDragOver={onDragOver}
 						onDrop={onDrop}
 						onDragEnter={(e) => onEmptyGroupDragEnter(e, groupKey)}
-						style={{
-							borderStyle: draggedInfo ? "dashed" : "solid",
-							borderWidth: draggedInfo ? "2px" : "1px",
-							borderColor: isHovered ? "#4dabf7" : undefined,
-						}}
 					>
-						<small
-							className={draggedInfo ? "text-primary fw-bold" : "text-muted"}
+						<span
+							className={cn(
+								"text-sm",
+								draggedInfo
+									? "font-semibold text-bokk-dark"
+									: "text-zinc-500"
+							)}
 						>
 							{draggedInfo ? dropText : emptyText}
-						</small>
+						</span>
 					</li>
 				) : (
 					links.map((weblink, index) => (
 						<WeblinkManageItem
-							className="list-group-item"
 							key={weblink.id}
 							index={index}
 							weblink={weblink}
@@ -227,7 +226,6 @@ export default function MyWeblink() {
 	const groups = groupData?.myWeblinkGroups || [];
 	const userGroups = groups.filter((g) => g.id > 0);
 
-	// 비로그인 사용자 로그인 페이지로 리다이렉트
 	useEffect(() => {
 		if (!meLoading && !meData?.me) {
 			navigate("/signin/");
@@ -270,8 +268,8 @@ export default function MyWeblink() {
 	if (userGroups.length === 0) {
 		return (
 			<>
-				<div className="d-flex align-items-center justify-content-between mb-3">
-					<h4 className="mb-0 fw-bold">내 웹링크 관리</h4>
+				<div className="mb-4 flex items-center justify-between gap-2">
+					<h4 className="m-0 text-xl font-bold text-zinc-900">내 웹링크 관리</h4>
 					<Button
 						variant="outline"
 						size="sm"
@@ -283,28 +281,20 @@ export default function MyWeblink() {
 				</div>
 
 				<ul
-					className="list-group list-group-flush border rounded-3 overflow-hidden"
+					className="m-0 overflow-hidden rounded-xl border-[1px] border-solid border-zinc-200 bg-white p-0"
 					onDragOver={handleDragOver}
 					onDrop={handleDrop}
 				>
-					<li className="list-group-item bg-light">
-						<div className="row align-items-center">
-							<div className="col-12 col-sm-6 d-flex align-items-center">
-								<span
-									className="me-3 fs-4 user-select-none"
-									style={{ visibility: "hidden", lineHeight: 1 }}
-								>
-									☰
-								</span>
-								<div>
-									<AddWeblinkModal position="first" />
-								</div>
-							</div>
+					<li className="list-none border-0 border-b border-solid border-zinc-100 bg-zinc-50 px-3.5 py-2.5">
+						<div className="flex items-center gap-2.5">
+							<span className="invisible inline-flex shrink-0 items-center">
+								<GripVertical className="size-5" />
+							</span>
+							<AddWeblinkModal position="first" />
 						</div>
 					</li>
 					{weblinks.map((weblink, index) => (
 						<WeblinkManageItem
-							className="list-group-item"
 							key={weblink.id}
 							index={index}
 							weblink={weblink}
@@ -325,17 +315,16 @@ export default function MyWeblink() {
 		);
 	}
 
-	// 그룹이 존재하는 경우: 그룹별 섹션 분리 렌더링
 	const untaggedLinks = weblinks.filter((w) => isUntaggedWeblink(w, userGroups));
 
 	return (
 		<>
-			<div className="d-flex align-items-center justify-content-between mb-3">
+			<div className="mb-5 flex flex-wrap items-center justify-between gap-2">
 				<div>
-					<h4 className="mb-0 fw-bold">내 웹링크 관리</h4>
-					<small className="text-muted">
-						☰ 핸들을 드래그하여 순서를 바꾸거나 다른 그룹으로 이동할 수 있습니다.
-					</small>
+					<h4 className="m-0 text-xl font-bold text-zinc-900">내 웹링크 관리</h4>
+					<span className="text-xs text-zinc-500">
+						핸들을 드래그하여 순서를 바꾸거나 다른 그룹으로 이동할 수 있습니다.
+					</span>
 				</div>
 				<Button
 					variant="outline"
@@ -347,7 +336,6 @@ export default function MyWeblink() {
 				</Button>
 			</div>
 
-			{/* 각 그룹별 섹션 */}
 			{userGroups.map((group) => (
 				<WeblinkManageSection
 					key={group.id}
@@ -368,10 +356,9 @@ export default function MyWeblink() {
 				/>
 			))}
 
-			{/* 미분류 웹링크 섹션 */}
 			<WeblinkManageSection
 				title="미분류"
-				titleClassName="text-secondary"
+				titleClassName="text-zinc-500"
 				groupKey="untagged"
 				defaultGroupId={null}
 				links={untaggedLinks}
@@ -394,4 +381,3 @@ export default function MyWeblink() {
 		</>
 	);
 }
-

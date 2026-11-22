@@ -1,7 +1,9 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useMemo, useState } from "react";
 import { X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import PlaylistFilterDropdown from "../../components/Header/SearchSelector/YoutubeOffcanvas/PlaylistFilterDropdown";
 import PlaylistManageModal from "../../components/Header/SearchSelector/YoutubeOffcanvas/PlaylistManageModal";
 import VideoPlaylistTagModal from "../../components/Header/SearchSelector/YoutubeOffcanvas/VideoPlaylistTagModal";
@@ -21,6 +23,7 @@ import {
 } from "../../utils/youtubeUtil";
 
 function VideoItem({
+	index,
 	itemId,
 	youtubeId,
 	title,
@@ -46,27 +49,21 @@ function VideoItem({
 	};
 
 	return (
-		<div className="list-group-item py-2">
-			<div className="row align-items-center flex-nowrap">
-				<div className="col-auto flex-shrink-0">
-					<div
-						style={{
-							width: "104px",
-							height: "58px",
-							borderRadius: "6px",
-							overflow: "hidden",
-							backgroundColor: "#000",
-							border: "1px solid rgba(0, 0, 0, 0.08)",
-							boxShadow: "0 1px 3px rgba(0, 0, 0, 0.06)",
-						}}
-					>
+		<div
+			className={cn(
+				"px-3.5 py-2.5 transition-colors hover:bg-zinc-50/70",
+				index !== 0 && "border-0 border-t border-solid border-zinc-100"
+			)}
+		>
+			<div className="flex flex-nowrap items-center gap-3">
+				<div className="shrink-0">
+					<div className="h-[58px] w-[104px] overflow-hidden rounded-md border-[1px] border-solid border-black/10 bg-black shadow-xs">
 						<img
-							className="w-100 h-100"
+							className="h-full w-full object-cover"
 							src={thumbnailUrl(youtubeId, RESOLUTION.MQ)}
 							alt={title}
 							loading="lazy"
 							style={{
-								objectFit: "cover",
 								transform: "translateZ(0)",
 								backfaceVisibility: "hidden",
 							}}
@@ -75,23 +72,26 @@ function VideoItem({
 						/>
 					</div>
 				</div>
-				<div className="col" style={{ minWidth: 0 }}>
-					<p className="mb-1 text-truncate fw-medium" title={title}>
+
+				<div className="min-w-0 flex-1">
+					<p
+						className="m-0 mb-1 truncate text-sm font-semibold text-zinc-900"
+						title={title}
+					>
 						{title}
 					</p>
-					<div className="d-flex align-items-center gap-2 flex-wrap">
-						<small className="text-muted">{secondToDate(length)}</small>
+					<div className="flex flex-wrap items-center gap-2">
+						<span className="text-xs text-zinc-500">
+							{secondToDate(length)}
+						</span>
 						<button
 							type="button"
-							className={`btn btn-sm py-0 px-1.5 border ${
-								playlists.length > 0 ? "text-primary fw-medium" : "text-muted"
-							}`}
-							style={{
-								fontSize: "11px",
-								borderRadius: "4px",
-								backgroundColor: playlists.length > 0 ? "#e7f5ff" : "#f8f9fa",
-								borderColor: playlists.length > 0 ? "#d0ebff" : "#dee2e6",
-							}}
+							className={cn(
+								"inline-flex cursor-pointer items-center rounded border-[1px] border-solid px-1.5 py-0.5 text-[11px] transition-colors",
+								playlists.length > 0
+									? "border-bokk-border bg-bokk-subtle font-semibold text-bokk-dark hover:bg-bokk-border/40"
+									: "border-zinc-200 bg-zinc-50 text-zinc-600 hover:bg-zinc-100"
+							)}
 							title="플레이리스트에 담기 / 변경"
 							onClick={onOpenTagModal}
 						>
@@ -99,20 +99,21 @@ function VideoItem({
 						</button>
 					</div>
 					{playlists.length > 0 && (
-						<div className="d-flex flex-wrap gap-1 mt-1">
+						<div className="mt-1.5 flex flex-wrap gap-1">
 							{playlists.map((p) => (
-								<span
+								<Badge
 									key={p.id}
-									className="badge bg-light text-secondary border"
-									style={{ fontSize: "11px", fontWeight: "normal" }}
+									variant="secondary"
+									className="font-normal text-zinc-600"
 								>
 									#{p.name}
-								</span>
+								</Badge>
 							))}
 						</div>
 					)}
 				</div>
-				<div className="col-auto">
+
+				<div className="shrink-0">
 					<button
 						type="button"
 						onClick={onClickDelete}
@@ -153,9 +154,9 @@ export default function Playlist() {
 	const [selectedVideoForTag, setSelectedVideoForTag] = useState(null);
 
 	return (
-		<>
-			<div className="d-flex align-items-center justify-content-between mb-3">
-				<h4 className="mb-0 fw-bold">재생 목록 관리</h4>
+		<div className="flex flex-col gap-3">
+			<div className="flex items-center justify-between gap-2">
+				<h4 className="m-0 text-xl font-bold text-zinc-900">재생 목록 관리</h4>
 				<Button
 					variant="outline"
 					size="sm"
@@ -168,11 +169,10 @@ export default function Playlist() {
 
 			<YoutubeVideoAdder />
 
-			{/* 플레이리스트 필터 셀렉터 */}
-			<div className="d-flex align-items-center gap-2 mb-3">
+			<div className="flex items-center gap-2">
 				<PlaylistFilterDropdown
 					toggleId="manage-playlist-dropdown"
-					className="w-100"
+					className="w-full"
 					selectedPlaylistId={selectedPlaylistId}
 					onSelectPlaylist={setSelectedPlaylistId}
 					selectedPlaylistInfo={selectedPlaylistInfo}
@@ -183,20 +183,21 @@ export default function Playlist() {
 				/>
 			</div>
 
-			<div className="list-group">
+			<div className="overflow-hidden rounded-xl border-[1px] border-solid border-zinc-200 bg-white">
 				{displayedVideoItems.length === 0 ? (
-					<div className="text-center text-muted py-5 border rounded">
-						<div className="fs-3 mb-2">📭</div>
-						<p className="mb-1">
+					<div className="py-12 text-center text-zinc-500">
+						<div className="mb-2 text-3xl">📭</div>
+						<p className="m-0 text-sm">
 							{selectedPlaylistId === PLAYLIST_FILTER.UNTAGGED
 								? "미분류 영상이 없습니다."
 								: "선택한 플레이리스트에 등록된 영상이 없습니다."}
 						</p>
 					</div>
 				) : (
-					displayedVideoItems.map((item) => (
+					displayedVideoItems.map((item, index) => (
 						<VideoItem
 							key={item.id}
+							index={index}
 							itemId={item.id}
 							youtubeId={item.video.id}
 							title={item.video.title}
@@ -227,6 +228,6 @@ export default function Playlist() {
 				playlists={playlists}
 				videoItems={videoItems}
 			/>
-		</>
+		</div>
 	);
 }

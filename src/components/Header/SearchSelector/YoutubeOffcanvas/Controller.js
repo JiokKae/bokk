@@ -1,5 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { ME, SET_USER_CONFIG } from "../../../../constants/querys";
 import styles from "./Controller.module.css";
 
@@ -37,6 +38,7 @@ export default function Controller({
 			}
 		},
 	});
+
 	const buttons = [
 		{ id: "previous_play", onClick: onPreviousPlay, title: "이전 곡" },
 		{
@@ -63,34 +65,35 @@ export default function Controller({
 	];
 
 	return (
-		<div
-			className="d-flex align-items-center flex-shrink-0 w-100 justify-content-between justify-content-sm-end"
-			style={{ position: "relative" }}
-		>
+		<div className="relative flex w-full shrink-0 items-center justify-between gap-0.5 sm:justify-end">
 			{buttons.map((button) => (
 				<button
 					key={button.id}
-					className={`btn btn-sm p-1 border-0 ${styles.controllerBtn} ${
-						button?.classCond ? "bgc-bokk-light" : ""
-					}`}
+					className={cn(
+						"inline-flex cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-1.5 transition-colors hover:bg-zinc-100",
+						styles.controllerBtn,
+						button?.classCond && "bgc-bokk-light"
+					)}
 					type="button"
 					title={button.title || ""}
 					onClick={
-						button?.condition
-							? button.swap?.onClick
-							: button?.onClick
-					}>
+						button?.condition ? button.swap?.onClick : button?.onClick
+					}
+				>
 					<img
 						src={`${process.env.REACT_APP_BOKK_IMG}/${
 							button?.condition ? button.swap.id : button.id
 						}.png`}
 						alt={button?.condition ? button.swap.id : button.id}
-						style={{ width: "20px", height: "20px", objectFit: "contain" }}
+						className="size-5 object-contain"
 					/>
 				</button>
 			))}
 			{showOption ? (
-				<div className={`px-4 py-3 ${styles.popover}`} style={{ top: "100%", right: 0, marginTop: "4px" }}>
+				<div
+					className={cn("px-4 py-3", styles.popover)}
+					style={{ top: "100%", right: 0, marginTop: "4px" }}
+				>
 					<label className="flex cursor-pointer select-none items-center gap-2 whitespace-nowrap text-sm text-zinc-800">
 						<input
 							type="checkbox"

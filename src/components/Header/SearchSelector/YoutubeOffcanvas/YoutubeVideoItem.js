@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import {
 	RESOLUTION,
 	handleYoutubeThumbnailError,
@@ -32,9 +33,12 @@ export default function YoutubeVideoItem({
 			id={`videoItem${index}`}
 			role="button"
 			tabIndex={0}
-			className={`list-group-item list-group-item-action pointer w-100 text-start py-2 ${
-				styles.videoItem
-			} ${isHighlighted ? styles.activeItem : ""}`}
+			className={cn(
+				"w-full cursor-pointer px-3 py-2 text-left transition-colors hover:bg-zinc-50",
+				index !== 0 && "border-0 border-t border-solid border-zinc-100",
+				styles.videoItem,
+				isHighlighted && styles.activeItem
+			)}
 			onClick={onClick}
 			onKeyDown={(e) => {
 				if (e.key === "Enter" || e.key === " ") {
@@ -43,8 +47,8 @@ export default function YoutubeVideoItem({
 				}
 			}}
 		>
-			<div className="row gx-2 align-items-center flex-nowrap">
-				<div className="col-auto flex-shrink-0">
+			<div className="flex flex-nowrap items-center gap-2.5">
+				<div className="shrink-0">
 					<div className={styles.thumbnailWrapper}>
 						<img
 							className={styles.thumbnailImg}
@@ -56,32 +60,30 @@ export default function YoutubeVideoItem({
 						/>
 					</div>
 				</div>
-				<div className="col" style={{ minWidth: 0 }}>
+
+				<div className="min-w-0 flex-1">
 					<p
-						className={`mb-1 text-truncate fw-medium ${styles.videoTitle}`}
+						className={cn(
+							"m-0 mb-1 truncate font-medium text-zinc-900",
+							styles.videoTitle
+						)}
 						title={title}
 					>
 						{title}
 					</p>
-					<div className="d-flex align-items-center justify-content-between flex-wrap gap-1">
-						<small className="text-muted" style={{ fontSize: "11px" }}>
+					<div className="flex flex-wrap items-center justify-between gap-1">
+						<span className="text-[11px] text-zinc-500">
 							{secondToDate(length)}
-						</small>
+						</span>
 						{onOpenTagModal && (
 							<button
 								type="button"
-								className={`btn btn-sm border py-0 px-2 text-decoration-none d-inline-flex align-items-center ${
+								className={cn(
+									"inline-flex h-[22px] cursor-pointer items-center rounded-full border-[1px] border-solid px-2 text-[11px] transition-colors",
 									playlists.length > 0
-										? "text-primary fw-semibold"
-										: "text-secondary"
-								}`}
-								style={{
-									fontSize: "11px",
-									height: "22px",
-									borderRadius: "11px",
-									backgroundColor: playlists.length > 0 ? "#e7f5ff" : "#f8f9fa",
-									borderColor: playlists.length > 0 ? "#d0ebff" : "#dee2e6",
-								}}
+										? "border-bokk-border bg-bokk-subtle font-semibold text-bokk-dark hover:bg-bokk-border/40"
+										: "border-zinc-200 bg-zinc-50 text-zinc-600 hover:bg-zinc-100"
+								)}
 								title="플레이리스트에 담기 / 변경"
 								onClick={(e) => {
 									e.stopPropagation();
@@ -118,4 +120,3 @@ export default function YoutubeVideoItem({
 		</div>
 	);
 }
-

@@ -218,15 +218,14 @@ export default function YoutubeOffcanvas() {
 				>
 					<div
 						id="youtube_video_queue"
-						className="d-flex flex-column h-100"
-						style={{ minHeight: 0 }}
+						className="flex h-full min-h-0 flex-col"
 					>
-						<div className="flex-shrink-0">
+						<div className="shrink-0">
 							{loading === false &&
 							(videoItems.length > 0 || currentQueue.length > 0) ? (
 								<div className={styles.playerWrapper}>
 									<YoutubePlayer
-										className="ratio ratio-16x9 mb-2"
+										className="mb-2 aspect-video w-full [&>iframe]:h-full [&>iframe]:w-full"
 										firstVideoId={
 											initialVideoId || videoItems[0]?.video?.id
 										}
@@ -243,7 +242,7 @@ export default function YoutubeOffcanvas() {
 								<div className={styles.selectorGroup}>
 									<PlaylistFilterDropdown
 										toggleId="playlist-dropdown-toggle"
-										className="flex-grow-1"
+										className="flex-1"
 										selectedPlaylistId={selectedPlaylistId}
 										onSelectPlaylist={setSelectedPlaylistId}
 										selectedPlaylistInfo={selectedPlaylistInfo}
