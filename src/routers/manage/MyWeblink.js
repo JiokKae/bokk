@@ -126,6 +126,95 @@ function WeblinkManageItem({
 	);
 }
 
+function WeblinkManageSection({
+	title,
+	titleClassName = "",
+	groupKey,
+	defaultGroupId,
+	links,
+	emptyText,
+	dropText,
+	draggedInfo,
+	isHovered,
+	onDragStart,
+	onItemDragEnter,
+	onEmptyGroupDragEnter,
+	onDragOver,
+	onDrop,
+	onDragEnd,
+}) {
+	return (
+		<div className="mb-4">
+			<div className="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom">
+				<div className="d-flex align-items-center gap-2">
+					<span className={`fw-bold fs-5 ${titleClassName}`}>{title}</span>
+					<span
+						className="badge rounded-pill bg-light text-secondary border"
+						style={{ fontSize: "11px", fontWeight: 500 }}
+					>
+						{links.length}
+					</span>
+				</div>
+				<div>
+					<AddWeblinkModal position="first" defaultGroupId={defaultGroupId} />
+				</div>
+			</div>
+
+			<ul
+				className={`list-group list-group-flush border rounded-3 overflow-hidden ${
+					isHovered && draggedInfo ? "border-primary" : ""
+				}`}
+				onDragOver={onDragOver}
+				onDrop={onDrop}
+				onDragEnter={(e) => {
+					if (links.length === 0) {
+						onEmptyGroupDragEnter(e, groupKey);
+					}
+				}}
+				style={{
+					transition: "border-color 0.2s ease",
+				}}
+			>
+				{links.length === 0 ? (
+					<li
+						className={`list-group-item text-center py-3 bg-white ${
+							isHovered ? "bg-light" : ""
+						}`}
+						onDragOver={onDragOver}
+						onDrop={onDrop}
+						onDragEnter={(e) => onEmptyGroupDragEnter(e, groupKey)}
+						style={{
+							borderStyle: draggedInfo ? "dashed" : "solid",
+							borderWidth: draggedInfo ? "2px" : "1px",
+							borderColor: isHovered ? "#4dabf7" : undefined,
+						}}
+					>
+						<small
+							className={draggedInfo ? "text-primary fw-bold" : "text-muted"}
+						>
+							{draggedInfo ? dropText : emptyText}
+						</small>
+					</li>
+				) : (
+					links.map((weblink, index) => (
+						<WeblinkManageItem
+							className="list-group-item"
+							key={weblink.id}
+							index={index}
+							weblink={weblink}
+							onDragStart={() => onDragStart(weblink)}
+							onDragEnter={(e, idx) => onItemDragEnter(e, groupKey, idx)}
+							onDragOver={onDragOver}
+							onDragEnd={onDragEnd}
+							isDragging={draggedInfo?.id === weblink.id}
+						/>
+					))
+				)}
+			</ul>
+		</div>
+	);
+}
+
 export default function MyWeblink() {
 	const navigate = useNavigate();
 	const { data: meData, loading: meLoading } = useQuery(ME);
@@ -257,166 +346,44 @@ export default function MyWeblink() {
 			</div>
 
 			{/* 각 그룹별 섹션 */}
-			{userGroups.map((group) => {
-				const groupLinks = weblinks.filter((w) => w.groupId === group.id);
-				const isHovered = hoverTargetGroup === group.id;
-
-				return (
-					<div key={group.id} className="mb-4">
-						<div className="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom">
-							<div className="d-flex align-items-center gap-2">
-								<span className="fw-bold fs-5">{group.name}</span>
-								<span
-									className="badge rounded-pill bg-light text-secondary border"
-									style={{ fontSize: "11px", fontWeight: 500 }}
-								>
-									{groupLinks.length}
-								</span>
-							</div>
-							<div>
-								<AddWeblinkModal position="first" defaultGroupId={group.id} />
-							</div>
-						</div>
-
-						<ul
-							className={`list-group list-group-flush border rounded-3 overflow-hidden ${
-								isHovered && draggedInfo ? "border-primary" : ""
-							}`}
-							onDragOver={handleDragOver}
-							onDrop={handleDrop}
-							onDragEnter={(e) => {
-								if (groupLinks.length === 0) {
-									handleEmptyGroupDragEnter(e, group.id);
-								}
-							}}
-							style={{
-								transition: "border-color 0.2s ease",
-							}}
-						>
-							{groupLinks.length === 0 ? (
-								<li
-									className={`list-group-item text-center py-3 bg-white ${
-										isHovered ? "bg-light" : ""
-									}`}
-									onDragOver={handleDragOver}
-									onDrop={handleDrop}
-									onDragEnter={(e) => handleEmptyGroupDragEnter(e, group.id)}
-									style={{
-										borderStyle: draggedInfo ? "dashed" : "solid",
-										borderWidth: draggedInfo ? "2px" : "1px",
-										borderColor: isHovered ? "#4dabf7" : undefined,
-									}}
-								>
-									<small
-										className={
-											draggedInfo ? "text-primary fw-bold" : "text-muted"
-										}
-									>
-										{draggedInfo
-											? "⬇ 여기에 드롭하여 이 그룹으로 이동"
-											: "이 그룹에 등록된 웹링크가 없습니다. 우측 상단 '+' 버튼으로 추가하거나 링크를 드래그해오세요."}
-									</small>
-								</li>
-							) : (
-								groupLinks.map((weblink, index) => (
-									<WeblinkManageItem
-										className="list-group-item"
-										key={weblink.id}
-										index={index}
-										weblink={weblink}
-										onDragStart={() => handleDragStart(weblink)}
-										onDragEnter={(e, idx) =>
-											handleItemDragEnter(e, group.id, idx)
-										}
-										onDragOver={handleDragOver}
-										onDragEnd={handleDragEnd}
-										isDragging={draggedInfo?.id === weblink.id}
-									/>
-								))
-							)}
-						</ul>
-					</div>
-				);
-			})}
-
-			{/* 미분류 웹링크 섹션 */}
-			<div className="mb-4">
-				<div className="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom">
-					<div className="d-flex align-items-center gap-2">
-						<span className="fw-bold fs-5 text-secondary">미분류</span>
-						<span
-							className="badge rounded-pill bg-light text-secondary border"
-							style={{ fontSize: "11px", fontWeight: 500 }}
-						>
-							{untaggedLinks.length}
-						</span>
-					</div>
-					<div>
-						<AddWeblinkModal position="first" defaultGroupId={null} />
-					</div>
-				</div>
-
-				<ul
-					className={`list-group list-group-flush border rounded-3 overflow-hidden ${
-						hoverTargetGroup === "untagged" && draggedInfo
-							? "border-primary"
-							: ""
-					}`}
+			{userGroups.map((group) => (
+				<WeblinkManageSection
+					key={group.id}
+					title={group.name}
+					groupKey={group.id}
+					defaultGroupId={group.id}
+					links={weblinks.filter((w) => w.groupId === group.id)}
+					emptyText="이 그룹에 등록된 웹링크가 없습니다. 우측 상단 '+' 버튼으로 추가하거나 링크를 드래그해오세요."
+					dropText="⬇ 여기에 드롭하여 이 그룹으로 이동"
+					draggedInfo={draggedInfo}
+					isHovered={hoverTargetGroup === group.id}
+					onDragStart={handleDragStart}
+					onItemDragEnter={handleItemDragEnter}
+					onEmptyGroupDragEnter={handleEmptyGroupDragEnter}
 					onDragOver={handleDragOver}
 					onDrop={handleDrop}
-					onDragEnter={(e) => {
-						if (untaggedLinks.length === 0) {
-							handleEmptyGroupDragEnter(e, "untagged");
-						}
-					}}
-					style={{
-						transition: "border-color 0.2s ease",
-					}}
-				>
-					{untaggedLinks.length === 0 ? (
-						<li
-							className={`list-group-item text-center py-3 bg-white ${
-								hoverTargetGroup === "untagged" ? "bg-light" : ""
-							}`}
-							onDragOver={handleDragOver}
-							onDrop={handleDrop}
-							onDragEnter={(e) => handleEmptyGroupDragEnter(e, "untagged")}
-							style={{
-								borderStyle: draggedInfo ? "dashed" : "solid",
-								borderWidth: draggedInfo ? "2px" : "1px",
-								borderColor:
-									hoverTargetGroup === "untagged" ? "#4dabf7" : undefined,
-							}}
-						>
-							<small
-								className={
-									draggedInfo ? "text-primary fw-bold" : "text-muted"
-								}
-							>
-								{draggedInfo
-									? "⬇ 여기에 드롭하여 미분류로 이동"
-									: "미분류 웹링크가 없습니다."}
-							</small>
-						</li>
-					) : (
-						untaggedLinks.map((weblink, index) => (
-							<WeblinkManageItem
-								className="list-group-item"
-								key={weblink.id}
-								index={index}
-								weblink={weblink}
-								onDragStart={() => handleDragStart(weblink)}
-								onDragEnter={(e, idx) =>
-									handleItemDragEnter(e, "untagged", idx)
-								}
-								onDragOver={handleDragOver}
-								onDragEnd={handleDragEnd}
-								isDragging={draggedInfo?.id === weblink.id}
-							/>
-						))
-					)}
-				</ul>
-			</div>
+					onDragEnd={handleDragEnd}
+				/>
+			))}
+
+			{/* 미분류 웹링크 섹션 */}
+			<WeblinkManageSection
+				title="미분류"
+				titleClassName="text-secondary"
+				groupKey="untagged"
+				defaultGroupId={null}
+				links={untaggedLinks}
+				emptyText="미분류 웹링크가 없습니다."
+				dropText="⬇ 여기에 드롭하여 미분류로 이동"
+				draggedInfo={draggedInfo}
+				isHovered={hoverTargetGroup === "untagged"}
+				onDragStart={handleDragStart}
+				onItemDragEnter={handleItemDragEnter}
+				onEmptyGroupDragEnter={handleEmptyGroupDragEnter}
+				onDragOver={handleDragOver}
+				onDrop={handleDrop}
+				onDragEnd={handleDragEnd}
+			/>
 
 			<WeblinkGroupManageModal
 				show={showGroupModal}
