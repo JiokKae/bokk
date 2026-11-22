@@ -22,7 +22,7 @@
 - `src/components/`: 헤더, 검색, 웹링크, 유튜브 오프캔버스, 게시판 에디터, 모달 등 재사용 UI 컴포넌트 (`src/components/ui/`: shadcn/ui 공용 컴포넌트)
 - `src/lib/`: UI 유틸리티 (`utils.js` — `cn`)
 - `src/styles/`: 전역 스타일 및 Tailwind v4 테마 토큰 (`tailwind.css`)
-- `src/routers/`: 각 페이지 라우트 컴포넌트 (`Home.js`, `Messageboard.js`, `manage/MyWeblink.js`, `manage/Playlist.js` 등)
+- `src/routers/`: 각 페이지 라우트 컴포넌트 (`Home.js`, `Messageboard.js`, `manage/Weblink.js`, `manage/Playlist.js` 등)
 - `src/hooks/`: 재사용 커스텀 훅 (`useWeblinkDnD.js`, `usePlaylistFilter.js`, `useOffcanvasResizer.js`, `useYoutubePlayerController.js` 등)
 - `src/outlets/`: 중첩 라우팅 레이아웃 (`HeaderLayout.js`, `SignLayout.js`)
 - `src/constants/`: GraphQL 쿼리/뮤테이션(`querys.js`), 게임 검색 프로바이더(`gameSearchProviders.js`), 업데이트 이력(`featureHistory.js`)

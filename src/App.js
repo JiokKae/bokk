@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import Home from "./routers/Home";
 import HeaderLayout from "./outlets/HeaderLayout";
 import SignLayout from "./outlets/SignLayout";
@@ -12,8 +12,7 @@ const Signin = lazy(() => import("./routers/Signin"));
 const Signup = lazy(() => import("./routers/Signup"));
 const ChangePassword = lazy(() => import("./routers/ChangePassword"));
 const Playlist = lazy(() => import("./routers/manage/Playlist"));
-const MyWeblink = lazy(() => import("./routers/manage/MyWeblink"));
-const BuiltinWeblink = lazy(() => import("./routers/manage/BuiltinWeblink"));
+const WeblinkManage = lazy(() => import("./routers/manage/Weblink"));
 
 const RouteFallback = (
 	<div className="p-4 text-center text-muted">로딩 중...</div>
@@ -39,8 +38,7 @@ export default function App() {
 	const MANAGE_ITEMS = {
 		nav: [
 			{ name: "재생 목록", url: "/manage/" },
-			{ name: "내 웹링크", url: "/manage/myWeblink/" },
-			{ name: "볶음밥 웹링크", url: "/manage/builtinWeblink/" },
+			{ name: "웹링크", url: "/manage/weblink/" },
 		],
 		menu: [{ name: "비밀번호 변경", url: "/changePassword/" }],
 	};
@@ -65,12 +63,16 @@ export default function App() {
 					<Route element={<HeaderLayout items={MANAGE_ITEMS} />}>
 						<Route path="/manage/" element={<Playlist />} />
 						<Route
+							path="/manage/weblink/"
+							element={<WeblinkManage />}
+						/>
+						<Route
 							path="/manage/myWeblink/"
-							element={<MyWeblink />}
+							element={<Navigate to="/manage/weblink/" replace />}
 						/>
 						<Route
 							path="/manage/builtinWeblink/"
-							element={<BuiltinWeblink />}
+							element={<Navigate to="/manage/weblink/" replace />}
 						/>
 					</Route>
 					<Route element={<SignLayout />}>

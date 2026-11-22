@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GripVertical } from "lucide-react";
+import { Eye, EyeOff, GripVertical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -10,13 +10,16 @@ import UpdateWeblinkModal from "../../components/Weblink/UpdateWeblinkModal";
 import Weblink from "../../components/Weblink/Weblink";
 import WeblinkGroupManageModal from "../../components/Weblink/WeblinkGroupManageModal";
 import {
+	BUILTIN_WEBLINKS,
 	DELETE_WEBLINK,
 	ME,
 	MY_WEBLINK_GROUPS,
 	OWN_WEBLINKS,
+	TOGGLE_BUILTIN_WEBLINK,
 } from "../../constants/querys";
 import useWeblinkDnD from "../../hooks/useWeblinkDnD";
 import {
+	WEBLINK_GROUP_ID,
 	hasDynamicDateToken,
 	isUntaggedWeblink,
 } from "../../utils/weblinkUtil";
@@ -115,16 +118,106 @@ function WeblinkManageItem({
 					<UpdateWeblinkModal
 						weblink={{ id, name, url, color, backgroundColor, groupId }}
 					/>
-					<Button
-						variant="destructive"
-						size="sm"
-						onClick={onRemove}
-					>
+					<Button variant="destructive" size="sm" onClick={onRemove}>
 						삭제
 					</Button>
 				</div>
 			</div>
 		</li>
+	);
+}
+
+function BuiltinWeblinkManageItem({
+	index,
+	weblink: { id, name, url, color, backgroundColor },
+	isHidden,
+	onToggleHide,
+	disabled,
+}) {
+	return (
+		<li
+			className={cn(
+				"select-none list-none bg-white px-3.5 py-2.5 transition-opacity duration-150",
+				index !== 0 && "border-0 border-t border-solid border-zinc-100"
+			)}
+		>
+			<div className="flex flex-wrap items-center justify-between gap-2.5">
+				<div className="flex min-w-0 flex-1 items-center gap-2.5">
+					<span className="invisible inline-flex shrink-0 items-center">
+						<GripVertical className="size-5" />
+					</span>
+					<div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+						<Weblink
+							name={name}
+							url={url}
+							color={color}
+							backgroundColor={backgroundColor}
+							style={isHidden ? { opacity: "0.4" } : undefined}
+						/>
+						{isHidden && <Badge variant="secondary">숨김</Badge>}
+					</div>
+				</div>
+
+				<div className="flex shrink-0 items-center gap-1.5">
+					<Button
+						variant={isHidden ? "default" : "outline"}
+						size="sm"
+						className="gap-1.5"
+						onClick={() => onToggleHide(id)}
+						disabled={disabled}
+					>
+						{isHidden ? (
+							<>
+								<Eye className="size-3.5" />
+								<span>보이기</span>
+							</>
+						) : (
+							<>
+								<EyeOff className="size-3.5" />
+								<span>숨기기</span>
+							</>
+						)}
+					</Button>
+				</div>
+			</div>
+		</li>
+	);
+}
+
+function BuiltinWeblinkManageSection({
+	links,
+	hidedIds,
+	onToggleHide,
+	toggling,
+}) {
+	if (links.length === 0) return null;
+
+	return (
+		<div className="mb-6">
+			<div className="mb-2 flex items-center justify-between border-0 border-b border-solid border-zinc-200 pb-1.5">
+				<div className="flex items-center gap-2">
+					<span className="text-lg font-bold text-zinc-900">bokk</span>
+					<Badge variant="subtle">기본</Badge>
+					<Badge variant="secondary">{links.length}</Badge>
+				</div>
+				<span className="text-xs text-zinc-500">
+					숨김 버튼으로 홈 화면 노출 여부를 전환할 수 있습니다.
+				</span>
+			</div>
+
+			<ul className="m-0 overflow-hidden rounded-xl border-[1px] border-solid border-zinc-200 bg-white p-0">
+				{links.map((weblink, index) => (
+					<BuiltinWeblinkManageItem
+						key={weblink.id}
+						index={index}
+						weblink={weblink}
+						isHidden={hidedIds.includes(weblink.id)}
+						onToggleHide={onToggleHide}
+						disabled={toggling}
+					/>
+				))}
+			</ul>
+		</div>
 	);
 }
 
@@ -214,17 +307,39 @@ function WeblinkManageSection({
 	);
 }
 
-export default function MyWeblink() {
+export default function WeblinkManage() {
 	const navigate = useNavigate();
 	const { data: meData, loading: meLoading } = useQuery(ME);
 	const { data } = useQuery(OWN_WEBLINKS);
 	const { data: groupData } = useQuery(MY_WEBLINK_GROUPS);
+	const { data: builtinData, refetch: refetchBuiltin } = useQuery(
+		BUILTIN_WEBLINKS,
+		{
+			variables: { input: { hided: true } },
+		}
+	);
+
+	const [toggleBuiltinWeblink, { loading: togglingBuiltin }] = useMutation(
+		TOGGLE_BUILTIN_WEBLINK,
+		{
+			onCompleted: ({ toggleBuiltinWeblink }) => {
+				if (toggleBuiltinWeblink) {
+					refetchBuiltin();
+					return;
+				}
+				alert("기본 웹 링크를 토글하는데 실패했습니다.");
+			},
+			refetchQueries: [{ query: BUILTIN_WEBLINKS }],
+		}
+	);
 
 	const [weblinks, setWeblinks] = useState([]);
 	const [showGroupModal, setShowGroupModal] = useState(false);
 
 	const groups = groupData?.myWeblinkGroups || [];
 	const userGroups = groups.filter((g) => g.id > 0);
+	const builtinWeblinks = builtinData?.builtinWeblinks?.weblinks || [];
+	const hidedIds = builtinData?.builtinWeblinks?.hidedIds || [];
 
 	useEffect(() => {
 		if (!meLoading && !meData?.me) {
@@ -260,68 +375,30 @@ export default function MyWeblink() {
 		handleDragEnd();
 	};
 
+	const handleToggleBuiltin = (weblinkId) => {
+		toggleBuiltinWeblink({ variables: { weblinkId } });
+	};
+
 	if (!meLoading && !meData?.me) {
 		return null;
 	}
 
-	// 그룹이 없는 기본 화면
-	if (userGroups.length === 0) {
-		return (
-			<>
-				<div className="mb-4 flex items-center justify-between gap-2">
-					<h4 className="m-0 text-xl font-bold text-zinc-900">내 웹링크 관리</h4>
-					<Button
-						variant="outline"
-						size="sm"
-						className="border-bokk-border text-bokk-dark hover:bg-bokk-subtle"
-						onClick={() => setShowGroupModal(true)}
-					>
-						⚙️ 그룹 관리
-					</Button>
-				</div>
-
-				<ul
-					className="m-0 overflow-hidden rounded-xl border-[1px] border-solid border-zinc-200 bg-white p-0"
-					onDragOver={handleDragOver}
-					onDrop={handleDrop}
-				>
-					<li className="list-none border-0 border-b border-solid border-zinc-100 bg-zinc-50 px-3.5 py-2.5">
-						<div className="flex items-center gap-2.5">
-							<span className="invisible inline-flex shrink-0 items-center">
-								<GripVertical className="size-5" />
-							</span>
-							<AddWeblinkModal position="first" />
-						</div>
-					</li>
-					{weblinks.map((weblink, index) => (
-						<WeblinkManageItem
-							key={weblink.id}
-							index={index}
-							weblink={weblink}
-							onDragStart={() => handleDragStart(weblink)}
-							onDragEnter={(e, idx) => handleItemDragEnter(e, "untagged", idx)}
-							onDragOver={handleDragOver}
-							onDragEnd={handleDragEnd}
-							isDragging={draggedInfo?.id === weblink.id}
-						/>
-					))}
-				</ul>
-
-				<WeblinkGroupManageModal
-					show={showGroupModal}
-					onHide={() => setShowGroupModal(false)}
-				/>
-			</>
-		);
-	}
-
 	const untaggedLinks = weblinks.filter((w) => isUntaggedWeblink(w, userGroups));
+
+	// 사용자가 설정한 그룹 순서(seq)를 그대로 반영 (커스텀 그룹 + bokk + 미분류)
+	const displayGroups =
+		groups.length > 0
+			? groups
+			: [
+					{ id: WEBLINK_GROUP_ID.UNTAGGED, name: "미분류", seq: 0 },
+					{ id: WEBLINK_GROUP_ID.BUILTIN, name: "bokk", seq: 1 },
+			  ];
 
 	return (
 		<>
 			<div className="mb-5 flex flex-wrap items-center justify-between gap-2">
 				<div>
-					<h4 className="m-0 text-xl font-bold text-zinc-900">내 웹링크 관리</h4>
+					<h4 className="m-0 text-xl font-bold text-zinc-900">웹링크 관리</h4>
 					<span className="text-xs text-zinc-500">
 						핸들을 드래그하여 순서를 바꾸거나 다른 그룹으로 이동할 수 있습니다.
 					</span>
@@ -336,43 +413,62 @@ export default function MyWeblink() {
 				</Button>
 			</div>
 
-			{userGroups.map((group) => (
-				<WeblinkManageSection
-					key={group.id}
-					title={group.name}
-					groupKey={group.id}
-					defaultGroupId={group.id}
-					links={weblinks.filter((w) => w.groupId === group.id)}
-					emptyText="이 그룹에 등록된 웹링크가 없습니다. 우측 상단 '+' 버튼으로 추가하거나 링크를 드래그해오세요."
-					dropText="⬇ 여기에 드롭하여 이 그룹으로 이동"
-					draggedInfo={draggedInfo}
-					isHovered={hoverTargetGroup === group.id}
-					onDragStart={handleDragStart}
-					onItemDragEnter={handleItemDragEnter}
-					onEmptyGroupDragEnter={handleEmptyGroupDragEnter}
-					onDragOver={handleDragOver}
-					onDrop={handleDrop}
-					onDragEnd={handleDragEnd}
-				/>
-			))}
+			{displayGroups.map((group) => {
+				if (group.id === WEBLINK_GROUP_ID.BUILTIN) {
+					return (
+						<BuiltinWeblinkManageSection
+							key="builtin-bokk"
+							links={builtinWeblinks}
+							hidedIds={hidedIds}
+							onToggleHide={handleToggleBuiltin}
+							toggling={togglingBuiltin}
+						/>
+					);
+				}
 
-			<WeblinkManageSection
-				title="미분류"
-				titleClassName="text-zinc-500"
-				groupKey="untagged"
-				defaultGroupId={null}
-				links={untaggedLinks}
-				emptyText="미분류 웹링크가 없습니다."
-				dropText="⬇ 여기에 드롭하여 미분류로 이동"
-				draggedInfo={draggedInfo}
-				isHovered={hoverTargetGroup === "untagged"}
-				onDragStart={handleDragStart}
-				onItemDragEnter={handleItemDragEnter}
-				onEmptyGroupDragEnter={handleEmptyGroupDragEnter}
-				onDragOver={handleDragOver}
-				onDrop={handleDrop}
-				onDragEnd={handleDragEnd}
-			/>
+				if (group.id === WEBLINK_GROUP_ID.UNTAGGED) {
+					return (
+						<WeblinkManageSection
+							key="untagged"
+							title="미분류"
+							titleClassName="text-zinc-500"
+							groupKey="untagged"
+							defaultGroupId={null}
+							links={untaggedLinks}
+							emptyText="미분류 웹링크가 없습니다."
+							dropText="⬇ 여기에 드롭하여 미분류로 이동"
+							draggedInfo={draggedInfo}
+							isHovered={hoverTargetGroup === "untagged"}
+							onDragStart={handleDragStart}
+							onItemDragEnter={handleItemDragEnter}
+							onEmptyGroupDragEnter={handleEmptyGroupDragEnter}
+							onDragOver={handleDragOver}
+							onDrop={handleDrop}
+							onDragEnd={handleDragEnd}
+						/>
+					);
+				}
+
+				return (
+					<WeblinkManageSection
+						key={group.id}
+						title={group.name}
+						groupKey={group.id}
+						defaultGroupId={group.id}
+						links={weblinks.filter((w) => w.groupId === group.id)}
+						emptyText="이 그룹에 등록된 웹링크가 없습니다. 우측 상단 '+' 버튼으로 추가하거나 링크를 드래그해오세요."
+						dropText="⬇ 여기에 드롭하여 이 그룹으로 이동"
+						draggedInfo={draggedInfo}
+						isHovered={hoverTargetGroup === group.id}
+						onDragStart={handleDragStart}
+						onItemDragEnter={handleItemDragEnter}
+						onEmptyGroupDragEnter={handleEmptyGroupDragEnter}
+						onDragOver={handleDragOver}
+						onDrop={handleDrop}
+						onDragEnd={handleDragEnd}
+					/>
+				);
+			})}
 
 			<WeblinkGroupManageModal
 				show={showGroupModal}

@@ -216,7 +216,7 @@ export default function Home() {
 							{isReordering ? "✓ 변경 완료" : "⇄ 순서·그룹 변경"}
 						</Button>
 						<Link
-							to="/manage/myWeblink/"
+							to="/manage/weblink/"
 							className={`inline-flex h-8 items-center justify-center rounded-md border border-solid border-zinc-300 bg-white px-3 text-xs font-medium text-zinc-700 no-underline shadow-xs transition-colors hover:bg-zinc-100 hover:text-zinc-900 ${styles.toolbarBtn}`}
 							title="웹링크 관리 페이지로 이동"
 						>
