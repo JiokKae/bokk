@@ -4,20 +4,29 @@ import { Button, Modal } from "react-bootstrap";
 import { MY_WEBLINK_GROUPS, OWN_WEBLINKS, UPDATE_WEBLINK } from "../../constants/querys";
 import WeblinkForm from "./WeblinkForm";
 
+const createValuesFromWeblink = (weblink) => ({
+	name: weblink.name,
+	url: weblink.url,
+	color: weblink.color,
+	backgroundColor: weblink.backgroundColor,
+	groupId: weblink.groupId ?? "",
+});
+
 export default function UpdateWeblinkModal({ weblink }) {
 	const [show, setShow] = useState(false);
-	const [name, setName] = useState(weblink.name);
-	const [url, setUrl] = useState(weblink.url);
-	const [color, setColor] = useState(weblink.color);
-	const [backgroundColor, setBackgroundColor] = useState(
-		weblink.backgroundColor
+	const [formValues, setFormValues] = useState(() =>
+		createValuesFromWeblink(weblink)
 	);
-	const [groupId, setGroupId] = useState(weblink.groupId ?? "");
 
 	const { data: groupData } = useQuery(MY_WEBLINK_GROUPS);
 	const groups = groupData?.myWeblinkGroups || [];
 
+	const handleFieldChange = (field, value) => {
+		setFormValues((prev) => ({ ...prev, [field]: value }));
+	};
+
 	const isChange = () => {
+		const { name, url, color, backgroundColor, groupId } = formValues;
 		if (name !== weblink.name) return true;
 		if (url !== weblink.url) return true;
 		if (color !== weblink.color) return true;
@@ -35,6 +44,7 @@ export default function UpdateWeblinkModal({ weblink }) {
 		if (isChange() === false) {
 			return;
 		}
+		const { name, url, color, backgroundColor, groupId } = formValues;
 		updateWeblink({
 			variables: {
 				input: {
@@ -48,12 +58,9 @@ export default function UpdateWeblinkModal({ weblink }) {
 			},
 		});
 	};
+
 	const handleOpen = () => {
-		setName(weblink.name);
-		setUrl(weblink.url);
-		setColor(weblink.color);
-		setBackgroundColor(weblink.backgroundColor);
-		setGroupId(weblink.groupId ?? "");
+		setFormValues(createValuesFromWeblink(weblink));
 		setShow(true);
 	};
 
@@ -70,16 +77,8 @@ export default function UpdateWeblinkModal({ weblink }) {
 					<WeblinkForm
 						id="updateWeblinkForm"
 						onSubmit={onSubmit}
-						name={name}
-						setName={setName}
-						url={url}
-						setUrl={setUrl}
-						color={color}
-						setColor={setColor}
-						backgroundColor={backgroundColor}
-						setBackgroundColor={setBackgroundColor}
-						groupId={groupId}
-						setGroupId={setGroupId}
+						values={formValues}
+						onChange={handleFieldChange}
 						groups={groups}
 					/>
 				</Modal.Body>

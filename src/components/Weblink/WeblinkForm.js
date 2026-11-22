@@ -11,18 +11,11 @@ export default function WeblinkForm({
 	id,
 	className,
 	onSubmit,
-	name,
-	setName,
-	url,
-	setUrl,
-	color,
-	setColor,
-	backgroundColor,
-	setBackgroundColor,
-	groupId,
-	setGroupId,
+	values,
+	onChange,
 	groups = [],
 }) {
+	const { name, url, color, backgroundColor, groupId } = values;
 	const nameInputRef = useRef(null);
 	const urlInputRef = useRef(null);
 	const [activeField, setActiveField] = useState("url");
@@ -33,11 +26,11 @@ export default function WeblinkForm({
 	const handleInsertToken = (token) => {
 		const isNameTarget = activeField === "name";
 		const inputEl = isNameTarget ? nameInputRef.current : urlInputRef.current;
+		const fieldKey = isNameTarget ? "name" : "url";
 		const currentValue = (isNameTarget ? name : url) || "";
-		const setter = isNameTarget ? setName : setUrl;
 
 		if (!inputEl) {
-			setter(currentValue + token);
+			onChange(fieldKey, currentValue + token);
 			return;
 		}
 
@@ -52,7 +45,7 @@ export default function WeblinkForm({
 
 		const nextValue =
 			currentValue.slice(0, start) + token + currentValue.slice(end);
-		setter(nextValue);
+		onChange(fieldKey, nextValue);
 
 		const nextCursorPos = start + token.length;
 		requestAnimationFrame(() => {
@@ -93,7 +86,7 @@ export default function WeblinkForm({
 					required
 					value={name}
 					onFocus={() => setActiveField("name")}
-					onChange={(e) => setName(e.target.value)}
+					onChange={(e) => onChange("name", e.target.value)}
 				/>
 			</Form.Group>
 			<Form.Group className="col-auto">
@@ -101,7 +94,7 @@ export default function WeblinkForm({
 				<Form.Select
 					id="groupId"
 					value={groupId ?? ""}
-					onChange={(e) => setGroupId(e.target.value)}
+					onChange={(e) => onChange("groupId", e.target.value)}
 				>
 					<option value="">미분류</option>
 					{groups
@@ -125,7 +118,7 @@ export default function WeblinkForm({
 					required
 					value={url}
 					onFocus={() => setActiveField("url")}
-					onChange={(e) => setUrl(e.target.value)}
+					onChange={(e) => onChange("url", e.target.value)}
 				/>
 				<div
 					className={`card border overflow-hidden mt-2 ${
@@ -245,7 +238,7 @@ export default function WeblinkForm({
 						<Form.Control
 							type="color"
 							id="color"
-							onInput={(e) => setColor(e.target.value)}
+							onInput={(e) => onChange("color", e.target.value)}
 							value={color}></Form.Control>
 					</Form.Group>
 					<Form.Group className="col-auto">
@@ -255,7 +248,7 @@ export default function WeblinkForm({
 						<Form.Control
 							type="color"
 							id="backgroundColor"
-							onInput={(e) => setBackgroundColor(e.target.value)}
+							onInput={(e) => onChange("backgroundColor", e.target.value)}
 							value={backgroundColor}></Form.Control>
 					</Form.Group>
 					<Col>

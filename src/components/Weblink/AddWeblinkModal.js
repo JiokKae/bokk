@@ -4,13 +4,19 @@ import { Button, Modal } from "react-bootstrap";
 import { ADD_WEBLINK, MY_WEBLINK_GROUPS, OWN_WEBLINKS } from "../../constants/querys";
 import WeblinkForm from "./WeblinkForm";
 
+const createInitialValues = (defaultGroupId) => ({
+	name: "",
+	url: "",
+	color: "#FFFFFF",
+	backgroundColor: "#1EA1F7",
+	groupId: defaultGroupId ?? "",
+});
+
 export default function AddWeblinkModal({ position = "last", defaultGroupId = null }) {
 	const [show, setShow] = useState(false);
-	const [name, setName] = useState("");
-	const [url, setUrl] = useState("");
-	const [color, setColor] = useState("#FFFFFF");
-	const [backgroundColor, setBackgroundColor] = useState("#1EA1F7");
-	const [groupId, setGroupId] = useState(defaultGroupId ?? "");
+	const [formValues, setFormValues] = useState(() =>
+		createInitialValues(defaultGroupId)
+	);
 
 	const { data: groupData } = useQuery(MY_WEBLINK_GROUPS);
 	const groups = groupData?.myWeblinkGroups || [];
@@ -19,16 +25,17 @@ export default function AddWeblinkModal({ position = "last", defaultGroupId = nu
 		refetchQueries: [{ query: OWN_WEBLINKS }, { query: MY_WEBLINK_GROUPS }],
 	});
 
+	const handleFieldChange = (field, value) => {
+		setFormValues((prev) => ({ ...prev, [field]: value }));
+	};
+
 	const handleOpen = () => {
-		setName("");
-		setUrl("");
-		setColor("#FFFFFF");
-		setBackgroundColor("#1EA1F7");
-		setGroupId(defaultGroupId ?? "");
+		setFormValues(createInitialValues(defaultGroupId));
 		setShow(true);
 	};
 
 	const onSubmit = () => {
+		const { name, url, color, backgroundColor, groupId } = formValues;
 		addWeblink({
 			variables: {
 				input: {
@@ -43,6 +50,7 @@ export default function AddWeblinkModal({ position = "last", defaultGroupId = nu
 		});
 		setShow(false);
 	};
+
 	return (
 		<>
 			<button
@@ -60,16 +68,8 @@ export default function AddWeblinkModal({ position = "last", defaultGroupId = nu
 					<WeblinkForm
 						id="addWeblinkForm"
 						onSubmit={onSubmit}
-						name={name}
-						setName={setName}
-						url={url}
-						setUrl={setUrl}
-						color={color}
-						setColor={setColor}
-						backgroundColor={backgroundColor}
-						setBackgroundColor={setBackgroundColor}
-						groupId={groupId}
-						setGroupId={setGroupId}
+						values={formValues}
+						onChange={handleFieldChange}
 						groups={groups}
 					/>
 				</Modal.Body>
