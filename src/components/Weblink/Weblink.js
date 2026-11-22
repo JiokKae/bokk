@@ -17,7 +17,7 @@ export default function Weblink({
 		return (
 			<button
 				type="button"
-				className={`btn ${styles.btnMd} m-1`}
+				className={`${styles.btnMd} m-1`}
 				style={{ color, backgroundColor, ...style }}
 				onClick={onClick}>
 				{resolvedName === "" ? "웹 링크" : resolvedName}
@@ -30,7 +30,7 @@ export default function Weblink({
 			href={resolvedUrl}
 			target="_blank"
 			rel="noopener noreferrer"
-			className={`btn ${styles.btnMd} m-1`}
+			className={`${styles.btnMd} m-1`}
 			style={{ color, backgroundColor, ...style }}>
 			{resolvedName === "" ? "웹 링크" : resolvedName}
 		</a>

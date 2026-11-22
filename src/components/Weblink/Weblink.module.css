@@ -4,7 +4,15 @@
 	justify-content: center;
 	height: 48px;
 	padding: 10px 13px;
+	border-radius: 0.375rem;
 	font-size: 13pt !important;
+	text-decoration: none;
 	vertical-align: middle;
 	box-sizing: border-box;
+	cursor: pointer;
+	transition: opacity 0.15s ease-in-out;
+}
+
+.btnMd:hover {
+	opacity: 0.9;
 }
