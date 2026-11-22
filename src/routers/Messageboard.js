@@ -1,13 +1,13 @@
 import { useQuery } from "@apollo/client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Message from "../components/MessageBoard/Message";
 import Pagination from "../components/MessageBoard/Pagination";
 import PostMessageForm from "../components/MessageBoard/PostMessageForm";
 import { MESSAGEBOARD } from "../constants/querys";
-import { scroller } from "react-scroll";
 
 export default function MessageBoard() {
 	const [currentPage, setCurrentPage] = useState(1);
+	const topRef = useRef(null);
 	const onSetCurrentPage = (page) => {
 		setCurrentPage(page);
 		scrollToComponent();
@@ -18,15 +18,16 @@ export default function MessageBoard() {
 		},
 	});
 	const scrollToComponent = () => {
-		scroller.scrollTo("top", {
-			duration: 100,
-			smooth: true,
-			offset: -75,
-		});
+		if (!topRef.current) return;
+		const top = Math.max(
+			0,
+			topRef.current.getBoundingClientRect().top + window.scrollY - 75
+		);
+		window.scrollTo({ top, behavior: "smooth" });
 	};
 	return (
 		<>
-			<div name="top"></div>
+			<div ref={topRef} name="top"></div>
 			<PostMessageForm setCurrentPage={onSetCurrentPage} />
 			<div className="p-2">
 				<button
