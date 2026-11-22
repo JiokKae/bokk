@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Form, InputGroup, ListGroup, Modal } from "react-bootstrap";
 import {
 	CREATE_PLAYLIST,
@@ -9,6 +9,7 @@ import {
 	MY_VIDEO_ITEMS,
 	UPDATE_PLAYLIST,
 } from "../../../../constants/querys";
+import useOffcanvasFocusTrapBypass from "../../../../hooks/useOffcanvasFocusTrapBypass";
 import styles from "./PlaylistManageModal.module.css";
 
 export default function PlaylistManageModal({
@@ -24,25 +25,7 @@ export default function PlaylistManageModal({
 	const [editingId, setEditingId] = useState(null);
 	const [editingName, setEditingName] = useState("");
 
-	// 모달 오픈 시 오프캔버스의 포커스 트랩을 일시 해제하여 모달 인풋에 정상 포커스 가능하도록 처리
-	useEffect(() => {
-		if (!show) return;
-
-		const offcanvasElem = document.getElementById("offcanvasYoutubeQueue");
-		let bsOffcanvas = null;
-		if (window.bootstrap?.Offcanvas && offcanvasElem) {
-			bsOffcanvas = window.bootstrap.Offcanvas.getInstance(offcanvasElem);
-			if (bsOffcanvas?._focustrap) {
-				bsOffcanvas._focustrap.deactivate();
-			}
-		}
-
-		return () => {
-			if (bsOffcanvas?._focustrap && bsOffcanvas._isShown) {
-				bsOffcanvas._focustrap.activate();
-			}
-		};
-	}, [show]);
+	useOffcanvasFocusTrapBypass(show);
 
 	const [createPlaylist, { loading: creating }] = useMutation(CREATE_PLAYLIST, {
 		onCompleted: () => {

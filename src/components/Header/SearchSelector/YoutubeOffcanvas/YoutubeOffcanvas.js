@@ -1,9 +1,13 @@
 import { useQuery } from "@apollo/client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button, CloseButton, Dropdown } from "react-bootstrap";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Button, CloseButton } from "react-bootstrap";
 import YouTube from "react-youtube";
 import { ME, MY_PLAYLISTS, MY_VIDEO_ITEMS } from "../../../../constants/querys";
+import usePlaylistFilter, { PLAYLIST_FILTER } from "../../../../hooks/usePlaylistFilter";
+import { resolvePlaylistMeta } from "../../../../utils/playlistUtil";
 import Controller from "./Controller";
+import EqualizerIcon from "./EqualizerIcon";
+import PlaylistFilterDropdown from "./PlaylistFilterDropdown";
 import YoutubePlayer from "./YoutubePlayer";
 import YoutubeVideoAdder from "./YoutubeVideoAdder";
 import YoutubeVideoItem from "./YoutubeVideoItem";
@@ -41,9 +45,17 @@ export default function YoutubeOffcanvas() {
 		[myPlaylistsData]
 	);
 
-	const [selectedPlaylistId, setSelectedPlaylistId] = useState("ALL");
+	const {
+		selectedPlaylistId,
+		setSelectedPlaylistId,
+		displayedVideoItems,
+		untaggedCount,
+		getPlaylistCount,
+		selectedPlaylistInfo,
+	} = usePlaylistFilter(videoItems, playlists);
+
 	// 현재 재생 중인 플레이리스트 ID
-	const [playingPlaylistId, setPlayingPlaylistId] = useState("ALL");
+	const [playingPlaylistId, setPlayingPlaylistId] = useState(PLAYLIST_FILTER.ALL);
 	const [showPlaylistManageModal, setShowPlaylistManageModal] = useState(false);
 	const [selectedVideoForTag, setSelectedVideoForTag] = useState(null);
 
@@ -68,26 +80,6 @@ export default function YoutubeOffcanvas() {
 		initialVideoIdRef.current = videoItems[0].video.id;
 	}
 
-	// 1. 화면에 표시할 목록 (사용자가 선택한 플레이리스트에 따른 View)
-	const displayedVideoItems = useMemo(() => {
-		if (selectedPlaylistId === "ALL") {
-			return videoItems;
-		}
-		if (selectedPlaylistId === "UNTAGGED") {
-			return videoItems.filter(
-				(item) => !item.playlists || item.playlists.length === 0
-			);
-		}
-		const targetId = Number(selectedPlaylistId);
-		const exists = playlists.some((p) => p.id === targetId);
-		if (!exists) {
-			return videoItems;
-		}
-		return videoItems.filter(
-			(item) => item.playlists && item.playlists.some((p) => p.id === targetId)
-		);
-	}, [videoItems, selectedPlaylistId, playlists]);
-
 	// 2. 실제로 재생 및 컨트롤러가 순회하는 활성 재생 큐
 	const currentQueue = useMemo(
 		() => (activeQueue && activeQueue.length > 0 ? activeQueue : videoItems),
@@ -102,71 +94,24 @@ export default function YoutubeOffcanvas() {
 		"";
 
 	// 현재 재생 중인 플레이리스트 메타 정보 (이름)
-	const playingPlaylistInfo = useMemo(() => {
-		if (playingPlaylistId === "ALL") {
-			return { id: "ALL", name: "전체" };
-		}
-		if (playingPlaylistId === "UNTAGGED") {
-			return { id: "UNTAGGED", name: "미분류" };
-		}
-		const targetId = Number(playingPlaylistId);
-		const found = playlists.find((p) => p.id === targetId);
-		if (found) {
-			return { id: targetId, name: found.name };
-		}
-		return { id: "ALL", name: "전체" };
-	}, [playingPlaylistId, playlists]);
+	const playingPlaylistInfo = useMemo(
+		() => resolvePlaylistMeta(playingPlaylistId, videoItems, playlists),
+		[playingPlaylistId, videoItems, playlists]
+	);
 
-	// 현재 선택된 플레이리스트 및 재생 중인 플레이리스트가 삭제되어 목록에 없으면 자동으로 '전체'로 복구
+	// 재생 중인 플레이리스트가 삭제되어 목록에 없으면 자동으로 '전체'로 복구
 	useEffect(() => {
-		if (selectedPlaylistId !== "ALL" && selectedPlaylistId !== "UNTAGGED") {
-			const targetId = Number(selectedPlaylistId);
-			const exists = playlists.some((p) => p.id === targetId);
-			if (!exists) {
-				setSelectedPlaylistId("ALL");
-			}
-		}
-		if (playingPlaylistId !== "ALL" && playingPlaylistId !== "UNTAGGED") {
+		if (
+			playingPlaylistId !== PLAYLIST_FILTER.ALL &&
+			playingPlaylistId !== PLAYLIST_FILTER.UNTAGGED
+		) {
 			const targetId = Number(playingPlaylistId);
 			const exists = playlists.some((p) => p.id === targetId);
 			if (!exists) {
-				setPlayingPlaylistId("ALL");
+				setPlayingPlaylistId(PLAYLIST_FILTER.ALL);
 			}
 		}
-	}, [playlists, selectedPlaylistId, playingPlaylistId]);
-
-	const untaggedCount = useMemo(
-		() =>
-			videoItems.filter(
-				(item) => !item.playlists || item.playlists.length === 0
-			).length,
-		[videoItems]
-	);
-
-	const getPlaylistCount = useCallback(
-		(playlistId) => {
-			return videoItems.filter(
-				(item) => item.playlists && item.playlists.some((p) => p.id === playlistId)
-			).length;
-		},
-		[videoItems]
-	);
-
-	// 현재 선택된 플레이리스트 정보 (이름 및 곡 수)
-	const selectedPlaylistInfo = useMemo(() => {
-		if (selectedPlaylistId === "ALL") {
-			return { name: "전체", count: videoItems.length };
-		}
-		if (selectedPlaylistId === "UNTAGGED") {
-			return { name: "미분류", count: untaggedCount };
-		}
-		const targetId = Number(selectedPlaylistId);
-		const pl = playlists.find((p) => p.id === targetId);
-		if (pl) {
-			return { name: pl.name, count: getPlaylistCount(targetId) };
-		}
-		return { name: "전체", count: videoItems.length };
-	}, [selectedPlaylistId, videoItems.length, untaggedCount, playlists, getPlaylistCount]);
+	}, [playlists, playingPlaylistId]);
 
 	const [offcanvasWidth, setOffcanvasWidth] = useState(DEFAULT_WIDTH);
 	const [isDragging, setIsDragging] = useState(false);
@@ -457,11 +402,7 @@ export default function YoutubeOffcanvas() {
 				>
 					{showTicker ? (
 						<div className={styles.headerTickerBadge}>
-							<div className={styles.equalizer}>
-								<span className={`${styles.equalizerBar} ${styles.bar1}`} />
-								<span className={`${styles.equalizerBar} ${styles.bar2}`} />
-								<span className={`${styles.equalizerBar} ${styles.bar3}`} />
-							</div>
+							<EqualizerIcon isPlaying />
 							<div className={styles.tickerMarqueeWrapper}>
 								<div className={styles.tickerMarquee}>
 									{currentTitle} &nbsp;·&nbsp; {currentTitle} &nbsp;·&nbsp;
@@ -575,210 +516,37 @@ export default function YoutubeOffcanvas() {
 							{/* 플레이리스트 선택 & 컨트롤러 바 (모바일 스마트 2단 반응형) */}
 							<div className={styles.controlBar}>
 								<div className={styles.selectorGroup}>
-									<Dropdown className="flex-grow-1" style={{ minWidth: 0 }}>
-									<Dropdown.Toggle
-										variant="light"
-										id="playlist-dropdown-toggle"
-										className={`w-100 d-flex align-items-center justify-content-between text-start fw-medium shadow-none ${styles.playlistDropdownToggle}`}
+									<PlaylistFilterDropdown
+										toggleId="playlist-dropdown-toggle"
+										className="flex-grow-1"
+										selectedPlaylistId={selectedPlaylistId}
+										onSelectPlaylist={setSelectedPlaylistId}
+										selectedPlaylistInfo={selectedPlaylistInfo}
+										totalCount={videoItems.length}
+										untaggedCount={untaggedCount}
+										playlists={playlists}
+										getPlaylistCount={getPlaylistCount}
+										hasStarted={hasStarted}
+										playingPlaylistId={playingPlaylistId}
+										isPlaying={isPlaying}
+									/>
+									<Button
+										variant="outline-secondary"
+										size="sm"
+										className="d-flex align-items-center justify-content-center flex-shrink-0"
+										style={{
+											fontSize: "12.5px",
+											height: "38px",
+											padding: "0 10px",
+											whiteSpace: "nowrap",
+											borderRadius: "6px",
+										}}
+										title="플레이리스트 추가 / 수정 / 삭제"
+										onClick={() => setShowPlaylistManageModal(true)}
 									>
-										<span className="text-truncate me-2">
-											{selectedPlaylistInfo.name}
-										</span>
-										<div className="d-flex align-items-center gap-1.5 ms-auto me-1 flex-shrink-0">
-											{hasStarted && String(selectedPlaylistId) === String(playingPlaylistId) && (
-												<div
-													className={`${styles.equalizer} ${!isPlaying ? styles.paused : ""} me-1`}
-													style={{ height: "11px" }}
-													title={isPlaying ? "재생 중" : "일시정지됨"}
-												>
-													<span className={`${styles.equalizerBar} ${styles.bar1}`} />
-													<span className={`${styles.equalizerBar} ${styles.bar2}`} />
-													<span className={`${styles.equalizerBar} ${styles.bar3}`} />
-												</div>
-											)}
-											<span
-												className={`badge rounded-pill flex-shrink-0 ${
-													hasStarted && String(selectedPlaylistId) === String(playingPlaylistId)
-														? "bg-primary-subtle text-primary border-primary-subtle"
-														: "bg-light text-secondary border"
-												}`}
-												style={{ fontSize: "11px", fontWeight: 500 }}
-											>
-												{selectedPlaylistInfo.count}
-											</span>
-										</div>
-									</Dropdown.Toggle>
-
-									<Dropdown.Menu className={`w-100 ${styles.playlistDropdownMenu}`}>
-										{(() => {
-											const isPlayingAll = hasStarted && playingPlaylistId === "ALL";
-											return (
-												<Dropdown.Item
-													as="button"
-													type="button"
-													className={`d-flex align-items-center justify-content-between ${styles.dropdownItem} ${
-														isPlayingAll ? styles.playingItem : ""
-													}`}
-													style={{
-														fontWeight: selectedPlaylistId === "ALL" ? "700" : undefined,
-													}}
-													onClick={() => setSelectedPlaylistId("ALL")}
-												>
-													<div className="d-flex align-items-center text-truncate me-2" style={{ minWidth: 0 }}>
-														{selectedPlaylistId === "ALL" && (
-															<span className="text-primary me-2 fw-bold" style={{ fontSize: "12px" }}>
-																✓
-															</span>
-														)}
-														<span className="text-truncate">전체</span>
-													</div>
-													<div className="d-flex align-items-center gap-2 flex-shrink-0">
-														{isPlayingAll && (
-															<div
-																className={`${styles.equalizer} ${!isPlaying ? styles.paused : ""}`}
-																style={{ height: "11px" }}
-																title={isPlaying ? "재생 중" : "일시정지됨"}
-															>
-																<span className={`${styles.equalizerBar} ${styles.bar1}`} />
-																<span className={`${styles.equalizerBar} ${styles.bar2}`} />
-																<span className={`${styles.equalizerBar} ${styles.bar3}`} />
-															</div>
-														)}
-														<span
-															className={`badge rounded-pill flex-shrink-0 ${
-																isPlayingAll
-																	? "bg-primary-subtle text-primary border-primary-subtle"
-																	: "bg-light text-secondary border"
-															}`}
-															style={{ fontSize: "11px" }}
-														>
-															{videoItems.length}
-														</span>
-													</div>
-												</Dropdown.Item>
-											);
-										})()}
-
-										{(() => {
-											const isPlayingUntagged = hasStarted && playingPlaylistId === "UNTAGGED";
-											return (
-												<Dropdown.Item
-													as="button"
-													type="button"
-													className={`d-flex align-items-center justify-content-between ${styles.dropdownItem} ${
-														isPlayingUntagged ? styles.playingItem : ""
-													}`}
-													style={{
-														fontWeight: selectedPlaylistId === "UNTAGGED" ? "700" : undefined,
-													}}
-													onClick={() => setSelectedPlaylistId("UNTAGGED")}
-												>
-													<div className="d-flex align-items-center text-truncate me-2" style={{ minWidth: 0 }}>
-														{selectedPlaylistId === "UNTAGGED" && (
-															<span className="text-primary me-2 fw-bold" style={{ fontSize: "12px" }}>
-																✓
-															</span>
-														)}
-														<span className="text-truncate">미분류</span>
-													</div>
-													<div className="d-flex align-items-center gap-2 flex-shrink-0">
-														{isPlayingUntagged && (
-															<div
-																className={`${styles.equalizer} ${!isPlaying ? styles.paused : ""}`}
-																style={{ height: "11px" }}
-																title={isPlaying ? "재생 중" : "일시정지됨"}
-															>
-																<span className={`${styles.equalizerBar} ${styles.bar1}`} />
-																<span className={`${styles.equalizerBar} ${styles.bar2}`} />
-																<span className={`${styles.equalizerBar} ${styles.bar3}`} />
-															</div>
-														)}
-														<span
-															className={`badge rounded-pill flex-shrink-0 ${
-																isPlayingUntagged
-																	? "bg-primary-subtle text-primary border-primary-subtle"
-																	: "bg-light text-secondary border"
-															}`}
-															style={{ fontSize: "11px" }}
-														>
-															{untaggedCount}
-														</span>
-													</div>
-												</Dropdown.Item>
-											);
-										})()}
-
-										{playlists.length > 0 && <Dropdown.Divider className="my-1" />}
-
-										{playlists.map((pl) => {
-											const isPlayingThis = hasStarted && String(playingPlaylistId) === String(pl.id);
-											const isSelectedThis = String(selectedPlaylistId) === String(pl.id);
-											return (
-												<Dropdown.Item
-													key={pl.id}
-													as="button"
-													type="button"
-													className={`d-flex align-items-center justify-content-between ${styles.dropdownItem} ${
-														isPlayingThis ? styles.playingItem : ""
-													}`}
-													style={{
-														fontWeight: isSelectedThis ? "700" : undefined,
-													}}
-													onClick={() => setSelectedPlaylistId(pl.id)}
-												>
-													<div className="d-flex align-items-center text-truncate me-2" style={{ minWidth: 0 }}>
-														{isSelectedThis && (
-															<span className="text-primary me-2 fw-bold" style={{ fontSize: "12px" }}>
-																✓
-															</span>
-														)}
-														<span className="text-truncate">{pl.name}</span>
-													</div>
-													<div className="d-flex align-items-center gap-2 flex-shrink-0">
-														{isPlayingThis && (
-															<div
-																className={`${styles.equalizer} ${!isPlaying ? styles.paused : ""}`}
-																style={{ height: "11px" }}
-																title={isPlaying ? "재생 중" : "일시정지됨"}
-															>
-																<span className={`${styles.equalizerBar} ${styles.bar1}`} />
-																<span className={`${styles.equalizerBar} ${styles.bar2}`} />
-																<span className={`${styles.equalizerBar} ${styles.bar3}`} />
-															</div>
-														)}
-														<span
-															className={`badge rounded-pill flex-shrink-0 ${
-																isPlayingThis
-																	? "bg-primary-subtle text-primary border-primary-subtle"
-																	: "bg-light text-secondary border"
-															}`}
-															style={{ fontSize: "11px" }}
-														>
-															{getPlaylistCount(pl.id)}
-														</span>
-													</div>
-												</Dropdown.Item>
-											);
-										})}
-									</Dropdown.Menu>
-								</Dropdown>
-								<Button
-									variant="outline-secondary"
-									size="sm"
-									className="d-flex align-items-center justify-content-center flex-shrink-0"
-									style={{
-										fontSize: "12.5px",
-										height: "38px",
-										padding: "0 10px",
-										whiteSpace: "nowrap",
-										borderRadius: "6px",
-									}}
-									title="플레이리스트 추가 / 수정 / 삭제"
-									onClick={() => setShowPlaylistManageModal(true)}
-								>
-									⚙️ 관리
-								</Button>
-							</div>
+										⚙️ 관리
+									</Button>
+								</div>
 
 								{loading === false && (videoItems.length > 0 || currentQueue.length > 0) ? (
 									<div className={styles.controllerWrapper}>
@@ -803,14 +571,7 @@ export default function YoutubeOffcanvas() {
 						{hasStarted && String(selectedPlaylistId) !== String(playingPlaylistId) && (
 							<div className={styles.returnBanner}>
 								<div className={styles.returnBannerLeft}>
-									<div
-										className={`${styles.equalizer} ${!isPlaying ? styles.paused : ""}`}
-										style={{ height: "12px" }}
-									>
-										<span className={`${styles.equalizerBar} ${styles.bar1}`} />
-										<span className={`${styles.equalizerBar} ${styles.bar2}`} />
-										<span className={`${styles.equalizerBar} ${styles.bar3}`} />
-									</div>
+									<EqualizerIcon isPlaying={isPlaying} height="12px" />
 									<span className={styles.returnLabel}>
 										{isPlaying ? "재생 중" : "일시정지"}
 									</span>

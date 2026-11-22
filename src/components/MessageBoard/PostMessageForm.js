@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
 import { ME, MESSAGEBOARD, POST_MESSAGE } from "../../constants/querys";
+import { extractYoutubeVideoId } from "../../utils/youtubeUtil";
 
 function GuestInput({ setWriterName, setPassword }) {
 	return (
@@ -184,12 +185,7 @@ function IMESafeEditor({ onReady, placeholder = "내용", onUploading }) {
 		const url = prompt("유튜브 동영상 주소(URL)를 입력하세요.\n(예: https://www.youtube.com/watch?v=...)", "");
 		if (!url) return;
 
-		let videoId = "";
-		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-		const match = url.match(regExp);
-		if (match && match[2].length === 11) {
-			videoId = match[2];
-		}
+		const videoId = extractYoutubeVideoId(url);
 
 		if (videoId) {
 			const videoHtml = `<div class="ratio ratio-16x9 my-2"><iframe src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p><br></p>`;

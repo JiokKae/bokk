@@ -7,6 +7,7 @@ import {
 	MY_VIDEO_ITEMS,
 	SET_VIDEO_PLAYLISTS,
 } from "../../../../constants/querys";
+import useOffcanvasFocusTrapBypass from "../../../../hooks/useOffcanvasFocusTrapBypass";
 import styles from "./VideoPlaylistTagModal.module.css";
 
 export default function VideoPlaylistTagModal({
@@ -20,25 +21,7 @@ export default function VideoPlaylistTagModal({
 	const [newPlaylistName, setNewPlaylistName] = useState("");
 	const inputRef = useRef(null);
 
-	// 모달 오픈 시 오프캔버스의 포커스 트랩을 일시 해제하여 모달 인풋에 정상 포커스 가능하도록 처리
-	useEffect(() => {
-		if (!show) return;
-
-		const offcanvasElem = document.getElementById("offcanvasYoutubeQueue");
-		let bsOffcanvas = null;
-		if (window.bootstrap?.Offcanvas && offcanvasElem) {
-			bsOffcanvas = window.bootstrap.Offcanvas.getInstance(offcanvasElem);
-			if (bsOffcanvas?._focustrap) {
-				bsOffcanvas._focustrap.deactivate();
-			}
-		}
-
-		return () => {
-			if (bsOffcanvas?._focustrap && bsOffcanvas._isShown) {
-				bsOffcanvas._focustrap.activate();
-			}
-		};
-	}, [show]);
+	useOffcanvasFocusTrapBypass(show);
 
 	// 플레이리스트가 0개인 경우 바로 인풋에 포커스
 	useEffect(() => {
