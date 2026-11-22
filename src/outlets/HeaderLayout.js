@@ -13,7 +13,7 @@ export default function HeaderLayout({ items, searchSelector }) {
 						<SearchSelector />
 					</div>
 				) : null}
-				<div className="m-4">
+				<div className="my-5 px-2 sm:px-4">
 					<Outlet />
 				</div>
 			</div>

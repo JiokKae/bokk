@@ -1,6 +1,8 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { CHANGE_PASSWORD, ME } from "../constants/querys";
 
 export default function ChangePassword() {
@@ -9,9 +11,10 @@ export default function ChangePassword() {
 	const [newPassword2, setNewPassword2] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
 	const { data: isLoginData, loading } = useQuery(ME);
-	const [changePassword, { data }] = useMutation(CHANGE_PASSWORD);
+	const [changePassword, { data, loading: submitting }] =
+		useMutation(CHANGE_PASSWORD);
 	const navigate = useNavigate();
-	const form = useRef();
+	const form = useRef(null);
 
 	useEffect(() => {
 		if (data?.changePassword?.success === undefined) {
@@ -19,7 +22,7 @@ export default function ChangePassword() {
 		}
 		if (data.changePassword.success === false) {
 			setErrorMessage("비밀번호를 변경하는데 실패했습니다.");
-			form.current.reset();
+			form.current?.reset();
 			return;
 		}
 		navigate("/");
@@ -41,6 +44,7 @@ export default function ChangePassword() {
 			setErrorMessage("새로운 비밀번호가 일치하지 않습니다.");
 			return;
 		}
+		setErrorMessage("");
 		changePassword({
 			variables: {
 				input: {
@@ -50,73 +54,102 @@ export default function ChangePassword() {
 			},
 		});
 	};
+
 	return (
-		<>
-			<Link to="/">
+		<div className="flex flex-col">
+			<Link to="/" className="mx-auto mb-6 block">
 				<img
 					src={`${process.env.REACT_APP_BOKK_IMG}/볶음밥_logo.png`}
 					alt="볶음밥 로고"
+					className="mx-auto block max-w-[220px]"
 				/>
 			</Link>
-			<form className="formSign" ref={form} onSubmit={onSubmit}>
-				<div className="form-floating mb-3">
-					<input
+
+			<form className="flex flex-col gap-3.5" ref={form} onSubmit={onSubmit}>
+				<div className="flex flex-col gap-1">
+					<label
+						htmlFor="cpwInput"
+						className="text-sm font-semibold text-zinc-700"
+					>
+						현재 비밀번호
+					</label>
+					<Input
 						type="password"
 						id="cpwInput"
-						className="form-control"
 						placeholder="현재 비밀번호"
-						maxLength="20"
+						maxLength={20}
 						pattern=".{8,20}"
 						required
 						autoFocus
+						className="h-10"
 						onChange={(e) => setCurrentPassword(e.target.value)}
 					/>
-					<label htmlFor="cpwInput">현재 비밀번호</label>
-					<small className="form-text text-muted">
+					<span className="text-xs text-zinc-500">
 						현재 비밀번호를 입력하세요.
-					</small>
+					</span>
 				</div>
-				<div className="form-floating mb-3">
-					<input
+
+				<div className="flex flex-col gap-1">
+					<label
+						htmlFor="npwInput"
+						className="text-sm font-semibold text-zinc-700"
+					>
+						새로운 비밀번호
+					</label>
+					<Input
 						type="password"
 						id="npwInput"
-						className="form-control"
 						placeholder="새로운 비밀번호"
-						maxLength="20"
+						maxLength={20}
 						pattern=".{8,20}"
 						autoComplete="new-password"
 						required
+						className="h-10"
 						onChange={(e) => setNewPassword(e.target.value)}
 					/>
-					<label htmlFor="npwInput">새로운 비밀번호</label>
-					<small className="form-text text-muted">
+					<span className="text-xs text-zinc-500">
 						8~20자만 사용 가능합니다.
-					</small>
+					</span>
 				</div>
-				<div className="form-floating mb-3">
-					<input
+
+				<div className="flex flex-col gap-1">
+					<label
+						htmlFor="npw2Input"
+						className="text-sm font-semibold text-zinc-700"
+					>
+						새로운 비밀번호 확인
+					</label>
+					<Input
 						type="password"
 						id="npw2Input"
-						className="form-control"
 						placeholder="새로운 비밀번호 확인"
-						maxLength="20"
+						maxLength={20}
 						pattern=".{8,20}"
 						autoComplete="new-password"
 						required
+						className="h-10"
 						onChange={(e) => setNewPassword2(e.target.value)}
 					/>
-					<label htmlFor="npw2Input">새로운 비밀번호 확인</label>
-					<small className="form-text text-muted">
+					<span className="text-xs text-zinc-500">
 						새로운 비밀번호를 한번 더 입력하세요.
-					</small>
+					</span>
 				</div>
-				<div style={{ color: "red" }}>{errorMessage}</div>
-				<input
+
+				{errorMessage && (
+					<div className="rounded-lg border-[1px] border-solid border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-600">
+						{errorMessage}
+					</div>
+				)}
+
+				<Button
 					type="submit"
-					className="btn btn-lg bgc-bokk signBtn"
-					value="비밀번호 변경"
-				/>
+					size="lg"
+					className="mt-1 h-11 w-full text-[15px] font-semibold"
+					disabled={submitting}
+				>
+					{submitting ? "변경 중..." : "비밀번호 변경"}
+				</Button>
 			</form>
-		</>
+		</div>
 	);
 }

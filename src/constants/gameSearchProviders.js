@@ -41,7 +41,7 @@ export const GAME_SEARCH_PROVIDERS = [
 		placeholder: "소환사명, 소환사명, ...",
 		hiddenInputs: [{ name: "region", value: "kr" }],
 		buttonClass: "bgc-white",
-		linkClass: "btn btn-md bgc-white ms-2 mb-2",
+		linkClass: "bgc-white",
 		getProfileUrl: (name) =>
 			`https://op.gg/ko/lol/summoners/search?q=${encodeURIComponent(name)}&region=kr`,
 	},
@@ -54,7 +54,7 @@ export const GAME_SEARCH_PROVIDERS = [
 		inputName: "field",
 		hiddenInputs: [{ name: "act", value: "find" }],
 		buttonClass: "bgc-white",
-		linkClass: "btn bgc-white ms-2 mb-2",
+		linkClass: "bgc-white",
 		getProfileUrl: (name) => `http://fow.kr/find/${name}`,
 	},
 	{
@@ -62,9 +62,9 @@ export const GAME_SEARCH_PROVIDERS = [
 		title: "YOUR.GG",
 		players: PLAYER_NAMES.LOL,
 		placeholder: "소환사",
-		inputClass: "form-control bgc-white mb-2",
+		inputClass: "bgc-white",
 		buttonClass: "bgc-white",
-		linkClass: "btn btn-md bgc-white ms-2 mb-2",
+		linkClass: "bgc-white",
 		getProfileUrl: (name) => `https://your.gg/kr/profile/${name}`,
 		onNavigate: (query) => {
 			window.location.replace(`https://your.gg/kr/profile/${query}`);
@@ -79,7 +79,7 @@ export const GAME_SEARCH_PROVIDERS = [
 		required: true,
 		placeholder: "배틀그라운드 닉네임을 입력하세요",
 		buttonClass: "bgc-dakgg-orange",
-		linkClass: "btn bgc-dakgg-orange ms-2 mb-2",
+		linkClass: "bgc-dakgg-orange",
 		getProfileUrl: (name) => `https://dak.gg/profile/${name}`,
 	},
 	{
@@ -93,7 +93,7 @@ export const GAME_SEARCH_PROVIDERS = [
 		placeholder: "소환사 검색",
 		hiddenInputs: [{ name: "region", value: "KR" }],
 		buttonClass: "bgc-white",
-		linkClass: "btn btn-md bgc-white ms-2 mb-2",
+		linkClass: "bgc-white",
 		getProfileUrl: (name) => `https://lolchess.gg/profile/kr/${name}`,
 	},
 	{
@@ -105,7 +105,7 @@ export const GAME_SEARCH_PROVIDERS = [
 		required: true,
 		placeholder: "검색할 캐릭터명을 입력",
 		buttonClass: "bgc-loawa-gray",
-		linkClass: "btn bgc-loawa-gray ms-2 mb-2",
+		linkClass: "bgc-loawa-gray",
 		getProfileUrl: (name) => `https://loawa.com/char/${name}`,
 		onNavigate: (query) => {
 			window.location = `https://loawa.com/char/${query}`;
