@@ -10,6 +10,7 @@ import {
 	REORDER_WEBLINK_GROUPS,
 	UPDATE_WEBLINK_GROUP,
 } from "../../constants/querys";
+import { WEBLINK_GROUP_ID, isUntaggedWeblink } from "../../utils/weblinkUtil";
 
 export default function WeblinkGroupManageModal({ show, onHide }) {
 	const [newGroupName, setNewGroupName] = useState("");
@@ -136,13 +137,11 @@ export default function WeblinkGroupManageModal({ show, onHide }) {
 	};
 
 	const getGroupCount = (groupId) => {
-		if (groupId === 0) {
+		if (groupId === WEBLINK_GROUP_ID.BUILTIN) {
 			return builtinWeblinks.length;
 		}
-		if (groupId === -1) {
-			return weblinks.filter(
-				(w) => !w.groupId || !groups.some((g) => g.id === w.groupId && g.id > 0)
-			).length;
+		if (groupId === WEBLINK_GROUP_ID.UNTAGGED) {
+			return weblinks.filter((w) => isUntaggedWeblink(w, groups)).length;
 		}
 		return weblinks.filter((w) => w.groupId === groupId).length;
 	};

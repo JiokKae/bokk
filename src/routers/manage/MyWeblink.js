@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import AddWeblinkModal from "../../components/Weblink/AddWeblinkModal";
@@ -11,10 +11,12 @@ import {
 	ME,
 	MY_WEBLINK_GROUPS,
 	OWN_WEBLINKS,
-	REORDER_WEBLINKS,
-	SET_WEBLINK_GROUP,
 } from "../../constants/querys";
-import { hasDynamicDateToken } from "../../utils/weblinkUtil";
+import useWeblinkDnD from "../../hooks/useWeblinkDnD";
+import {
+	hasDynamicDateToken,
+	isUntaggedWeblink,
+} from "../../utils/weblinkUtil";
 
 function WeblinkManageItem({
 	className,
@@ -131,20 +133,10 @@ export default function MyWeblink() {
 	const { data: groupData } = useQuery(MY_WEBLINK_GROUPS);
 
 	const [weblinks, setWeblinks] = useState([]);
-	const [draggedInfo, setDraggedInfo] = useState(null);
-	const [hoverTargetGroup, setHoverTargetGroup] = useState(null);
 	const [showGroupModal, setShowGroupModal] = useState(false);
-
-	const draggedInfoRef = useRef(draggedInfo);
-	draggedInfoRef.current = draggedInfo;
-	const weblinksRef = useRef(weblinks);
-	weblinksRef.current = weblinks;
 
 	const groups = groupData?.myWeblinkGroups || [];
 	const userGroups = groups.filter((g) => g.id > 0);
-
-	const [setWeblinkGroup] = useMutation(SET_WEBLINK_GROUP);
-	const [reorderWeblinks] = useMutation(REORDER_WEBLINKS);
 
 	// 비로그인 사용자 로그인 페이지로 리다이렉트
 	useEffect(() => {
@@ -159,174 +151,27 @@ export default function MyWeblink() {
 		}
 	}, [data]);
 
-	const handleDragStart = (weblink) => {
-		setDraggedInfo({
-			id: weblink.id,
-			originGroupId: weblink.groupId ?? null,
-		});
-	};
+	const {
+		draggedInfo,
+		hoverTargetGroup,
+		handleLinkDragStart,
+		handleLinkDragEnter: handleItemDragEnter,
+		handleEmptyGroupDragEnter,
+		handleDragOver,
+		handleLinkDragEnd: handleDragEnd,
+	} = useWeblinkDnD({
+		weblinks,
+		setWeblinks,
+		groups,
+		enabled: true,
+	});
 
-	const handleItemDragEnter = (e, targetGroupId, targetIndex) => {
-		e.preventDefault();
-		if (!draggedInfoRef.current) return;
-
-		const draggedItem = weblinks.find((w) => w.id === draggedInfoRef.current.id);
-		if (!draggedItem) return;
-
-		const normTargetGroupId =
-			targetGroupId === "untagged" ? null : Number(targetGroupId);
-
-		// 대상 그룹의 아이템들 (드래그 중인 아이템 제외)
-		const targetGroupItems = weblinks.filter(
-			(w) =>
-				(targetGroupId === "untagged"
-					? !w.groupId || !groups.some((g) => g.id === w.groupId)
-					: w.groupId === normTargetGroupId) && w.id !== draggedItem.id
-		);
-
-		// 대상 위치에 소속 그룹이 갱신된 드래그 아이템 삽입
-		const updatedItem = { ...draggedItem, groupId: normTargetGroupId };
-		targetGroupItems.splice(targetIndex, 0, updatedItem);
-
-		// 모든 그룹 순서대로 weblinks 재구성
-		const newWeblinks = [];
-		groups.forEach((g) => {
-			if (g.id === normTargetGroupId) {
-				newWeblinks.push(...targetGroupItems);
-			} else {
-				newWeblinks.push(
-					...weblinks.filter(
-						(w) => w.groupId === g.id && w.id !== draggedItem.id
-					)
-				);
-			}
-		});
-
-		if (normTargetGroupId === null) {
-			newWeblinks.push(...targetGroupItems);
-		} else {
-			newWeblinks.push(
-				...weblinks.filter(
-					(w) =>
-						(!w.groupId || !groups.some((g) => g.id === w.groupId)) &&
-						w.id !== draggedItem.id
-				)
-			);
-		}
-
-		setWeblinks(newWeblinks);
-		setHoverTargetGroup(targetGroupId);
-	};
-
-	const handleEmptyGroupDragEnter = (e, targetGroupId) => {
-		e.preventDefault();
-		if (!draggedInfoRef.current) return;
-
-		const draggedItem = weblinks.find((w) => w.id === draggedInfoRef.current.id);
-		if (!draggedItem) return;
-
-		const normTargetGroupId =
-			targetGroupId === "untagged" ? null : Number(targetGroupId);
-		if (draggedItem.groupId === normTargetGroupId) return;
-
-		const updatedItem = { ...draggedItem, groupId: normTargetGroupId };
-
-		const newWeblinks = [];
-		groups.forEach((g) => {
-			if (g.id === normTargetGroupId) {
-				newWeblinks.push(updatedItem);
-			} else {
-				newWeblinks.push(
-					...weblinks.filter(
-						(w) => w.groupId === g.id && w.id !== draggedItem.id
-					)
-				);
-			}
-		});
-
-		if (normTargetGroupId === null) {
-			newWeblinks.push(updatedItem);
-		} else {
-			newWeblinks.push(
-				...weblinks.filter(
-					(w) =>
-						(!w.groupId || !groups.some((g) => g.id === w.groupId)) &&
-						w.id !== draggedItem.id
-				)
-			);
-		}
-
-		setWeblinks(newWeblinks);
-		setHoverTargetGroup(targetGroupId);
-	};
-
-	const handleDragOver = (e) => {
-		e.preventDefault();
-		e.dataTransfer.dropEffect = "move";
-	};
-
-	const handleDragEnd = useCallback(() => {
-		const currentInfo = draggedInfoRef.current;
-		// 1. UI 상태 즉각 초기화 (투명도 즉시 100% 복원, 테두리 하이라이트 즉시 해제)
-		setDraggedInfo(null);
-		setHoverTargetGroup(null);
-
-		if (!currentInfo) return;
-
-		const currentLinks = weblinksRef.current;
-		const finalItem = currentLinks.find((w) => w.id === currentInfo.id);
-		if (!finalItem) return;
-
-		const originGid = currentInfo.originGroupId;
-		const finalGid = finalItem.groupId ?? null;
-
-		// 2. 비동기 백엔드 동기화 (UI는 이미 정상 복원된 상태)
-		(async () => {
-			if (originGid !== finalGid) {
-				try {
-					await setWeblinkGroup({
-						variables: {
-							weblinkId: finalItem.id,
-							groupId: finalGid,
-						},
-					});
-				} catch (err) {
-					console.error("Failed to set weblink group:", err);
-				}
-			}
-
-			const allIds = currentLinks.map((w) => w.id);
-			try {
-				await reorderWeblinks({
-					variables: { weblinkIds: allIds },
-					refetchQueries: [
-						{ query: OWN_WEBLINKS },
-						{ query: MY_WEBLINK_GROUPS },
-					],
-				});
-			} catch (err) {
-				console.error("Failed to reorder weblinks:", err);
-			}
-		})();
-	}, [setWeblinkGroup, reorderWeblinks]);
+	const handleDragStart = (weblink) => handleLinkDragStart(null, weblink);
 
 	const handleDrop = (e) => {
 		e.preventDefault();
 		handleDragEnd();
 	};
-
-	// 드래그 중 브라우저 밖으로 마우스가 튀거나 윈도우 레벨에서 드래그가 종료될 때 안전망
-	useEffect(() => {
-		const handleGlobalDragEnd = () => {
-			if (draggedInfoRef.current) {
-				handleDragEnd();
-			}
-		};
-		window.addEventListener("dragend", handleGlobalDragEnd);
-		return () => {
-			window.removeEventListener("dragend", handleGlobalDragEnd);
-		};
-	}, [handleDragEnd]);
 
 	if (!meLoading && !meData?.me) {
 		return null;
@@ -391,9 +236,7 @@ export default function MyWeblink() {
 	}
 
 	// 그룹이 존재하는 경우: 그룹별 섹션 분리 렌더링
-	const untaggedLinks = weblinks.filter(
-		(w) => !w.groupId || !userGroups.some((g) => g.id === w.groupId)
-	);
+	const untaggedLinks = weblinks.filter((w) => isUntaggedWeblink(w, userGroups));
 
 	return (
 		<>

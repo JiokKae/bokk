@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import AddWeblinkModal from "../components/Weblink/AddWeblinkModal";
@@ -10,11 +10,14 @@ import {
 	ME,
 	MY_WEBLINK_GROUPS,
 	OWN_WEBLINKS,
-	REORDER_WEBLINKS,
 	REORDER_WEBLINK_GROUPS,
-	SET_WEBLINK_GROUP,
 } from "../constants/querys";
-import { getResolvedWeblinkUrl } from "../utils/weblinkUtil";
+import useWeblinkDnD from "../hooks/useWeblinkDnD";
+import {
+	WEBLINK_GROUP_ID,
+	getResolvedWeblinkUrl,
+	isUntaggedWeblink,
+} from "../utils/weblinkUtil";
 import styles from "./Home.module.css";
 
 export default function Home() {
@@ -31,24 +34,15 @@ export default function Home() {
 
 	const [weblinks, setWeblinks] = useState(ownWeblinksData?.ownWeblinks || []);
 	const [groups, setGroups] = useState(groupData?.myWeblinkGroups || []);
-	const [draggedInfo, setDraggedInfo] = useState(null);
-	const [hoverTargetGroup, setHoverTargetGroup] = useState(null);
 	const [draggedGroupIndex, setDraggedGroupIndex] = useState(null);
 
 	const displayGroups =
 		groups.length > 0
 			? groups
 			: [
-					{ id: 0, name: "bokk", seq: 0 },
-					{ id: -1, name: "미분류", seq: 999 },
+					{ id: WEBLINK_GROUP_ID.BUILTIN, name: "bokk", seq: 0 },
+					{ id: WEBLINK_GROUP_ID.UNTAGGED, name: "미분류", seq: 999 },
 			  ];
-
-	const draggedInfoRef = useRef(draggedInfo);
-	draggedInfoRef.current = draggedInfo;
-	const weblinksRef = useRef(weblinks);
-	weblinksRef.current = weblinks;
-	const groupsRef = useRef(groups);
-	groupsRef.current = displayGroups;
 
 	useEffect(() => {
 		if (ownWeblinksData?.ownWeblinks) {
@@ -66,9 +60,22 @@ export default function Home() {
 		}
 	}, [groupData, isLogin]);
 
-	const [setWeblinkGroup] = useMutation(SET_WEBLINK_GROUP);
-	const [reorderWeblinks] = useMutation(REORDER_WEBLINKS);
 	const [reorderWeblinkGroups] = useMutation(REORDER_WEBLINK_GROUPS);
+
+	const {
+		draggedInfo,
+		hoverTargetGroup,
+		handleLinkDragStart,
+		handleLinkDragEnter,
+		handleEmptyGroupDragEnter,
+		handleDragOver,
+		handleLinkDragEnd,
+	} = useWeblinkDnD({
+		weblinks,
+		setWeblinks,
+		groups: displayGroups,
+		enabled: isReordering,
+	});
 
 	// Shift 키 누름 상태 실시간 감지 (새 창 모드 시각적 피드백)
 	useEffect(() => {
@@ -96,184 +103,6 @@ export default function Home() {
 			window.removeEventListener("blur", handleBlur);
 		};
 	}, []);
-
-	// 웹링크 드래그 앤 드롭 핸들러
-	const handleLinkDragStart = (e, weblink) => {
-		if (!isReordering) return;
-		e.stopPropagation();
-		setDraggedInfo({
-			id: weblink.id,
-			originGroupId: weblink.groupId ?? null,
-		});
-		e.dataTransfer.effectAllowed = "move";
-		e.dataTransfer.setData("text/plain", String(weblink.id));
-	};
-
-	const handleLinkDragEnter = (e, targetGroupId, targetIndex) => {
-		e.preventDefault();
-		if (!draggedInfoRef.current) return;
-
-		const draggedItem = weblinksRef.current.find(
-			(w) => w.id === draggedInfoRef.current.id
-		);
-		if (!draggedItem) return;
-
-		const normTargetGroupId =
-			targetGroupId === "untagged" || targetGroupId === -1 ? null : Number(targetGroupId);
-
-		const currentList = weblinksRef.current;
-		const customGroups = groupsRef.current.filter((g) => g.id > 0);
-
-		// 대상 그룹의 아이템들 (드래그 중인 아이템 제외)
-		const targetGroupItems = currentList.filter(
-			(w) =>
-				(normTargetGroupId === null
-					? !w.groupId || !customGroups.some((g) => g.id === w.groupId)
-					: w.groupId === normTargetGroupId) && w.id !== draggedItem.id
-		);
-
-		// 대상 위치에 소속 그룹이 갱신된 드래그 아이템 삽입
-		const updatedItem = { ...draggedItem, groupId: normTargetGroupId };
-		targetGroupItems.splice(targetIndex, 0, updatedItem);
-
-		// 모든 그룹 순서대로 weblinks 재구성
-		const newWeblinks = [];
-		groupsRef.current.forEach((g) => {
-			if (g.id <= 0) return;
-			if (g.id === normTargetGroupId) {
-				newWeblinks.push(...targetGroupItems);
-			} else {
-				newWeblinks.push(
-					...currentList.filter(
-						(w) => w.groupId === g.id && w.id !== draggedItem.id
-					)
-				);
-			}
-		});
-
-		if (normTargetGroupId === null) {
-			newWeblinks.push(...targetGroupItems);
-		} else {
-			newWeblinks.push(
-				...currentList.filter(
-					(w) =>
-						(!w.groupId || !customGroups.some((g) => g.id === w.groupId)) &&
-						w.id !== draggedItem.id
-				)
-			);
-		}
-
-		setWeblinks(newWeblinks);
-		setHoverTargetGroup(targetGroupId);
-	};
-
-	const handleEmptyGroupDragEnter = (e, targetGroupId) => {
-		e.preventDefault();
-		if (!draggedInfoRef.current) return;
-
-		const draggedItem = weblinksRef.current.find(
-			(w) => w.id === draggedInfoRef.current.id
-		);
-		if (!draggedItem) return;
-
-		const normTargetGroupId =
-			targetGroupId === "untagged" || targetGroupId === -1 ? null : Number(targetGroupId);
-		if ((draggedItem.groupId ?? null) === normTargetGroupId) return;
-
-		const currentList = weblinksRef.current;
-		const customGroups = groupsRef.current.filter((g) => g.id > 0);
-		const updatedItem = { ...draggedItem, groupId: normTargetGroupId };
-
-		const newWeblinks = [];
-		groupsRef.current.forEach((g) => {
-			if (g.id <= 0) return;
-			if (g.id === normTargetGroupId) {
-				newWeblinks.push(updatedItem);
-			} else {
-				newWeblinks.push(
-					...currentList.filter(
-						(w) => w.groupId === g.id && w.id !== draggedItem.id
-					)
-				);
-			}
-		});
-
-		if (normTargetGroupId === null) {
-			newWeblinks.push(updatedItem);
-		} else {
-			newWeblinks.push(
-				...currentList.filter(
-					(w) =>
-						(!w.groupId || !customGroups.some((g) => g.id === w.groupId)) &&
-						w.id !== draggedItem.id
-				)
-			);
-		}
-
-		setWeblinks(newWeblinks);
-		setHoverTargetGroup(targetGroupId);
-	};
-
-	const handleDragOver = (e) => {
-		e.preventDefault();
-		e.dataTransfer.dropEffect = "move";
-	};
-
-	const handleLinkDragEnd = useCallback(() => {
-		const currentInfo = draggedInfoRef.current;
-		setDraggedInfo(null);
-		setHoverTargetGroup(null);
-
-		if (!currentInfo) return;
-
-		const currentLinks = weblinksRef.current;
-		const finalItem = currentLinks.find((w) => w.id === currentInfo.id);
-		if (!finalItem) return;
-
-		const originGid = currentInfo.originGroupId;
-		const finalGid = finalItem.groupId ?? null;
-
-		(async () => {
-			if (originGid !== finalGid) {
-				try {
-					await setWeblinkGroup({
-						variables: {
-							weblinkId: finalItem.id,
-							groupId: finalGid,
-						},
-					});
-				} catch (err) {
-					console.error("Failed to set weblink group:", err);
-				}
-			}
-
-			const allIds = currentLinks.map((w) => w.id);
-			try {
-				await reorderWeblinks({
-					variables: { weblinkIds: allIds },
-					refetchQueries: [
-						{ query: OWN_WEBLINKS },
-						{ query: MY_WEBLINK_GROUPS },
-					],
-				});
-			} catch (err) {
-				console.error("Failed to reorder weblinks:", err);
-			}
-		})();
-	}, [setWeblinkGroup, reorderWeblinks]);
-
-	// 전역 드래그 종료 안전망
-	useEffect(() => {
-		const handleGlobalDragEnd = () => {
-			if (draggedInfoRef.current) {
-				handleLinkDragEnd();
-			}
-		};
-		window.addEventListener("dragend", handleGlobalDragEnd);
-		return () => {
-			window.removeEventListener("dragend", handleGlobalDragEnd);
-		};
-	}, [handleLinkDragEnd]);
 
 	// 그룹 순서 변경 핸들러
 	const handleGroupDragStart = (e, index) => {
@@ -492,11 +321,9 @@ export default function Home() {
 								);
 							}
 
-							if (group.id === -1) {
-								const untaggedLinks = weblinks.filter(
-									(w) =>
-										!w.groupId ||
-										!groups.some((g) => g.id === w.groupId && g.id > 0)
+							if (group.id === WEBLINK_GROUP_ID.UNTAGGED) {
+								const untaggedLinks = weblinks.filter((w) =>
+									isUntaggedWeblink(w, groups)
 								);
 								if (untaggedLinks.length === 0 && !isReordering) return null;
 								const isHovered = hoverTargetGroup === -1 || hoverTargetGroup === "untagged";
@@ -719,12 +546,10 @@ export default function Home() {
 						})}
 
 						{/* 미분류 그룹 폴백 (그룹 목록에 id: -1이 없는 경우 대비) */}
-						{!displayGroups.some((g) => g.id === -1) &&
+						{!displayGroups.some((g) => g.id === WEBLINK_GROUP_ID.UNTAGGED) &&
 							(() => {
-								const untaggedLinks = weblinks.filter(
-									(w) =>
-										!w.groupId ||
-										!displayGroups.some((g) => g.id === w.groupId && g.id > 0)
+								const untaggedLinks = weblinks.filter((w) =>
+									isUntaggedWeblink(w, displayGroups)
 								);
 								if (untaggedLinks.length === 0 && !isReordering) return null;
 								const isHovered = hoverTargetGroup === -1 || hoverTargetGroup === "untagged";

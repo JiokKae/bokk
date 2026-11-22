@@ -79,6 +79,93 @@ export function formatWeblinkDynamicText(text, now = new Date()) {
 	});
 }
 
+export const WEBLINK_GROUP_ID = {
+	BUILTIN: 0,
+	UNTAGGED: -1,
+};
+
+export function normalizeTargetGroupId(targetGroupId) {
+	if (
+		targetGroupId === null ||
+		targetGroupId === undefined ||
+		targetGroupId === "untagged" ||
+		Number(targetGroupId) === WEBLINK_GROUP_ID.UNTAGGED
+	) {
+		return null;
+	}
+	return Number(targetGroupId);
+}
+
+export function isUntaggedWeblink(weblink, groups = []) {
+	if (!weblink?.groupId) return true;
+	return !groups.some((g) => g.id > 0 && g.id === weblink.groupId);
+}
+
+/**
+ * 드래그 중인 웹링크를 대상 그룹의 특정 위치(targetIndex가 null이면 빈 그룹 이동)로 재배치한 새 배열 반환
+ */
+export function reorderWeblinksAcrossGroups(
+	weblinks,
+	groups,
+	draggedId,
+	targetGroupId,
+	targetIndex = null
+) {
+	const draggedItem = weblinks.find((w) => w.id === draggedId);
+	if (!draggedItem) return null;
+
+	const normTargetGroupId = normalizeTargetGroupId(targetGroupId);
+
+	// 빈 그룹 드롭 시 이미 같은 그룹 소속이면 변경 불필요
+	if (
+		targetIndex === null &&
+		(draggedItem.groupId ?? null) === normTargetGroupId
+	) {
+		return null;
+	}
+
+	const customGroups = groups.filter((g) => g.id > 0);
+	const updatedItem = { ...draggedItem, groupId: normTargetGroupId };
+
+	let targetGroupItems;
+	if (targetIndex === null) {
+		targetGroupItems = [updatedItem];
+	} else {
+		targetGroupItems = weblinks.filter(
+			(w) =>
+				(normTargetGroupId === null
+					? isUntaggedWeblink(w, customGroups)
+					: w.groupId === normTargetGroupId) && w.id !== draggedItem.id
+		);
+		targetGroupItems.splice(targetIndex, 0, updatedItem);
+	}
+
+	const newWeblinks = [];
+	customGroups.forEach((g) => {
+		if (g.id === normTargetGroupId) {
+			newWeblinks.push(...targetGroupItems);
+		} else {
+			newWeblinks.push(
+				...weblinks.filter(
+					(w) => w.groupId === g.id && w.id !== draggedItem.id
+				)
+			);
+		}
+	});
+
+	if (normTargetGroupId === null) {
+		newWeblinks.push(...targetGroupItems);
+	} else {
+		newWeblinks.push(
+			...weblinks.filter(
+				(w) => isUntaggedWeblink(w, customGroups) && w.id !== draggedItem.id
+			)
+		);
+	}
+
+	return newWeblinks;
+}
+
 export function getResolvedWeblinkUrl(url, now = new Date()) {
 	if (!url) return "#";
 	if (url === "#") return "#";
