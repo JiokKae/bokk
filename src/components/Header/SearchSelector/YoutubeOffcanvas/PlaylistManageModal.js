@@ -21,7 +21,6 @@ import {
 	MY_VIDEO_ITEMS,
 	UPDATE_PLAYLIST,
 } from "../../../../constants/querys";
-import useOffcanvasFocusTrapBypass from "../../../../hooks/useOffcanvasFocusTrapBypass";
 
 export default function PlaylistManageModal({
 	show,
@@ -35,8 +34,6 @@ export default function PlaylistManageModal({
 	const [copiedCodeId, setCopiedCodeId] = useState(null);
 	const [editingId, setEditingId] = useState(null);
 	const [editingName, setEditingName] = useState("");
-
-	useOffcanvasFocusTrapBypass(show);
 
 	const [createPlaylist, { loading: creating }] = useMutation(CREATE_PLAYLIST, {
 		onCompleted: () => {

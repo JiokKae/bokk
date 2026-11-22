@@ -50,6 +50,7 @@ export default function YoutubeOffcanvas() {
 		handleDragStart,
 	} = useOffcanvasResizer();
 
+	const [isOpen, setIsOpen] = useState(false);
 	const [showPlaylistManageModal, setShowPlaylistManageModal] = useState(false);
 	const [selectedVideoForTag, setSelectedVideoForTag] = useState(null);
 
@@ -84,25 +85,29 @@ export default function YoutubeOffcanvas() {
 		displayedVideoItems,
 	});
 
-	// Bootstrap Offcanvas가 열릴 때 모달 인풋 등의 포커스를 가로채지 못하도록 포커스 트랩 해제
+	// Escape 키로 오프캔버스 닫기 (하위 모달이 열려 있을 때는 모달이 먼저 처리)
 	useEffect(() => {
-		const offcanvasElem = document.getElementById("offcanvasYoutubeQueue");
-		if (!offcanvasElem) return;
+		if (!isOpen) return;
 
-		const handleShown = () => {
-			if (window.bootstrap?.Offcanvas) {
-				const bsOffcanvas = window.bootstrap.Offcanvas.getInstance(offcanvasElem);
-				if (bsOffcanvas?._focustrap) {
-					bsOffcanvas._focustrap.deactivate();
-				}
+		const prevOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+
+		const handleKeyDown = (e) => {
+			if (
+				e.key === "Escape" &&
+				!showPlaylistManageModal &&
+				!selectedVideoForTag
+			) {
+				setIsOpen(false);
 			}
 		};
 
-		offcanvasElem.addEventListener("shown.bs.offcanvas", handleShown);
+		document.addEventListener("keydown", handleKeyDown);
 		return () => {
-			offcanvasElem.removeEventListener("shown.bs.offcanvas", handleShown);
+			document.body.style.overflow = prevOverflow;
+			document.removeEventListener("keydown", handleKeyDown);
 		};
-	}, []);
+	}, [isOpen, showPlaylistManageModal, selectedVideoForTag]);
 
 	return (
 		<>
@@ -112,12 +117,29 @@ export default function YoutubeOffcanvas() {
 				hasStarted={hasStarted}
 				currentTitle={currentTitle}
 				playingPlaylistName={playingPlaylistInfo.name}
+				onOpen={() => setIsOpen(true)}
+			/>
+
+			{/* 백드롭 */}
+			<div
+				aria-hidden={!isOpen}
+				onClick={() => setIsOpen(false)}
+				className={`fixed inset-0 z-[1040] bg-black/45 transition-opacity duration-300 ${
+					isOpen
+						? "pointer-events-auto opacity-100"
+						: "pointer-events-none opacity-0"
+				}`}
 			/>
 
 			<div
-				className="offcanvas offcanvas-end shadow-lg"
+				className={`fixed top-0 right-0 bottom-0 z-[1045] flex flex-col border-0 border-l border-solid border-zinc-200 bg-white shadow-2xl ${
+					isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
+				}`}
 				id="offcanvasYoutubeQueue"
-				aria-labelledby="offcanvasYoutubeQueue"
+				role="dialog"
+				aria-modal={isOpen}
+				aria-hidden={!isOpen}
+				aria-labelledby="offcanvasYoutubeQueueTitle"
 				tabIndex="-1"
 				style={{
 					width:
@@ -127,11 +149,11 @@ export default function YoutubeOffcanvas() {
 					maxWidth: "100vw",
 					transition: isDragging
 						? "none"
-						: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+						: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
 					overflow: "visible",
 				}}
 			>
-				{canExpand && (
+				{isOpen && canExpand && (
 					<div
 						role="separator"
 						aria-orientation="vertical"
@@ -173,13 +195,16 @@ export default function YoutubeOffcanvas() {
 					/>
 				)}
 
-				<div className="offcanvas-header">
-					<h5 className="offcanvas-title mb-0" id="offcanvasYoutubeQueue">
+				<div className="flex h-14 shrink-0 items-center justify-between border-0 border-b border-solid border-zinc-200 bg-white px-4">
+					<h5
+						className="m-0 text-base font-bold text-zinc-900"
+						id="offcanvasYoutubeQueueTitle"
+					>
 						유튜브 재생 목록
 					</h5>
 					<button
 						type="button"
-						data-bs-dismiss="offcanvas"
+						onClick={() => setIsOpen(false)}
 						aria-label="닫기"
 						className="ml-auto inline-flex size-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
 					>
@@ -188,8 +213,8 @@ export default function YoutubeOffcanvas() {
 				</div>
 
 				<div
-					className="offcanvas-body d-flex flex-column p-3"
-					style={{ height: "calc(100% - 56px)", overflow: "hidden" }}
+					className="flex flex-1 flex-col overflow-hidden p-3.5"
+					style={{ minHeight: 0 }}
 				>
 					<div
 						id="youtube_video_queue"

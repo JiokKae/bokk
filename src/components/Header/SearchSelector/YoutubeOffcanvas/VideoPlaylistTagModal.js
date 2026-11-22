@@ -19,7 +19,6 @@ import {
 	MY_VIDEO_ITEMS,
 	SET_VIDEO_PLAYLISTS,
 } from "../../../../constants/querys";
-import useOffcanvasFocusTrapBypass from "../../../../hooks/useOffcanvasFocusTrapBypass";
 
 export default function VideoPlaylistTagModal({
 	show,
@@ -31,8 +30,6 @@ export default function VideoPlaylistTagModal({
 	const [selectedIds, setSelectedIds] = useState([]);
 	const [newPlaylistName, setNewPlaylistName] = useState("");
 	const inputRef = useRef(null);
-
-	useOffcanvasFocusTrapBypass(show);
 
 	// 플레이리스트가 0개인 경우 바로 인풋에 포커스
 	useEffect(() => {

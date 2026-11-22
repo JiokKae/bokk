@@ -35,6 +35,24 @@ describe("YoutubeHeaderTrigger", () => {
 
 		expect(screen.getByText("조작 시 자동 재생")).toBeInTheDocument();
 	});
+
+	it("invokes onOpen when clicking YouTube icon or playing ticker", () => {
+		const onOpen = vi.fn();
+		render(
+			<YoutubeHeaderTrigger
+				isPlaying
+				autoPlay={false}
+				hasStarted
+				currentTitle="클릭 테스트 곡"
+				playingPlaylistName="전체"
+				onOpen={onOpen}
+			/>
+		);
+
+		fireEvent.click(screen.getByRole("button", { name: "유튜브 재생 목록 열기" }));
+		fireEvent.click(screen.getByTitle("재생 중: [전체] 클릭 테스트 곡"));
+		expect(onOpen).toHaveBeenCalledTimes(2);
+	});
 });
 
 describe("YoutubeQueueList", () => {

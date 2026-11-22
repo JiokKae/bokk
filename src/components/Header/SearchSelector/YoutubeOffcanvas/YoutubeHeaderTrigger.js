@@ -7,23 +7,25 @@ export default function YoutubeHeaderTrigger({
 	hasStarted,
 	currentTitle,
 	playingPlaylistName,
+	onOpen,
 }) {
 	const showTicker = isPlaying && Boolean(currentTitle);
 	const showAutoPlayNotice = !isPlaying && autoPlay && !hasStarted;
 	const showBadge = showTicker || showAutoPlayNotice;
 
+	const handleOpen = (e) => {
+		e.preventDefault();
+		onOpen?.();
+	};
+
 	return (
-		<div
-			className="d-flex align-items-center flex-shrink-1"
-			style={{ minWidth: 0 }}
-		>
-			<a
-				data-bs-toggle="offcanvas"
-				href="#offcanvasYoutubeQueue"
-				role="button"
+		<div className="flex min-w-0 shrink items-center">
+			<button
+				type="button"
 				aria-controls="offcanvasYoutubeQueue"
+				onClick={handleOpen}
 				onMouseDown={(e) => e.preventDefault()}
-				className="text-decoration-none flex-shrink-1"
+				className="shrink cursor-pointer border-0 bg-transparent p-0 text-left"
 				title={
 					showTicker
 						? `재생 중: [${playingPlaylistName}] ${currentTitle}`
@@ -58,29 +60,28 @@ export default function YoutubeHeaderTrigger({
 					</div>
 				) : showAutoPlayNotice ? (
 					<div className={styles.tickerNoticeBadge}>
-						<span
-							className="spinner-grow spinner-grow-sm text-primary me-1 flex-shrink-0"
-							style={{ width: "6px", height: "6px" }}
-						/>
-						<span className="text-truncate">조작 시 자동 재생</span>
+						<span className="relative mr-1.5 inline-flex size-1.5 shrink-0">
+							<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-bokk opacity-75" />
+							<span className="relative inline-flex size-1.5 rounded-full bg-bokk" />
+						</span>
+						<span className="truncate">조작 시 자동 재생</span>
 					</div>
 				) : null}
-			</a>
+			</button>
 
-			<a
-				data-bs-toggle="offcanvas"
-				href="#offcanvasYoutubeQueue"
-				role="button"
+			<button
+				type="button"
 				aria-controls="offcanvasYoutubeQueue"
+				aria-label="유튜브 재생 목록 열기"
+				onClick={handleOpen}
 				onMouseDown={(e) => e.preventDefault()}
-				style={{ userSelect: "none" }}
-				className="flex-shrink-0"
+				className="inline-flex shrink-0 cursor-pointer items-center border-0 bg-transparent p-0 select-none"
 			>
 				<img
 					src={`${process.env.REACT_APP_BOKK_IMG}/YouTube-icon.png`}
 					alt="유튜브 재생 목록"
 				/>
-			</a>
+			</button>
 		</div>
 	);
 }
