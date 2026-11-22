@@ -197,7 +197,7 @@ export default function Home() {
 							💡 웹링크를 드래그하여 순서나 그룹을 변경할 수 있습니다.
 						</span>
 					)}
-					<div className="d-flex align-items-center gap-2">
+					<div className="flex items-center gap-2">
 						<Button
 							variant={isReordering ? "default" : "outline"}
 							size="sm"
@@ -217,7 +217,7 @@ export default function Home() {
 						</Button>
 						<Link
 							to="/manage/myWeblink/"
-							className={`btn btn-sm btn-outline-secondary ${styles.toolbarBtn}`}
+							className={`inline-flex h-8 items-center justify-center rounded-md border border-solid border-zinc-300 bg-white px-3 text-xs font-medium text-zinc-700 no-underline shadow-xs transition-colors hover:bg-zinc-100 hover:text-zinc-900 ${styles.toolbarBtn}`}
 							title="웹링크 관리 페이지로 이동"
 						>
 							⚙️ 웹링크 관리

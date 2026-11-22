@@ -632,3 +632,16 @@
 - **의존성 및 번들 최적화**:
   - `react-bootstrap` 및 하위 26개 패키지 완전 제거 (`src/` 참조 0건, `npm audit` 0 vulnerabilities).
   - `vite build` 메인 청크(`171.86 → 125.22 kB`)·`vendor-ui` 청크(`126.46 → 105.42 kB`) 경량화 및 Vitest 9개 파일 / 26개 테스트 전량 통과.
+
+### 5.67 Bootstrap 5 CDN 완전 제거 및 전 페이지 Tailwind CSS v4 마이그레이션 완료 (2026-11-22)
+- **Bootstrap JS (`bootstrap.bundle.min.js`) 및 `data-bs-*` 완전 제거**:
+  - `Navbar.js` 모바일 햄버거 메뉴·사용자 드롭다운 및 `YoutubeOffcanvas.js`·`YoutubeHeaderTrigger.js` 오프캔버스 열기/닫기를 순수 React 상태로 전환 (`useOffcanvasFocusTrapBypass.js`, `Navbar.module.css` 삭제).
+  - 신규 단위 테스트 5건 보강 (`Navbar.test.js` 신규 3건, `YoutubeOffcanvasComponents.test.js` +1건, `PlaylistFilterDropdown.test.js` +1건 → 총 **10개 파일 / 31개 테스트**).
+- **인증·검색·유튜브 큐·관리·게시판·다운로드 전 페이지 Tailwind v4 전환**:
+  - 인증(`SignLayout`, `Signin`, `Signup`, `ChangePassword` — 미사용 `SignLayout.css`/`SignLayout.module.css` 삭제) 및 검색(`GameRecordSearch`, `gameSearchProviders`, `SearchSelector`, `HeaderLayout`).
+  - 유튜브 큐(`YoutubeVideoAdder`, `YoutubeVideoItem`, `YoutubeQueueList`, `Controller`) 및 관리 페이지(`Playlist`, `MyWeblink`).
+  - 자유 게시판(`Messageboard`, `Message`, `PostMessageForm`, `PostReplyForm`, `Pagination`) 및 다운로드(`Download`, `DownloadCard`).
+- **Bootstrap CSS CDN 완전 삭제 및 표준 Tailwind v4 전환**:
+  - `index.html`에서 Bootstrap 5.3.3 CSS/JS CDN 링크 전량 삭제 (외부 Bootstrap 네트워크 요청 0건).
+  - `src/styles/tailwind.css`를 표준 `@import "tailwindcss";` (Preflight 활성화)로 단순화하고 `App.css`의 레거시 게시판/그리드 규칙 정리.
+  - 데스크톱(`1440×900`)·모바일(`390×844`) 전 주요 페이지 실화면 캡처 검수 및 Vitest 31/31·`vite build` 통과 완료.

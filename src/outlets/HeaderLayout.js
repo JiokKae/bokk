@@ -7,7 +7,7 @@ export default function HeaderLayout({ items, searchSelector }) {
 	return (
 		<div>
 			<Navbar items={items} />
-			<div className="container">
+			<div className="mx-auto w-full max-w-[1320px] px-3 sm:px-4">
 				{searchSelector ? (
 					<div className={styles.header}>
 						<SearchSelector />

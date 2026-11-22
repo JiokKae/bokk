@@ -70,7 +70,7 @@ export default function ThumbnailModal() {
 		<>
 			<button
 				type="button"
-				className={`btn ${styles.btnLg} ${styles.bgcYoutube} mt-2`}
+				className={`mt-2 inline-flex cursor-pointer items-center justify-center rounded-lg font-medium shadow-xs transition-opacity hover:opacity-90 ${styles.btnLg} ${styles.bgcYoutube}`}
 				onClick={() => setOpen(true)}
 			>
 				유튜브 Thumbnail 크게 보기

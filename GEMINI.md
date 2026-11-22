@@ -11,7 +11,7 @@
 
 - **Core**: React 18 (`v18.2.0`), React Router DOM v7 (`BrowserRouter`, `Routes`, `Outlet`, `React.lazy` 코드 스플리팅), **Vite 6** (`vite.config.js`, `outDir: 'build'`, 벤더 청크 분리)
 - **API & State**: Apollo Client v3 (`@apollo/client`), GraphQL (`src/constants/querys.js`, `src/client.js`)
-- **UI & Styling**: **Tailwind CSS v4** (`@tailwindcss/vite`, `src/styles/tailwind.css`), **shadcn/ui** (`src/components/ui/`, Radix UI + `lucide-react`), CSS Modules (`*.module.css`), Styled Components (Bootstrap 5.3 CDN 점진적 전환 중, `react-bootstrap` 완전 제거)
+- **UI & Styling**: **Tailwind CSS v4** (`@tailwindcss/vite`, `src/styles/tailwind.css` 표준 `@import "tailwindcss";`), **shadcn/ui** (`src/components/ui/`, Radix UI + `lucide-react`), CSS Modules (`*.module.css`), Styled Components (Bootstrap 5 CDN 및 `react-bootstrap` 완전 제거)
 - **Media & Editor**: `react-youtube`, 자체 구축 한글 조합 호환 `IMESafeEditor` (`src/components/MessageBoard/IMESafeEditor.js`)
 - **Testing**: Vitest 5 + Testing Library + jsdom (`npm test`, `src/__tests__/`)
 

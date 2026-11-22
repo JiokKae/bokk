@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useState } from "react";
-import styled from "styled-components";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ME, MESSAGEBOARD, POST_MESSAGE } from "../../constants/querys";
 import { convertYoutubeIframesToOembed } from "../../utils/imageCompressor";
 import IMESafeEditor from "./IMESafeEditor";
@@ -8,30 +9,26 @@ import IMESafeEditor from "./IMESafeEditor";
 function GuestInput({ setWriterName, setPassword }) {
 	return (
 		<>
-			<div className="col-auto">
-				<input
-					type="text"
-					className="form-control mb-2"
-					maxLength="10"
-					required
-					placeholder="닉네임"
-					autoComplete="off"
-					onChange={(e) => setWriterName(e.target.value)}
-				/>
-			</div>
-			<div className="col-auto">
-				<input
-					type="password"
-					className="form-control mb-2"
-					maxLength="4"
-					pattern="[0-9]{4,4}"
-					required
-					placeholder="비밀번호"
-					inputMode="numeric"
-					autoComplete="new-password"
-					onChange={(e) => setPassword(e.target.value)}
-				/>
-			</div>
+			<Input
+				type="text"
+				className="h-9 w-36 bg-white"
+				maxLength={10}
+				required
+				placeholder="닉네임"
+				autoComplete="off"
+				onChange={(e) => setWriterName(e.target.value)}
+			/>
+			<Input
+				type="password"
+				className="h-9 w-32 bg-white"
+				maxLength={4}
+				pattern="[0-9]{4,4}"
+				required
+				placeholder="비밀번호"
+				inputMode="numeric"
+				autoComplete="new-password"
+				onChange={(e) => setPassword(e.target.value)}
+			/>
 		</>
 	);
 }
@@ -91,49 +88,33 @@ export default function PostMessageForm({ setCurrentPage }) {
 	};
 
 	return (
-		<div className="bgc-bokk p-2" style={{ borderRadius: "5px" }}>
-			<form onSubmit={onSubmit}>
-				<div className="row">
+		<div className="rounded-xl bg-bokk p-3 shadow-xs">
+			<form onSubmit={onSubmit} className="flex flex-col gap-2.5">
+				<div className="flex flex-wrap items-center gap-2">
 					{data?.me ? null : (
 						<GuestInput
 							setWriterName={setWriterName}
 							setPassword={setPassword}
 						/>
 					)}
-					<div className="col-auto">
-						<button
-							type="submit"
-							className="btn bgc-bokk-dark"
-							disabled={uploadCount > 0}
-						>
-							{uploadCount > 0 ? "업로드 중..." : "작성"}
-						</button>
-					</div>
+					<Button
+						type="submit"
+						size="sm"
+						className="h-9 bg-bokk-dark px-4 text-sm font-semibold text-white hover:bg-[#046eb5]"
+						disabled={uploadCount > 0}
+					>
+						{uploadCount > 0 ? "업로드 중..." : "작성"}
+					</Button>
 				</div>
-				<CKEditorLayout>
+
+				<div className="w-full overflow-hidden rounded-lg border border-solid border-zinc-300 bg-white text-zinc-900 [&_p]:m-0">
 					<IMESafeEditor
 						placeholder="내용"
 						onUploading={handleUploading}
 						onReady={handleEditorReady}
 					/>
-				</CKEditorLayout>
+				</div>
 			</form>
 		</div>
 	);
 }
-
-const CKEditorLayout = styled.div`
-	width: 100%;
-	font-size: 1rem;
-	font-weight: 400;
-	color: #212529;
-	background-color: #fff;
-	background-clip: padding-box;
-	border: 1px solid #ced4da;
-	border-radius: 0.375rem;
-	overflow: hidden;
-	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-	p {
-		margin: 0;
-	}
-`;

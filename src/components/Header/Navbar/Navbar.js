@@ -147,7 +147,7 @@ export default function Navbar({ items }) {
 
 	return (
 		<nav className="sticky top-0 z-[1020] bg-bokk-dark text-white shadow-xs">
-			<div className="container">
+			<div className="mx-auto w-full max-w-[1320px] px-3 sm:px-4">
 				<div className="flex min-h-14 items-center justify-between gap-4 py-1.5">
 					<div className="flex items-center gap-4">
 						<Link

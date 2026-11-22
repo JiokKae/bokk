@@ -1,21 +1,6 @@
-/*
- * Tailwind CSS v4 + shadcn/ui (Bokk Theme)
- *
- * 점진적 마이그레이션 기간 동안 기존 Bootstrap 5 CDN 스타일과 공존합니다:
- * - Preflight(전역 리셋)는 제외하여 기존 Bootstrap 레이아웃을 보호합니다.
- * - utilities는 unlayered로 로드하여 Bootstrap의 unlayered 요소 스타일(button, h1~h6 등)에
- *   Tailwind 유틸리티(.text-*, .font-*, .rounded-*)가 덮어쓰이지 않도록 합니다.
- * Bootstrap CDN을 완전히 제거한 뒤에는 `@import "tailwindcss";` 한 줄로 전환하세요.
- */
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css";
+/* Tailwind CSS v4 + shadcn/ui (Bokk Theme) */
+@import "tailwindcss";
 @import "tw-animate-css";
-
-/* Bootstrap 5 공존 보정: Tailwind v4 `.collapse { visibility: collapse }`가 Bootstrap `.navbar-collapse`를 숨기는 충돌 방지 */
-.collapse,
-.navbar-collapse.collapse {
-	visibility: visible !important;
-}
 
 @custom-variant dark (&:is(.dark *));
 
