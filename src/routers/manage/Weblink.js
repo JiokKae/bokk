@@ -1,7 +1,14 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, GripVertical } from "lucide-react";
+import {
+	ChevronDown,
+	ChevronsDownUp,
+	ChevronsUpDown,
+	Eye,
+	EyeOff,
+	GripVertical,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -23,6 +30,19 @@ import {
 	hasDynamicDateToken,
 	isUntaggedWeblink,
 } from "../../utils/weblinkUtil";
+
+const COLLAPSED_STORAGE_KEY = "bokk_weblink_manage_collapsed_groups";
+
+function loadCollapsedGroups() {
+	try {
+		const raw = localStorage.getItem(COLLAPSED_STORAGE_KEY);
+		if (!raw) return {};
+		const parsed = JSON.parse(raw);
+		return parsed && typeof parsed === "object" ? parsed : {};
+	} catch (_) {
+		return {};
+	}
+}
 
 function WeblinkManageItem({
 	index,
@@ -187,6 +207,8 @@ function BuiltinWeblinkManageItem({
 function BuiltinWeblinkManageSection({
 	links,
 	hidedIds,
+	isCollapsed,
+	onToggleCollapse,
 	onToggleHide,
 	toggling,
 }) {
@@ -194,29 +216,45 @@ function BuiltinWeblinkManageSection({
 
 	return (
 		<div className="mb-6">
-			<div className="mb-2 flex items-center justify-between border-0 border-b border-solid border-zinc-200 pb-1.5">
-				<div className="flex items-center gap-2">
+			<div className="mb-2 flex items-center justify-between gap-2 border-0 border-b border-solid border-zinc-200 pb-1.5">
+				<button
+					type="button"
+					onClick={onToggleCollapse}
+					aria-expanded={!isCollapsed}
+					className="inline-flex cursor-pointer items-center gap-2 rounded-md border-0 bg-transparent px-1 py-0.5 text-left transition-colors hover:bg-zinc-100"
+					title={isCollapsed ? "그룹 펼치기" : "그룹 접기"}
+				>
+					<ChevronDown
+						className={cn(
+							"size-4 text-zinc-500 transition-transform duration-200",
+							isCollapsed && "-rotate-90"
+						)}
+					/>
 					<span className="text-lg font-bold text-zinc-900">bokk</span>
 					<Badge variant="subtle">기본</Badge>
 					<Badge variant="secondary">{links.length}</Badge>
-				</div>
-				<span className="text-xs text-zinc-500">
-					숨김 버튼으로 홈 화면 노출 여부를 전환할 수 있습니다.
-				</span>
+				</button>
+				{!isCollapsed && (
+					<span className="hidden text-xs text-zinc-500 sm:inline">
+						숨김 버튼으로 홈 화면 노출 여부를 전환할 수 있습니다.
+					</span>
+				)}
 			</div>
 
-			<ul className="m-0 overflow-hidden rounded-xl border-[1px] border-solid border-zinc-200 bg-white p-0">
-				{links.map((weblink, index) => (
-					<BuiltinWeblinkManageItem
-						key={weblink.id}
-						index={index}
-						weblink={weblink}
-						isHidden={hidedIds.includes(weblink.id)}
-						onToggleHide={onToggleHide}
-						disabled={toggling}
-					/>
-				))}
-			</ul>
+			{!isCollapsed && (
+				<ul className="m-0 overflow-hidden rounded-xl border-[1px] border-solid border-zinc-200 bg-white p-0">
+					{links.map((weblink, index) => (
+						<BuiltinWeblinkManageItem
+							key={weblink.id}
+							index={index}
+							weblink={weblink}
+							isHidden={hidedIds.includes(weblink.id)}
+							onToggleHide={onToggleHide}
+							disabled={toggling}
+						/>
+					))}
+				</ul>
+			)}
 		</div>
 	);
 }
@@ -231,6 +269,9 @@ function WeblinkManageSection({
 	dropText,
 	draggedInfo,
 	isHovered,
+	isCollapsed,
+	onToggleCollapse,
+	onExpand,
 	onDragStart,
 	onItemDragEnter,
 	onEmptyGroupDragEnter,
@@ -240,69 +281,99 @@ function WeblinkManageSection({
 }) {
 	return (
 		<div className="mb-6">
-			<div className="mb-2 flex items-center justify-between border-0 border-b border-solid border-zinc-200 pb-1.5">
-				<div className="flex items-center gap-2">
+			<div
+				className={cn(
+					"mb-2 flex items-center justify-between gap-2 border-0 border-b border-solid pb-1.5 transition-colors",
+					isCollapsed && isHovered && draggedInfo
+						? "border-bokk"
+						: "border-zinc-200"
+				)}
+				onDragOver={onDragOver}
+				onDragEnter={(e) => {
+					if (isCollapsed && draggedInfo) {
+						onExpand?.();
+						if (links.length === 0) {
+							onEmptyGroupDragEnter(e, groupKey);
+						}
+					}
+				}}
+			>
+				<button
+					type="button"
+					onClick={onToggleCollapse}
+					aria-expanded={!isCollapsed}
+					className="inline-flex cursor-pointer items-center gap-2 rounded-md border-0 bg-transparent px-1 py-0.5 text-left transition-colors hover:bg-zinc-100"
+					title={isCollapsed ? "그룹 펼치기" : "그룹 접기"}
+				>
+					<ChevronDown
+						className={cn(
+							"size-4 text-zinc-500 transition-transform duration-200",
+							isCollapsed && "-rotate-90"
+						)}
+					/>
 					<span className={cn("text-lg font-bold text-zinc-900", titleClassName)}>
 						{title}
 					</span>
 					<Badge variant="secondary">{links.length}</Badge>
-				</div>
+				</button>
 				<div>
 					<AddWeblinkModal position="first" defaultGroupId={defaultGroupId} />
 				</div>
 			</div>
 
-			<ul
-				className={cn(
-					"m-0 overflow-hidden rounded-xl border-[1px] border-solid bg-white p-0 transition-colors duration-200",
-					isHovered && draggedInfo
-						? "border-bokk ring-2 ring-bokk/20"
-						: "border-zinc-200"
-				)}
-				onDragOver={onDragOver}
-				onDrop={onDrop}
-				onDragEnter={(e) => {
-					if (links.length === 0) {
-						onEmptyGroupDragEnter(e, groupKey);
-					}
-				}}
-			>
-				{links.length === 0 ? (
-					<li
-						className={cn(
-							"list-none py-6 text-center transition-colors",
-							isHovered ? "bg-bokk-subtle/50" : "bg-white"
-						)}
-						onDragOver={onDragOver}
-						onDrop={onDrop}
-						onDragEnter={(e) => onEmptyGroupDragEnter(e, groupKey)}
-					>
-						<span
+			{!isCollapsed && (
+				<ul
+					className={cn(
+						"m-0 overflow-hidden rounded-xl border-[1px] border-solid bg-white p-0 transition-colors duration-200",
+						isHovered && draggedInfo
+							? "border-bokk ring-2 ring-bokk/20"
+							: "border-zinc-200"
+					)}
+					onDragOver={onDragOver}
+					onDrop={onDrop}
+					onDragEnter={(e) => {
+						if (links.length === 0) {
+							onEmptyGroupDragEnter(e, groupKey);
+						}
+					}}
+				>
+					{links.length === 0 ? (
+						<li
 							className={cn(
-								"text-sm",
-								draggedInfo
-									? "font-semibold text-bokk-dark"
-									: "text-zinc-500"
+								"list-none py-6 text-center transition-colors",
+								isHovered ? "bg-bokk-subtle/50" : "bg-white"
 							)}
-						>
-							{draggedInfo ? dropText : emptyText}
-						</span>
-					</li>
-				) : (
-					links.map((weblink, index) => (
-						<WeblinkManageItem
-							key={weblink.id}
-							index={index}
-							weblink={weblink}
-							onDragStart={() => onDragStart(weblink)}
-							onDragEnter={(e, idx) => onItemDragEnter(e, groupKey, idx)}
 							onDragOver={onDragOver}
-							onDragEnd={onDragEnd}
-							isDragging={draggedInfo?.id === weblink.id}
-						/>
-					))
-				)}
-			</ul>
+							onDrop={onDrop}
+							onDragEnter={(e) => onEmptyGroupDragEnter(e, groupKey)}
+						>
+							<span
+								className={cn(
+									"text-sm",
+									draggedInfo
+										? "font-semibold text-bokk-dark"
+										: "text-zinc-500"
+								)}
+							>
+								{draggedInfo ? dropText : emptyText}
+							</span>
+						</li>
+					) : (
+						links.map((weblink, index) => (
+							<WeblinkManageItem
+								key={weblink.id}
+								index={index}
+								weblink={weblink}
+								onDragStart={() => onDragStart(weblink)}
+								onDragEnter={(e, idx) => onItemDragEnter(e, groupKey, idx)}
+								onDragOver={onDragOver}
+								onDragEnd={onDragEnd}
+								isDragging={draggedInfo?.id === weblink.id}
+							/>
+						))
+					)}
+				</ul>
+			)}
 		</div>
 	);
 }
@@ -335,11 +406,23 @@ export default function WeblinkManage() {
 
 	const [weblinks, setWeblinks] = useState([]);
 	const [showGroupModal, setShowGroupModal] = useState(false);
+	const [collapsedGroups, setCollapsedGroups] = useState(loadCollapsedGroups);
 
 	const groups = groupData?.myWeblinkGroups || [];
 	const userGroups = groups.filter((g) => g.id > 0);
 	const builtinWeblinks = builtinData?.builtinWeblinks?.weblinks || [];
 	const hidedIds = builtinData?.builtinWeblinks?.hidedIds || [];
+
+	useEffect(() => {
+		try {
+			localStorage.setItem(
+				COLLAPSED_STORAGE_KEY,
+				JSON.stringify(collapsedGroups)
+			);
+		} catch (_) {
+			// ignore storage quota errors
+		}
+	}, [collapsedGroups]);
 
 	useEffect(() => {
 		if (!meLoading && !meData?.me) {
@@ -394,6 +477,42 @@ export default function WeblinkManage() {
 					{ id: WEBLINK_GROUP_ID.BUILTIN, name: "bokk", seq: 1 },
 			  ];
 
+	const sectionKeys = displayGroups
+		.filter(
+			(g) =>
+				g.id !== WEBLINK_GROUP_ID.BUILTIN || builtinWeblinks.length > 0
+		)
+		.map((g) => String(g.id));
+
+	const allCollapsed =
+		sectionKeys.length > 0 &&
+		sectionKeys.every((key) => Boolean(collapsedGroups[key]));
+
+	const toggleGroupCollapse = (key) => {
+		const strKey = String(key);
+		setCollapsedGroups((prev) => ({
+			...prev,
+			[strKey]: !prev[strKey],
+		}));
+	};
+
+	const expandGroup = (key) => {
+		const strKey = String(key);
+		setCollapsedGroups((prev) => {
+			if (!prev[strKey]) return prev;
+			return { ...prev, [strKey]: false };
+		});
+	};
+
+	const handleToggleAll = () => {
+		const nextCollapsed = !allCollapsed;
+		const nextState = {};
+		sectionKeys.forEach((key) => {
+			nextState[key] = nextCollapsed;
+		});
+		setCollapsedGroups(nextState);
+	};
+
 	return (
 		<>
 			<div className="mb-5 flex flex-wrap items-center justify-between gap-2">
@@ -403,23 +522,49 @@ export default function WeblinkManage() {
 						핸들을 드래그하여 순서를 바꾸거나 다른 그룹으로 이동할 수 있습니다.
 					</span>
 				</div>
-				<Button
-					variant="outline"
-					size="sm"
-					className="border-bokk-border text-bokk-dark hover:bg-bokk-subtle"
-					onClick={() => setShowGroupModal(true)}
-				>
-					⚙️ 그룹 관리
-				</Button>
+				<div className="flex items-center gap-2">
+					{sectionKeys.length > 1 && (
+						<Button
+							variant="outline"
+							size="sm"
+							className="gap-1.5"
+							onClick={handleToggleAll}
+						>
+							{allCollapsed ? (
+								<>
+									<ChevronsUpDown className="size-3.5" />
+									<span>모두 펼치기</span>
+								</>
+							) : (
+								<>
+									<ChevronsDownUp className="size-3.5" />
+									<span>모두 접기</span>
+								</>
+							)}
+						</Button>
+					)}
+					<Button
+						variant="outline"
+						size="sm"
+						className="border-bokk-border text-bokk-dark hover:bg-bokk-subtle"
+						onClick={() => setShowGroupModal(true)}
+					>
+						⚙️ 그룹 관리
+					</Button>
+				</div>
 			</div>
 
 			{displayGroups.map((group) => {
+				const isCollapsed = Boolean(collapsedGroups[String(group.id)]);
+
 				if (group.id === WEBLINK_GROUP_ID.BUILTIN) {
 					return (
 						<BuiltinWeblinkManageSection
 							key="builtin-bokk"
 							links={builtinWeblinks}
 							hidedIds={hidedIds}
+							isCollapsed={isCollapsed}
+							onToggleCollapse={() => toggleGroupCollapse(group.id)}
 							onToggleHide={handleToggleBuiltin}
 							toggling={togglingBuiltin}
 						/>
@@ -439,6 +584,9 @@ export default function WeblinkManage() {
 							dropText="⬇ 여기에 드롭하여 미분류로 이동"
 							draggedInfo={draggedInfo}
 							isHovered={hoverTargetGroup === "untagged"}
+							isCollapsed={isCollapsed}
+							onToggleCollapse={() => toggleGroupCollapse(group.id)}
+							onExpand={() => expandGroup(group.id)}
 							onDragStart={handleDragStart}
 							onItemDragEnter={handleItemDragEnter}
 							onEmptyGroupDragEnter={handleEmptyGroupDragEnter}
@@ -460,6 +608,9 @@ export default function WeblinkManage() {
 						dropText="⬇ 여기에 드롭하여 이 그룹으로 이동"
 						draggedInfo={draggedInfo}
 						isHovered={hoverTargetGroup === group.id}
+						isCollapsed={isCollapsed}
+						onToggleCollapse={() => toggleGroupCollapse(group.id)}
+						onExpand={() => expandGroup(group.id)}
 						onDragStart={handleDragStart}
 						onItemDragEnter={handleItemDragEnter}
 						onEmptyGroupDragEnter={handleEmptyGroupDragEnter}
